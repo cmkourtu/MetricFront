@@ -1,10 +1,11 @@
-import axios from "axios";
-import { AuthModel, UserModel } from "./_models";
+import axios from 'axios';
+import { AuthModel, UserModel, UserByIdProps } from './_models';
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
 export const GET_USER_BY_ACCESSTOKEN_URL = `${API_URL}/verify_token`;
 export const LOGIN_URL = `${API_URL}/login`;
+export const GET_USER_BY_ID = `${API_URL}/profiles`;
 export const REGISTER_URL = `${API_URL}/register`;
 export const REQUEST_PASSWORD_URL = `${API_URL}/forgot_password`;
 
@@ -19,17 +20,25 @@ export function login(email: string, password: string) {
 // Server should return AuthModel
 export function register(
   email: string,
-  firstname: string,
-  lastname: string,
+  firstName: string,
+  lastName: string,
   password: string,
-  password_confirmation: string
+  companyName: string,
 ) {
   return axios.post(REGISTER_URL, {
     email,
-    first_name: firstname,
-    last_name: lastname,
+    firstName,
+    lastName,
     password,
-    password_confirmation,
+    companyName,
+  });
+}
+
+export function getUserById(userId: string, jwtToken: string) {
+  return axios.get<UserByIdProps>(`${GET_USER_BY_ID}/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+    },
   });
 }
 
