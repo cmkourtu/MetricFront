@@ -9,16 +9,16 @@ import {
   SetStateAction,
 } from 'react';
 import { LayoutSplashScreen } from '../../../../_metronic/layout/core';
-import { AuthModel, UserModel } from './_models';
+import { AuthModel, UserByIdProps, UserModel } from './_models';
 import * as authHelper from './AuthHelpers';
-import { getUserByToken } from './_requests';
+import { getUserById, getUserByToken } from './_requests';
 import { WithChildren } from '../../../../_metronic/helpers';
 
 type AuthContextProps = {
   auth: AuthModel | undefined;
   saveAuth: (auth: AuthModel | undefined) => void;
-  currentUser: UserModel | undefined;
-  setCurrentUser: Dispatch<SetStateAction<UserModel | undefined>>;
+  currentUser: UserByIdProps | undefined;
+  setCurrentUser: Dispatch<SetStateAction<UserByIdProps | undefined>>;
   logout: () => void;
 };
 
@@ -38,7 +38,7 @@ const useAuth = () => {
 
 const AuthProvider: FC<WithChildren> = ({ children }) => {
   const [auth, setAuth] = useState<AuthModel | undefined>(authHelper.getAuth());
-  const [currentUser, setCurrentUser] = useState<UserModel | undefined>();
+  const [currentUser, setCurrentUser] = useState<UserByIdProps | undefined>();
   const saveAuth = (auth: AuthModel | undefined) => {
     setAuth(auth);
     if (auth) {
@@ -66,10 +66,12 @@ const AuthInit: FC<WithChildren> = ({ children }) => {
 
   // We should request user by authToken (IN OUR EXAMPLE IT'S API_TOKEN) before rendering the application
   useEffect(() => {
-    const requestUser = async (apiToken: string) => {
+    const jwtToken = auth?.accessToken;
+    const userId = auth?.userId;
+    const requestUser = async (jwtToken: string) => {
       try {
-        if (!currentUser) {
-          const { data } = await getUserByToken(apiToken);
+        if (!currentUser && jwtToken && userId) {
+          const { data } = await getUserById(userId, jwtToken);
           if (data) {
             setCurrentUser(data);
           }
@@ -84,8 +86,8 @@ const AuthInit: FC<WithChildren> = ({ children }) => {
       }
     };
 
-    if (auth && auth.api_token) {
-      requestUser(auth.api_token);
+    if (auth && jwtToken) {
+      requestUser(jwtToken);
     } else {
       logout();
       setShowSplashScreen(false);
