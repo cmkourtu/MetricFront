@@ -57,7 +57,9 @@ const SidebarLogo = (props: PropsType) => {
               src={toAbsoluteUrl('media/logos/default-dark.svg')}
               className="h-25px app-sidebar-logo-default"
             />*/}
-            {/*<h1 className="text-white fs-1qx fw-bolder text-center">Statistic App</h1>*/}
+            <h1 className="text-white fs-1qx fw-bolder text-center app-sidebar-logo-default">
+              Statistic App
+            </h1>
           </>
         ) : (
           <>
@@ -79,7 +81,7 @@ const SidebarLogo = (props: PropsType) => {
           src={toAbsoluteUrl('media/logos/default-small.svg')}
           className="h-20px app-sidebar-logo-minimize"
         />*/}
-        <h1 className="text-white fs-1qx fw-bolder text-center">SA</h1>
+        <h1 className="text-white fs-1qx fw-bolder text-center app-sidebar-logo-minimize">SA</h1>
       </Link>
 
       {(appSidebarDefaultMinimizeDesktopEnabled || appSidebarDefaultCollapseDesktopEnabled) && (
