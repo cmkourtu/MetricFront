@@ -177,7 +177,7 @@ const ProfileDetails: FC = () => {
           <div className="card-footer d-flex justify-content-end py-6 px-9">
             <button
               type="submit"
-              className="btn btn-primary"
+              className="btn btn-primary fw-bold"
               data-kt-users-modal-action="submit"
               disabled={formik.isSubmitting || !formik.isValid || !formik.touched}
             >

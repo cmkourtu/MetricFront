@@ -7,7 +7,7 @@ const UserEditModalHeader = () => {
   return (
     <div className="modal-header">
       {/* begin::Modal title */}
-      <h2 className="fw-bolder">Edit Profile</h2>
+      <h2 className="fw-bolder">Add User</h2>
       {/* end::Modal title */}
 
       {/* begin::Close */}

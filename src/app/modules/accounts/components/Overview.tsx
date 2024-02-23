@@ -11,7 +11,10 @@ export function Overview() {
             <h3 className="fw-bolder m-0">Profile Details</h3>
           </div>
 
-          <Link to="/crafted/account/settings" className="btn btn-primary align-self-center">
+          <Link
+            to="/crafted/account/settings"
+            className="btn btn-primary align-self-center fw-bold"
+          >
             Edit Profile
           </Link>
         </div>

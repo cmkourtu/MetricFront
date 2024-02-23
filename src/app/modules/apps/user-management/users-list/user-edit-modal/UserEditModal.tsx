@@ -1,13 +1,8 @@
 import { useEffect } from 'react';
 import { UserEditModalHeader } from './UserEditModalHeader';
 import { UserEditModalFormWrapper } from './UserEditModalFormWrapper';
-import { KTIcon } from '../../../../../../_metronic/helpers';
 
-interface UserEditModalProps {
-  setIsEditUserModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const UserEditModal: React.FC<UserEditModalProps> = ({ setIsEditUserModalOpen }) => {
+const UserEditModal = () => {
   useEffect(() => {
     document.body.classList.add('modal-open');
     return () => {
@@ -15,9 +10,6 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ setIsEditUserModalOpen })
     };
   }, []);
 
-  const handleCloseEditProfileModal = () => {
-    setIsEditUserModalOpen(false);
-  };
   return (
     <>
       <div
@@ -31,22 +23,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ setIsEditUserModalOpen })
         <div className="modal-dialog modal-dialog-centered mw-650px">
           {/* begin::Modal content */}
           <div className="modal-content">
-            <div className="modal-header">
-              {/* begin::Modal title */}
-              <h2 className="fw-bolder">Edit Profile</h2>
-              {/* end::Modal title */}
-
-              {/* begin::Close */}
-              <div
-                className="btn btn-icon btn-sm btn-active-icon-primary"
-                data-kt-users-modal-action="close"
-                onClick={handleCloseEditProfileModal}
-                style={{ cursor: 'pointer' }}
-              >
-                <KTIcon iconName="cross" className="fs-1" />
-              </div>
-              {/* end::Close */}
-            </div>
+            <UserEditModalHeader />
             {/* begin::Modal body */}
             <div className="modal-body scroll-y mx-5 mx-xl-15 my-7">
               <UserEditModalFormWrapper />
