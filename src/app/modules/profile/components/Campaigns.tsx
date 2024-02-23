@@ -1,10 +1,12 @@
-
-import {Card5} from '../../../../_metronic/partials/content/cards/Card5'
+import { Card5 } from '../../../../_metronic/partials/content/cards/Card5';
 
 export function Campaigns() {
   return (
     <>
-      <div className='d-flex flex-wrap flex-stack mb-6'>
+      <div className="d-flex flex-wrap flex-stack mb-6">
+        <h3 className="fw-bolder my-2">My Campaigns</h3>
+      </div>
+      {/*<div className='d-flex flex-wrap flex-stack mb-6'>
         <h3 className='fw-bolder my-2'>
           My Campaigns
           <span className='fs-6 text-gray-500 fw-bold ms-1'>30 Days</span>
@@ -182,7 +184,7 @@ export function Campaigns() {
             </a>
           </li>
         </ul>
-      </div>
+  </div>*/}
     </>
-  )
+  );
 }

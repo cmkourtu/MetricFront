@@ -7,7 +7,7 @@ export const GET_USER_BY_ACCESSTOKEN_URL = `${API_URL}/verify_token`;
 export const LOGIN_URL = `${API_URL}/login`;
 export const GET_USER_BY_ID = `${API_URL}/profiles`;
 export const REGISTER_URL = `${API_URL}/register`;
-export const REQUEST_PASSWORD_URL = `${API_URL}/forgot_password`;
+export const REQUEST_PASSWORD_URL = `${API_URL}/forgot-password`;
 
 // Server should return AuthModel
 export function login(email: string, password: string) {
