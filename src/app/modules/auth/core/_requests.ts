@@ -42,6 +42,14 @@ export function getUserById(userId: string, jwtToken: string) {
   });
 }
 
+export function updateUserById(userId: string, jwtToken: string, userToUpdate: UserByIdProps) {
+  return axios.patch<UserByIdProps>(`${GET_USER_BY_ID}/${userId}`, userToUpdate, {
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+    },
+  });
+}
+
 // Server should return object => { result: boolean } (Is Email in DB)
 export function requestPassword(email: string) {
   return axios.post<{ result: boolean }>(REQUEST_PASSWORD_URL, {

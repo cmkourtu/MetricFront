@@ -1,10 +1,18 @@
-import { FC } from 'react';
+import react, { useState, useEffect } from 'react';
 import { KTIcon, toAbsoluteUrl } from '../../../_metronic/helpers';
 import { Link, useLocation } from 'react-router-dom';
 import { Dropdown1 } from '../../../_metronic/partials';
-
-const ProfileHeader: FC = () => {
+import { UserEditModal } from '../apps/user-management/users-list/user-edit-modal/UserEditModal';
+const ProfileHeader: React.FC = () => {
   const location = useLocation();
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const openEditUserModal = () => {
+    setIsEditUserModalOpen(true);
+  };
+
+  const closeEditUserModal = () => {
+    setIsEditUserModalOpen(false);
+  };
 
   return (
     <div className="card mb-5 mb-xl-10">
@@ -12,7 +20,7 @@ const ProfileHeader: FC = () => {
         <div className="d-flex flex-wrap flex-sm-nowrap mb-3">
           <div className="me-7 mb-4">
             <div className="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
-              <img src={toAbsoluteUrl('media/avatars/300-1.jpg')} alt="Metornic" />
+              <img src={toAbsoluteUrl('media/avatars/blank.png')} alt="Metornic" />
               <div className="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-white h-20px w-20px"></div>
             </div>
           </div>
@@ -78,6 +86,7 @@ const ProfileHeader: FC = () => {
                     data-kt-menu-trigger="click"
                     data-kt-menu-placement="bottom-end"
                     data-kt-menu-flip="top-end"
+                    onClick={openEditUserModal}
                   >
                     Edit profile
                   </button>
@@ -195,6 +204,7 @@ const ProfileHeader: FC = () => {
           </ul>
         </div>
       </div>
+      {isEditUserModalOpen && <UserEditModal setIsEditUserModalOpen={setIsEditUserModalOpen} />}
     </div>
   );
 };
