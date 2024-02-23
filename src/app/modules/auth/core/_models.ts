@@ -73,7 +73,7 @@ export interface UserByIdProps {
   firstName: string;
   lastName: string;
   companyName: string;
-  jobTitle: string;
-  registeredAt: string;
-  subscription: string;
+  jobTitle?: string;
+  registeredAt?: string;
+  subscription?: string;
 }

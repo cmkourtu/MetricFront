@@ -1,10 +1,13 @@
-import {KTIcon} from '../../../../_metronic/helpers'
-import {Card4} from '../../../../_metronic/partials/content/cards/Card4'
+import { KTIcon } from '../../../../_metronic/helpers';
+import { Card4 } from '../../../../_metronic/partials/content/cards/Card4';
 
 export function Documents() {
   return (
     <>
-      <div className='d-flex flex-wrap flex-stack mb-6'>
+      <div className="d-flex flex-wrap flex-stack mb-6">
+        <h3 className="fw-bolder my-2">My Documents</h3>
+      </div>
+      {/*<div className='d-flex flex-wrap flex-stack mb-6'>
         <h3 className='fw-bolder my-2'>
           My Documents
           <span className='fs-6 text-gray-500 fw-bold ms-1'>100+ resources</span>
@@ -88,7 +91,7 @@ export function Documents() {
             description='3 week ago'
           />
         </div>
-      </div>
+  </div>*/}
     </>
-  )
+  );
 }
