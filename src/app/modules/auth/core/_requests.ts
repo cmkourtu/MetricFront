@@ -8,6 +8,7 @@ export const LOGIN_URL = `${API_URL}/login`;
 export const GET_USER_BY_ID = `${API_URL}/profiles`;
 export const REGISTER_URL = `${API_URL}/register`;
 export const REQUEST_PASSWORD_URL = `${API_URL}/forgot-password`;
+export const RESET_PASSWORD_URL = `${API_URL}/reset-password`;
 
 // Server should return AuthModel
 export function login(email: string, password: string) {
@@ -54,6 +55,13 @@ export function updateUserById(userId: string, jwtToken: string, userToUpdate: U
 export function requestPassword(email: string) {
   return axios.post<{ result: boolean }>(REQUEST_PASSWORD_URL, {
     email,
+  });
+}
+
+export function resetPassword(token: string, password: string) {
+  return axios.post<{ result: boolean }>(RESET_PASSWORD_URL, {
+    token,
+    password,
   });
 }
 
