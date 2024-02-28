@@ -59,9 +59,9 @@ export function Registration() {
       try {
         const { data: auth } = await register(
           values.email,
-          values.password,
           values.firstName,
           values.lastName,
+          values.password,
           values.companyName,
         );
         saveAuth(auth);
