@@ -39,9 +39,8 @@ export function ResetPassword() {
       setLoading(true);
       setHasErrors(undefined);
       try {
-        const { data } = await resetPassword(token, values.password);
-        console.log(data);
-        if (data) {
+        const response = await resetPassword(token, values.password);
+        if (response?.status === 204) {
           setTimeout(() => {
             navigate('/auth');
           }, 2000);
