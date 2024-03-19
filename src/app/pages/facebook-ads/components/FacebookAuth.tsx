@@ -21,7 +21,7 @@ const FacebookAuth: React.FC = () => {
     }
   }, []);
 
-  return <div>FacebookAuth</div>;
+  return <></>;
 };
 
 export default FacebookAuth;

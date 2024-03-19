@@ -16,22 +16,13 @@ import {
   ListsWidget26,
   EngageWidget10,
 } from '../../../_metronic/partials/widgets';
-import { getFacebookAccounts } from '../../modules/auth/core/_requests';
-import { useAuth } from '../../modules/auth';
 
-const DashboardPage: FC<{ handleGetFacebookAccounts: () => void }> = ({
-  handleGetFacebookAccounts,
-}) => (
+const DashboardPage: FC = () => (
   <>
     {/* begin::Row */}
     <div className="row g-5 g-xl-10 mb-5 mb-xl-10">
       {/* begin::Col */}
-      <button
-        className="btn btn-primary fw-bold "
-        onClick={handleGetFacebookAccounts}
-      >
-        Get
-      </button>
+
       <div className="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
         <CardsWidget20
           className="h-md-50 mb-5 mb-xl-10"
@@ -124,24 +115,13 @@ const DashboardPage: FC<{ handleGetFacebookAccounts: () => void }> = ({
 
 const DashboardWrapper: FC = () => {
   const intl = useIntl();
-  const { auth } = useAuth();
-  console.log(auth?.accessToken);
 
-  const handleGetFacebookAccounts = async () => {
-    if (!auth?.accessToken) return;
-    try {
-      const { data } = await getFacebookAccounts(auth?.accessToken);
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <>
       <PageTitle breadcrumbs={[]}>
         {intl.formatMessage({ id: 'MENU.DASHBOARD' })}
       </PageTitle>
-      <DashboardPage handleGetFacebookAccounts={handleGetFacebookAccounts} />
+      <DashboardPage />
     </>
   );
 };

@@ -20,7 +20,7 @@ const FacebookCallback: React.FC = () => {
     }
   }, []);
 
-  return <div>FacebookCallback</div>;
+  return <></>;
 };
 
 export default FacebookCallback;
