@@ -8,8 +8,21 @@ const SidebarMenuMain = () => {
 
   return (
     <>
-      <SidebarMenuItem to="/dashboard" icon="home" title="Home" fontIcon="bi-app-indicator" />
+      <SidebarMenuItem
+        to="/dashboard"
+        icon="home"
+        title="Home"
+        fontIcon="bi-app-indicator"
+      />
       {/*<SidebarMenuItem to='/builder' icon='switch' title='Layout Builder' fontIcon='bi-layers' />*/}
+
+      <SidebarMenuItem
+        to="/facebook-ads"
+        icon="facebook"
+        title="Facebook Ads"
+        fontIcon="bi-layers"
+      />
+
       <div className="menu-item">
         <div className="menu-content pt-8 pb-2">
           <span className="menu-section text-muted text-uppercase fs-8 ls-1">
@@ -61,7 +74,12 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem to="/crafted/account/overview" title="Overview" hasBullet={true} />
         <SidebarMenuItem to="/crafted/account/settings" title="Settings" hasBullet={true} />
       </SidebarMenuItemWithSub>*/}
-      <SidebarMenuItemWithSub to="/error" title="Folders" fontIcon="bi-sticky" icon="folder">
+      <SidebarMenuItemWithSub
+        to="/error"
+        title="Folders"
+        fontIcon="bi-sticky"
+        icon="folder"
+      >
         <SidebarMenuItem to="/error/404" title="Folder 1" hasBullet={true} />
         <SidebarMenuItem to="/error/404" title="Folder 2" hasBullet={true} />
       </SidebarMenuItemWithSub>
