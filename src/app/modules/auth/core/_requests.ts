@@ -9,21 +9,12 @@ export const GET_USER_BY_ID = `${API_URL}/profiles`;
 export const REGISTER_URL = `${API_URL}/register`;
 export const REQUEST_PASSWORD_URL = `${API_URL}/forgot-password`;
 export const RESET_PASSWORD_URL = `${API_URL}/reset-password`;
-export const GET_FACEBOOK_ACCOUNTS = `${API_URL}/facebook/accounts/facebook`;
 
 // Server should return AuthModel
 export function login(email: string, password: string) {
   return axios.post<AuthModel>(LOGIN_URL, {
     email,
     password,
-  });
-}
-
-export function getFacebookAccounts(jwtToken: string) {
-  return axios.get(GET_FACEBOOK_ACCOUNTS, {
-    headers: {
-      Authorization: `Bearer ${jwtToken}`,
-    },
   });
 }
 

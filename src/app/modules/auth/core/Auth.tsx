@@ -20,6 +20,8 @@ type AuthContextProps = {
   currentUser: UserByIdProps | undefined;
   setCurrentUser: Dispatch<SetStateAction<UserByIdProps | undefined>>;
   logout: () => void;
+  facebookAuthCode: string;
+  setFacebookAuthCode: Dispatch<SetStateAction<string>>;
 };
 
 const initAuthContextPropsState = {
@@ -28,6 +30,8 @@ const initAuthContextPropsState = {
   currentUser: undefined,
   setCurrentUser: () => {},
   logout: () => {},
+  facebookAuthCode: '',
+  setFacebookAuthCode: () => {},
 };
 
 const AuthContext = createContext<AuthContextProps>(initAuthContextPropsState);
@@ -37,8 +41,13 @@ const useAuth = () => {
 };
 
 const AuthProvider: FC<WithChildren> = ({ children }) => {
+  const storedAuthLogin = localStorage.getItem('authLogin');
+  const storedCurrentUser = localStorage.getItem('currentUser');
   const [auth, setAuth] = useState<AuthModel | undefined>(authHelper.getAuth());
-  const [currentUser, setCurrentUser] = useState<UserByIdProps | undefined>();
+  const [currentUser, setCurrentUser] = useState<UserByIdProps | undefined>(
+    storedCurrentUser ? JSON.parse(storedCurrentUser) : undefined
+  );
+  const [facebookAuthCode, setFacebookAuthCode] = useState<string>('');
   const saveAuth = (auth: AuthModel | undefined) => {
     setAuth(auth);
     if (auth) {
@@ -51,10 +60,21 @@ const AuthProvider: FC<WithChildren> = ({ children }) => {
   const logout = () => {
     saveAuth(undefined);
     setCurrentUser(undefined);
+    setFacebookAuthCode('');
   };
 
   return (
-    <AuthContext.Provider value={{ auth, saveAuth, currentUser, setCurrentUser, logout }}>
+    <AuthContext.Provider
+      value={{
+        auth,
+        saveAuth,
+        currentUser,
+        setCurrentUser,
+        logout,
+        facebookAuthCode,
+        setFacebookAuthCode,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
