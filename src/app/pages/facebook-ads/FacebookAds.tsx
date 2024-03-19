@@ -1,42 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { KTIcon, toAbsoluteUrl } from '../../../_metronic/helpers';
-import { FacebookAuth } from './components';
+import { FacebookAuth, PaginationComponent } from './components';
 import { useAuth } from '../../modules/auth';
 import {
   getFacebookAccounts,
   getFacebookAds,
   getFacebookToken,
 } from '../../modules/apps/core/_appRequests';
-
-interface FacebookAccountsProps {
-  facebookId: string;
-  firstName: string;
-  lastName: string;
-}
-
-interface AdAccountProps {
-  id: string;
-  name: string;
-  currency: string;
-}
-
-interface FacebookAccountProps {
-  facebookId: string;
-  firstName: string;
-  lastName: string;
-}
-
-interface FacebookAdsProps {
-  facebookAccount: FacebookAccountProps;
-  adAccounts: AdAccountProps[];
-}
+import { FacebookAdsProps } from '../../modules/apps/core/_appModels';
 
 const FacebookAds: React.FC = () => {
   const { facebookAuthCode, auth } = useAuth();
-  const [facebookAccounts, setFacebookAccounts] = useState<
-    FacebookAccountsProps[]
-  >([]);
   const [facebookAds, setFacebookAds] = useState<FacebookAdsProps[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage: number = 10;
 
   //TemporaryToken
   const facebookToken =
@@ -55,10 +32,8 @@ const FacebookAds: React.FC = () => {
           );
 
           if (response) {
-            const { data } = await getFacebookAccounts(facebookToken);
-            setFacebookAccounts(data);
-            const response = await getFacebookAds(facebookToken);
-            setFacebookAds(response.data);
+            const { data } = await getFacebookAds(facebookToken);
+            setFacebookAds(data);
           }
         } catch (error) {
           console.log(error);
@@ -68,12 +43,19 @@ const FacebookAds: React.FC = () => {
     }
   }, [facebookAuthCode]);
 
-  const handleOpenFacebookAccount = async () => {
-    try {
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // Calculate total pages
+  const totalPages: number = Math.ceil(facebookAds.length / itemsPerPage);
+
+  // Get current items
+  const indexOfLastItem: number = currentPage * itemsPerPage;
+  const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
+  const currentItems: FacebookAdsProps[] = facebookAds.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  // Change page
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
     <div className={`card`}>
@@ -83,16 +65,7 @@ const FacebookAds: React.FC = () => {
           <span className="card-label fw-bold fs-3 mb-1">
             Facebook Accounts
           </span>
-          {/*<span className="text-muted mt-1 fw-semibold fs-7">
-            Over 500 new products
-            </span>*/}
         </h3>
-        <div className="card-toolbar">
-          <a href="#" className="btn btn-sm btn-light-primary">
-            <KTIcon iconName="plus" className="fs-2" />
-            New Member
-          </a>
-        </div>
       </div>
       {/* end::Header */}
       {/* begin::Body */}
@@ -104,35 +77,32 @@ const FacebookAds: React.FC = () => {
             {/* begin::Table head */}
             <thead>
               <tr className="fw-bold text-muted bg-light">
-                <th className="ps-4 min-w-200px">Facebook account</th>
-                <th className="ps-4 min-w-200px">Ads name</th>
+                <th className="ps-4 min-w-200px">Facebook Account</th>
+                <th className="ps-4 min-w-200px">Name</th>
                 <th className="ps-4 min-w-100px">Currency</th>
               </tr>
             </thead>
             {/* end::Table head */}
             {/* begin::Table body */}
             <tbody>
-              {facebookAds.map((ad) => (
-                <tr key={ad?.facebookAccount?.facebookId}>
+              {currentItems.map((ad, index) => (
+                <tr key={index}>
                   <td>
                     <div className="ps-4 text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6">
-                      {ad?.facebookAccount?.firstName}{' '}
-                      {ad?.facebookAccount?.lastName}
+                      {ad.facebookAccount.firstName}{' '}
+                      {ad.facebookAccount.lastName}
                     </div>
                   </td>
                   <td>
-                    {ad?.adAccounts.map((account) => (
-                      <div
-                        key={account?.id}
-                        className="ps-4 text-gray-900 text-hover-primary fs-7"
-                      >
+                    {ad.adAccounts.map((account, idx) => (
+                      <div key={idx} className="ps-4">
                         {account.name}
                       </div>
                     ))}
                   </td>
                   <td>
-                    {ad?.adAccounts.map((account) => (
-                      <div key={account?.id} className="ps-4">
+                    {ad.adAccounts.map((account, idx) => (
+                      <div key={idx} className="ps-4">
                         {account.currency}
                       </div>
                     ))}
@@ -145,8 +115,15 @@ const FacebookAds: React.FC = () => {
           {/* end::Table */}
         </div>
         {/* end::Table container */}
+
+        {/* Pagination */}
+        {/* Pagination Component */}
+        <PaginationComponent
+          totalPages={totalPages}
+          currentPage={currentPage}
+          paginate={paginate}
+        />
       </div>
-      {!facebookAuthCode && <FacebookAuth />}
       {/* begin::Body */}
     </div>
   );

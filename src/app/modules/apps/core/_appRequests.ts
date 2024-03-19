@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { FacebookAccountsProps, FacebookAdsProps } from '../core/_appModels';
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -19,7 +20,7 @@ export function getFacebookToken(jwtToken: string, code: string) {
 }
 
 export function getFacebookAccounts(jwtToken: string) {
-  return axios.get(GET_FACEBOOK_ACCOUNTS, {
+  return axios.get<FacebookAccountsProps[]>(GET_FACEBOOK_ACCOUNTS, {
     headers: {
       Authorization: `Bearer ${jwtToken}`,
     },
@@ -27,7 +28,7 @@ export function getFacebookAccounts(jwtToken: string) {
 }
 
 export function getFacebookAds(jwtToken: string) {
-  return axios.get(GET_FACEBOOK_ADS, {
+  return axios.get<FacebookAdsProps[]>(GET_FACEBOOK_ADS, {
     headers: {
       Authorization: `Bearer ${jwtToken}`,
     },
