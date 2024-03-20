@@ -1,6 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const FacebookAdsFilters: React.FC = () => {
+interface FacebookAdsFiltersProps {
+  onCurrencySelect: (currency: string) => void;
+}
+
+const FacebookAdsFilters: React.FC<FacebookAdsFiltersProps> = ({
+  onCurrencySelect,
+}) => {
+  const [selectedCurrency, setSelectedCurrency] = useState<string>('');
+  const handleCurrencySelect = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const currency = event.target.value;
+    setSelectedCurrency(currency);
+  };
+  const handleApplyFilter = () => {
+    onCurrencySelect(selectedCurrency);
+  };
+
   return (
     <div
       className="menu menu-sub menu-sub-dropdown w-250px w-md-300px"
@@ -13,8 +30,8 @@ const FacebookAdsFilters: React.FC = () => {
       <div className="separator border-gray-200"></div>
 
       <div className="px-7 py-5">
-        {/* <div className="mb-10">
-          <label className="form-label fw-bold">Status:</label>
+        <div className="mb-10">
+          <label className="form-label fw-bold">Currency:</label>
 
           <div>
             <select
@@ -22,16 +39,14 @@ const FacebookAdsFilters: React.FC = () => {
               data-kt-select2="true"
               data-placeholder="Select option"
               data-allow-clear="true"
-              defaultValue={'1'}
+              onChange={handleCurrencySelect}
             >
-              <option></option>
-              <option value="1">Facebook</option>
-              <option value="2">Pending</option>
-              <option value="3">In Process</option>
-              <option value="4">Rejected</option>
+              <option value="">All</option>
+              <option value="UAH">UAH</option>
+              <option value="RUB">RUB</option>
             </select>
-  </div>
-        </div>*/}
+          </div>
+        </div>
 
         {/* <div className="mb-10">
           <label className="form-label fw-bold">Member Type:</label>
@@ -82,6 +97,7 @@ const FacebookAdsFilters: React.FC = () => {
             type="submit"
             className="btn btn-sm btn-primary"
             data-kt-menu-dismiss="true"
+            onClick={handleApplyFilter}
           >
             Apply
           </button>

@@ -9,6 +9,7 @@ import { WithChildren } from '../../_metronic/helpers';
 import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper';
 import FacebookAds from '../pages/facebook-ads/FacebookAds';
 import { FacebookCallback } from '../pages/facebook-ads/components';
+import FacebookAdAccount from '../pages/facebook-ads/FacebookAdAccount';
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'));
@@ -28,6 +29,10 @@ const PrivateRoutes = () => {
         {/* Pages */}
         <Route path="dashboard" element={<DashboardWrapper />} />
         <Route path="facebook-ads" element={<FacebookAds />} />
+        <Route
+          path="/facebook-ads/:facebookId"
+          element={<FacebookAdAccount />}
+        />
         <Route
           path="callback/facebook-callback"
           element={<FacebookCallback />}
