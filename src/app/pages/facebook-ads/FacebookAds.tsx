@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { KTIcon, toAbsoluteUrl } from '../../../_metronic/helpers';
-import { FacebookAuth, PaginationComponent } from './components';
+import { KTIcon } from '../../../_metronic/helpers';
+import {
+  FacebookAdsFilters,
+  FacebookAuth,
+  PaginationComponent,
+} from './components';
 import { useAuth } from '../../modules/auth';
 import {
-  getFacebookAccounts,
   getFacebookAds,
   getFacebookToken,
 } from '../../modules/apps/core/_appRequests';
 import { FacebookAdsProps } from '../../modules/apps/core/_appModels';
-import { Dropdown1 } from '../../../_metronic/partials';
 
 const FacebookAds: React.FC = () => {
   const { facebookAuthCode, auth } = useAuth();
   const [facebookAds, setFacebookAds] = useState<FacebookAdsProps[]>([]);
+  const [facebookToken, setFacebookToken] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [searchInput, setSearchInput] = useState<string>('');
   const itemsPerPage: number = 10;
-
-  //TemporaryToken
-  const facebookToken =
-    'EAAMC39KPoBYBO3c3lsRG5skqF7K7esJwzGl7aM6PDrNKcmnpD543cGB7v2n0z9PThTmdCdn686pwmg3PgUnhav1fVWtA6Mw4akEtBYjrwKeb8muxh4rJmdQEQLEPprKWSi8sEXPtYvPLzzqfOZCTUQZC5xpZCepCHfhGD9TDJA2Gypc23Xsm7hXDXZBcbRK3nDZBEnwwM69FcY7QPgJlZBzIonn1OrBWXhgdABPSzbnTBSsaQgZCMrZAZAqfNdGiukQRI2gZDZD';
 
   useEffect(() => {
     const accessToken = auth?.accessToken;
@@ -31,6 +31,9 @@ const FacebookAds: React.FC = () => {
             accessToken,
             facebookAuthCode
           );
+          if (response) {
+            setFacebookToken(response?.data?.access_token);
+          }
 
           if (response) {
             const { data } = await getFacebookAds(facebookToken);
@@ -50,13 +53,30 @@ const FacebookAds: React.FC = () => {
   // Get current items
   const indexOfLastItem: number = currentPage * itemsPerPage;
   const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
-  const currentItems: FacebookAdsProps[] = facebookAds.slice(
+
+  // Filtered items based on search input
+  const filteredItems: FacebookAdsProps[] = facebookAds.filter((ad) =>
+    `${ad.facebookAccount.firstName} ${ad.facebookAccount.lastName}`
+      .toLowerCase()
+      .includes(searchInput.toLowerCase())
+  );
+
+  // Pagination logic
+  const currentItems: FacebookAdsProps[] = filteredItems.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
 
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  // Handle search input change
+  const handleSearchInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSearchInput(event.target.value);
+    setCurrentPage(1); // Reset to first page when search query changes
+  };
 
   return (
     <div className={`card`}>
@@ -79,6 +99,8 @@ const FacebookAds: React.FC = () => {
               type="text"
               className="form-control form-control-solid w-300px ps-14"
               placeholder="Search"
+              value={searchInput}
+              onChange={handleSearchInputChange}
             />
           </div>
           <div className="m-0">
@@ -94,7 +116,7 @@ const FacebookAds: React.FC = () => {
               />
               Filter
             </a>
-            <Dropdown1 />
+            <FacebookAdsFilters />
           </div>
         </div>
         {/* begin::Table container */}
@@ -115,7 +137,7 @@ const FacebookAds: React.FC = () => {
               {currentItems.map((ad, index) => (
                 <tr key={index}>
                   <td>
-                    <div className="ps-4 text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6">
+                    <div className="ps-4 text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6 cursor-pointer">
                       {ad.facebookAccount.firstName}{' '}
                       {ad.facebookAccount.lastName}
                     </div>
