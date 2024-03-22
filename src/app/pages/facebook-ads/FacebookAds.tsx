@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { KTIcon } from '../../../_metronic/helpers';
 import {
   FacebookAdsFilters,
@@ -6,17 +8,17 @@ import {
   PaginationComponent,
 } from './components';
 import { useAuth } from '../../modules/auth';
+import { usePageData } from '../../../_metronic/layout/core';
 import {
   getFacebookAds,
   getFacebookToken,
 } from '../../modules/apps/core/_appRequests';
 import { FacebookAdsProps } from '../../modules/apps/core/_appModels';
-import { useNavigate } from 'react-router-dom';
 
 const FacebookAds: React.FC = () => {
   const navigate = useNavigate();
   const { facebookAuthCode, auth } = useAuth();
-  const [facebookAds, setFacebookAds] = useState<FacebookAdsProps[]>([]);
+  const { facebookAds, setFacebookAds } = usePageData();
   const [facebookToken, setFacebookToken] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchInput, setSearchInput] = useState<string>('');
@@ -51,24 +53,25 @@ const FacebookAds: React.FC = () => {
   }, [facebookAuthCode]);
 
   // Calculate total pages
-  const totalPages: number = Math.ceil(facebookAds.length / itemsPerPage);
+  const totalPages: number = Math.ceil(
+    (facebookAds?.length || 0) / itemsPerPage
+  );
 
   // Get current items
   const indexOfLastItem: number = currentPage * itemsPerPage;
   const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
 
-  // Filtered items based on search input and selected currency
   const filteredItems: FacebookAdsProps[] = (facebookAds || [])
     .map((ad) => {
       if (ad) {
         if (selectedCurrency) {
-          const adAccountsUAH = ad.adAccounts.filter(
+          const adAccountsFiltered = ad.adAccounts.filter(
             (account) => account.currency === selectedCurrency
           );
-          if (adAccountsUAH.length > 0) {
+          if (adAccountsFiltered.length > 0) {
             return {
               ...ad,
-              adAccounts: adAccountsUAH,
+              adAccounts: adAccountsFiltered,
             };
           } else {
             return null;
@@ -174,8 +177,8 @@ const FacebookAds: React.FC = () => {
           </div>
         </div>
         {/* begin::Table container */}
-        {facebookAds?.length > 0 ? (
-          <div className="table-responsive">
+        {facebookAds && facebookAds?.length > 0 ? (
+          <div className="table-responsive w-100">
             {/* begin::Table */}
             <table className="table align-top gs-0 gy-4">
               {/* begin::Table head */}
@@ -188,39 +191,48 @@ const FacebookAds: React.FC = () => {
               </thead>
               {/* end::Table head */}
               {/* begin::Table body */}
-              <tbody>
-                {currentItems.map((ad, index) => (
-                  <tr key={index} className="border-bottom">
-                    <td>
-                      <div
-                        className="ps-4 text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6 cursor-pointer"
-                        onClick={() =>
-                          handleNavigateToFacebookAccountAds(
-                            ad.facebookAccount.facebookId
-                          )
-                        }
-                      >
-                        {ad.facebookAccount.firstName}{' '}
-                        {ad.facebookAccount.lastName}
-                      </div>
-                    </td>
-                    <td>
-                      {ad.adAccounts.map((account, idx) => (
-                        <div key={idx} className="ps-1 pb-3">
-                          {account.name}
+              {currentItems && currentItems.length > 0 ? (
+                <tbody>
+                  {currentItems.map((ad, index) => (
+                    <tr key={index} className="border-bottom">
+                      <td>
+                        <div
+                          className="ps-4 text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6 cursor-pointer"
+                          onClick={() =>
+                            handleNavigateToFacebookAccountAds(
+                              ad.facebookAccount.facebookId
+                            )
+                          }
+                        >
+                          {ad.facebookAccount.firstName}{' '}
+                          {ad.facebookAccount.lastName}
                         </div>
-                      ))}
-                    </td>
-                    <td>
-                      {ad.adAccounts.map((account, idx) => (
-                        <div key={idx} className="ps-1 pb-3">
-                          {account.currency}
-                        </div>
-                      ))}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+                      </td>
+                      <td>
+                        {ad.adAccounts.map((account, idx) => (
+                          <div key={idx} className="ps-1 pb-3">
+                            {account.name}
+                          </div>
+                        ))}
+                      </td>
+                      <td>
+                        {ad.adAccounts.map((account, idx) => (
+                          <div key={idx} className="ps-1 pb-3">
+                            {account.currency}
+                          </div>
+                        ))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              ) : (
+                <div className="d-flex align-items-center flex-row w-100">
+                  <span className="fw-bold text-muted mt-5 mb-5">
+                    There are no ads associated with this search and filter
+                    params.
+                  </span>
+                </div>
+              )}
               {/* end::Table body */}
             </table>
             {/* end::Table */}
@@ -228,7 +240,7 @@ const FacebookAds: React.FC = () => {
         ) : (
           <div className="d-flex justify-content-center">
             <span className="fw-bold text-muted mt-5 mb-5">
-              There are no ads associated with the specified Facebook account.
+              There are no ads associated with this specified Facebook account.
             </span>
           </div>
         )}
@@ -236,7 +248,7 @@ const FacebookAds: React.FC = () => {
 
         {/* Pagination */}
         {/* Pagination Component */}
-        {facebookAds?.length > 0 && (
+        {facebookAds && facebookAds?.length > 0 && (
           <PaginationComponent
             totalPages={totalPages}
             currentPage={currentPage}
