@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { FacebookAdsProps } from '../../../modules/apps/core/_appModels';
+import { usePageData } from '../../../../_metronic/layout/core';
 
 interface FacebookAdsFiltersProps {
   onCurrencySelect: (currency: string) => void;
@@ -8,6 +10,18 @@ const FacebookAdsFilters: React.FC<FacebookAdsFiltersProps> = ({
   onCurrencySelect,
 }) => {
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
+  const { facebookAds } = usePageData();
+
+  const uniqueCurrencies: string[] = Array.from(
+    new Set(
+      (facebookAds || [])
+        .flatMap(
+          (ad) => ad?.adAccounts.map((account) => account.currency) || []
+        )
+        .filter((currency) => currency !== '')
+    )
+  );
+
   const handleCurrencySelect = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -42,8 +56,11 @@ const FacebookAdsFilters: React.FC<FacebookAdsFiltersProps> = ({
               onChange={handleCurrencySelect}
             >
               <option value="">All</option>
-              <option value="UAH">UAH</option>
-              <option value="RUB">RUB</option>
+              {uniqueCurrencies.map((currency) => (
+                <option key={currency} value={currency}>
+                  {currency}
+                </option>
+              ))}
             </select>
           </div>
         </div>
