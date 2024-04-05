@@ -89,12 +89,12 @@ const SidebarMenuMain = () => {
         icon="element-7"
         fontIcon="bi-layers"
       >
-        <SidebarMenuItem to="/error/404" title="Report 1" hasBullet={true} />
-        <SidebarMenuItem to="/error/404" title="Report 2" hasBullet={true} />
+        <SidebarMenuItem to="/reports" title="Report 1" hasBullet={true} />
+        {/*<SidebarMenuItem to="/error/404" title="Report 2" hasBullet={true} />
         <SidebarMenuItem to="/error/404" title="Report 3" hasBullet={true} />
         <SidebarMenuItem to="/error/404" title="Report 4" hasBullet={true} />
         <SidebarMenuItem to="/error/404" title="Report 5" hasBullet={true} />
-        <SidebarMenuItem to="/error/404" title="Report 6" hasBullet={true} />
+    <SidebarMenuItem to="/error/404" title="Report 6" hasBullet={true} />*/}
         {/*
         <SidebarMenuItem to="/crafted/widgets/lists" title="Lists" hasBullet={true} />
         <SidebarMenuItem to="/crafted/widgets/statistics" title="Statistics" hasBullet={true} />
