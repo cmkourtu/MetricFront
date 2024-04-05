@@ -1,8 +1,9 @@
 export interface TemporaryReportsDataProps {
+  [key: string]: any;
   ads: string;
   spent?: string;
   purchaseValue?: string;
-  roas?: number;
+  roas?: string;
   purchaseRatio?: string;
   purchases?: number;
   thumbstop?: string;
@@ -11,7 +12,12 @@ export interface TemporaryReportsDataProps {
 
 export interface ReportsTableDataProps {
   reportsTableData: TemporaryReportsDataProps[];
+  chosenReports: TemporaryReportsDataProps[];
   setChosenReports: React.Dispatch<
     React.SetStateAction<TemporaryReportsDataProps[]>
   >;
+}
+
+export interface ReportsChartsProps {
+  chosenReports: TemporaryReportsDataProps[];
 }

@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { KTIcon } from '../../../../_metronic/helpers';
 import { ReportsTableDataProps } from './reportsModels';
 
 const ReportsTable: React.FC<ReportsTableDataProps> = ({
   reportsTableData,
   setChosenReports,
+  chosenReports,
 }) => {
+  const [updateReportsTrigger, setUpdateReportsTrigger] = useState(false);
+  const [checkedColumnTitles, setCheckedColumnTitles] = useState<string[]>([]);
+
+  console.log(checkedColumnTitles);
+
   const handleCheckboxChange = (index: number) => {
     const updatedChosenReports = [...reportsTableData];
     if (!updatedChosenReports[index].selected) {
@@ -19,10 +25,46 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
 
     const selectedAds = selectedReports.map((report) => ({
       ads: report.ads,
-      spent: report.spent,
     }));
     setChosenReports(selectedAds);
+    setUpdateReportsTrigger(!updateReportsTrigger);
   };
+
+  const handleColumnCheck = (columnTitle: string, isChecked: boolean) => {
+    if (isChecked) {
+      setCheckedColumnTitles((prevTitles) => [...prevTitles, columnTitle]);
+    } else {
+      setCheckedColumnTitles((prevTitles) =>
+        prevTitles.filter((title) => title !== columnTitle)
+      );
+    }
+    setUpdateReportsTrigger(!updateReportsTrigger);
+  };
+
+  useEffect(() => {
+    if (chosenReports.length < 1 || checkedColumnTitles.length < 1) {
+      return;
+    }
+    const updatedChosenReports = [...reportsTableData].map((report) => {
+      const newReport: any = { ads: report.ads };
+      checkedColumnTitles.forEach((title) => {
+        if (report.hasOwnProperty(title)) {
+          newReport[title] = report[title];
+        }
+      });
+      return newReport;
+    });
+    console.log('Updated', updatedChosenReports);
+    const filteredReports = chosenReports
+      .map((chosenReport) => {
+        return updatedChosenReports.find(
+          (report) => report.ads === chosenReport.ads
+        );
+      })
+      .filter((filteredReport) => filteredReport !== undefined);
+    setChosenReports(filteredReports);
+  }, [updateReportsTrigger]);
+
   return (
     <div className="table-responsive">
       <table className="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3">
@@ -30,33 +72,78 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
           <tr className="fw-bold text-muted">
             <th className="w-25px">
               <div className="form-check form-check-sm form-check-custom form-check-solid">
-                <input
+                {/*<input
                   className="form-check-input"
                   type="checkbox"
                   value="1"
                   data-kt-check="true"
                   data-kt-check-target=".widget-13-check"
-                />
+  />*/}
               </div>
             </th>
             <th className="min-w-150px">Ads</th>
-            <th className="min-w-140px d-flex flex-row align-items-center justify-content-start">
-              <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto me-2">
+            <th className="min-w-20px">
+              <span className="">Spent</span>
+            </th>
+            <th>
+              <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto ">
                 <input
-                  className="form-check-input "
+                  className="form-check-input me-2"
                   type="checkbox"
                   value="1"
                   data-kt-check="true"
                   data-kt-check-target=".widget-13-check"
+                  onChange={(e) =>
+                    handleColumnCheck('purchaseValue', e.target.checked)
+                  }
                 />
+                <span>Purchase Value</span>
               </div>
-              <span className="">Spent</span>
             </th>
-            <th className="min-w-120px">Purchase Value</th>
-            <th className="min-w-120px">ROAS</th>
-            <th className="min-w-120px">Purchase Ratio</th>
+            <th>
+              <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto ">
+                <input
+                  className="form-check-input me-2"
+                  type="checkbox"
+                  value="1"
+                  data-kt-check="true"
+                  data-kt-check-target=".widget-13-check"
+                  onChange={(e) => handleColumnCheck('roas', e.target.checked)}
+                />
+                <span>ROAS</span>
+              </div>
+            </th>
+            <th>
+              <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto ">
+                <input
+                  className="form-check-input me-2"
+                  type="checkbox"
+                  value="1"
+                  data-kt-check="true"
+                  data-kt-check-target=".widget-13-check"
+                  onChange={(e) =>
+                    handleColumnCheck('purchaseRatio', e.target.checked)
+                  }
+                />
+                <span>Purchase Ratio</span>
+              </div>
+            </th>
             <th className="min-w-120px">Purchases</th>
-            <th className="min-w-120px">Thumbstop</th>
+            <th className="min-w-120px">
+              <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto ">
+                <input
+                  className="form-check-input me-2"
+                  type="checkbox"
+                  value="1"
+                  data-kt-check="true"
+                  data-kt-check-target=".widget-13-check"
+                  onChange={(e) =>
+                    handleColumnCheck('thumbstop', e.target.checked)
+                  }
+                />
+                <span className="">Thumbstop</span>
+              </div>
+            </th>
             <th className="min-w-100px text-end">Actions</th>
           </tr>
         </thead>
