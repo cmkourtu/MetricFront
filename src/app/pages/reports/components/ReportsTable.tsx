@@ -10,8 +10,6 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
   const [updateReportsTrigger, setUpdateReportsTrigger] = useState(false);
   const [checkedColumnTitles, setCheckedColumnTitles] = useState<string[]>([]);
 
-  console.log(checkedColumnTitles);
-
   const handleCheckboxChange = (index: number) => {
     const updatedChosenReports = [...reportsTableData];
     if (!updatedChosenReports[index].selected) {
