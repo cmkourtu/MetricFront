@@ -1,21 +1,34 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../../modules/auth';
-import { createReport } from '../../../modules/apps/core/_appRequests';
+import {
+  createReport,
+  updateReport,
+} from '../../../modules/apps/core/_appRequests';
 import { usePageData } from '../../../../_metronic/layout/core';
 import { useNavigate } from 'react-router-dom';
 
 interface CreateReportModalProps {
   closeCreateReportModal: () => void;
+  isUpdate: boolean;
+  reportId?: string;
+  previousTitle?: string;
+  previousDescription?: string;
 }
 
 const CreateReportModal: React.FC<CreateReportModalProps> = ({
   closeCreateReportModal,
+  isUpdate,
+  reportId,
+  previousTitle,
+  previousDescription,
 }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const { updateReportsTrigger, setUpdateReportsTrigger } = usePageData();
-  const [reportTitle, setReportTitle] = useState('');
-  const [reportDescription, setReportDescription] = useState('');
+  const [reportTitle, setReportTitle] = useState<string>(previousTitle || '');
+  const [reportDescription, setReportDescription] = useState<string>(
+    previousDescription || ''
+  );
   const [submitting, setSubmitting] = useState(false);
 
   const handleReportTitleInputChange = (
@@ -35,15 +48,28 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
     try {
       if (reportTitle && userId && !submitting) {
         setSubmitting(true);
-        const { data } = await createReport(
-          userId,
-          reportTitle,
-          reportDescription
-        );
-        if (data) {
-          setUpdateReportsTrigger(!updateReportsTrigger);
-          closeCreateReportModal();
-          navigate(`/reports/${data.id}`);
+        if (!isUpdate) {
+          const { data } = await createReport(
+            userId,
+            reportTitle,
+            reportDescription
+          );
+          if (data) {
+            setUpdateReportsTrigger(!updateReportsTrigger);
+            closeCreateReportModal();
+            navigate(`/reports/${data.id}`);
+          }
+        } else if (reportId) {
+          const { data } = await updateReport(
+            reportId,
+            userId,
+            reportTitle,
+            reportDescription
+          );
+          if (data) {
+            setUpdateReportsTrigger(!updateReportsTrigger);
+            closeCreateReportModal();
+          }
         }
         setReportTitle('');
         setReportDescription('');
@@ -87,7 +113,9 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
                 action="#"
               >
                 <div className="mb-13 text-center">
-                  <h1 className="mb-3">Create a Report</h1>
+                  <h1 className="mb-3">
+                    {isUpdate ? 'Update' : 'Create'} a Report
+                  </h1>
                 </div>
                 <div className="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
                   <label className="d-flex align-items-center fs-6 fw-semibold mb-2">
@@ -130,7 +158,7 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
                     id="kt_modal_new_target_submit"
                     className="btn btn-primary"
                     onClick={handleCreateReport}
-                    disabled={submitting}
+                    disabled={submitting || !reportTitle}
                   >
                     <span className="indicator-label">Submit</span>
                     <span className="indicator-progress">

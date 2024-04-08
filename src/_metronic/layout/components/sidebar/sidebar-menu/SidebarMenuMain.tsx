@@ -89,7 +89,10 @@ const SidebarMenuMain: React.FC = () => {
           ))}
       </SidebarMenuItemWithSub>
       {showCreateReportModal && (
-        <CreateReportModal closeCreateReportModal={closeCreateReportModal} />
+        <CreateReportModal
+          closeCreateReportModal={closeCreateReportModal}
+          isUpdate={false}
+        />
       )}
     </>
   );

@@ -8,7 +8,11 @@ import {
   FacebookAdsProps,
   ReportsProps,
 } from '../../../app/modules/apps/core/_appModels';
-import { getAllReports } from '../../../app/modules/apps/core/_appRequests';
+import {
+  getAllReports,
+  getReportsByUserId,
+} from '../../../app/modules/apps/core/_appRequests';
+import { useAuth } from '../../../app/modules/auth';
 
 export interface PageLink {
   title: string;
@@ -45,6 +49,7 @@ const PageDataContext = createContext<PageDataContextModel>({
 });
 
 const PageDataProvider: FC<WithChildren> = ({ children }) => {
+  const { currentUser } = useAuth();
   const [pageTitle, setPageTitle] = useState<string>('');
   const [pageDescription, setPageDescription] = useState<string>('');
   const [pageBreadcrumbs, setPageBreadcrumbs] = useState<Array<PageLink>>([]);
@@ -55,6 +60,8 @@ const PageDataProvider: FC<WithChildren> = ({ children }) => {
 
   useEffect(() => {
     const fetchReports = async () => {
+      const userId = currentUser?.id;
+
       try {
         const { data } = await getAllReports();
         if (data) {
