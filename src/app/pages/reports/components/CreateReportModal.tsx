@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../../modules/auth';
 import { createReport } from '../../../modules/apps/core/_appRequests';
+import { usePageData } from '../../../../_metronic/layout/core';
+import { useNavigate } from 'react-router-dom';
 
 interface CreateReportModalProps {
   closeCreateReportModal: () => void;
@@ -9,7 +11,9 @@ interface CreateReportModalProps {
 const CreateReportModal: React.FC<CreateReportModalProps> = ({
   closeCreateReportModal,
 }) => {
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { updateReportsTrigger, setUpdateReportsTrigger } = usePageData();
   const [reportTitle, setReportTitle] = useState('');
   const [reportDescription, setReportDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -36,10 +40,13 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
           reportTitle,
           reportDescription
         );
-        // Optionally clear input fields after successful submission
+        if (data) {
+          setUpdateReportsTrigger(!updateReportsTrigger);
+          closeCreateReportModal();
+          navigate(`/reports/${data.id}`);
+        }
         setReportTitle('');
         setReportDescription('');
-        console.log('Report created:', data);
       }
     } catch (error) {
       console.log('Error creating report:', error);

@@ -52,7 +52,7 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
       });
       return newReport;
     });
-    console.log('Updated', updatedChosenReports);
+
     const filteredReports = chosenReports
       .map((chosenReport) => {
         return updatedChosenReports.find(

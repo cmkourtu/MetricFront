@@ -3,8 +3,10 @@ import { KTIcon } from '../../../../helpers';
 import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub';
 import { SidebarMenuItem } from './SidebarMenuItem';
 import { CreateReportModal } from '../../../../../app/pages/reports/components';
+import { usePageData } from '../../../core';
 
 const SidebarMenuMain: React.FC = () => {
+  const { reports } = usePageData();
   const [showCreateReportModal, setShowCreateReportModal] =
     useState<boolean>(false);
 
@@ -75,7 +77,16 @@ const SidebarMenuMain: React.FC = () => {
         icon="element-7"
         fontIcon="bi-layers"
       >
-        <SidebarMenuItem to="/reports" title="Report 1" hasBullet={true} />
+        {reports &&
+          reports.map((report) => (
+            <div key={report?.id}>
+              <SidebarMenuItem
+                to={`/reports/${report?.id}`}
+                title={report?.name}
+                hasBullet={true}
+              />
+            </div>
+          ))}
       </SidebarMenuItemWithSub>
       {showCreateReportModal && (
         <CreateReportModal closeCreateReportModal={closeCreateReportModal} />

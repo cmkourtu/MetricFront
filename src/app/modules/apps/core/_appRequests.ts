@@ -1,5 +1,9 @@
 import axios from 'axios';
-import { FacebookAccountsProps, FacebookAdsProps } from '../core/_appModels';
+import {
+  FacebookAccountsProps,
+  FacebookAdsProps,
+  ReportsProps,
+} from '../core/_appModels';
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -8,6 +12,7 @@ export const GET_FACEBOOK_ACCOUNTS = `${API_URL}/facebook/accounts/facebook`;
 export const GET_FACEBOOK_ADS = `${API_URL}/facebook/accounts/ad`;
 export const GET_FACEBOOK_ADS_BY_FACEBOOK_ID = `${API_URL}/facebook/accounts/ad`;
 export const CREATE_REPORT = `${API_URL}/reports`;
+export const GET_ALL_REPORTs = `${API_URL}/reports`;
 
 export function getFacebookToken(jwtToken: string, code: string) {
   return axios.post(
@@ -56,10 +61,13 @@ export function createReport(
   reportTitle: string,
   reportDescription?: string
 ) {
-  console.log(reportDescription, userId, reportTitle);
   return axios.post(CREATE_REPORT, {
     name: reportTitle,
     description: reportDescription,
     userId: userId,
   });
+}
+
+export function getAllReports() {
+  return axios.get<ReportsProps[]>(GET_ALL_REPORTs);
 }

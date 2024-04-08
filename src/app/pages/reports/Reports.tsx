@@ -6,7 +6,6 @@ import {
   ReportsHeader,
 } from './components';
 import { TemporaryReportsDataProps } from './components/reportsModels';
-import { ToolbarClassic } from '../../../_metronic/layout/components/toolbar/toolbars';
 
 const Reports: React.FC = () => {
   const [chosenReports, setChosenReports] = useState<
