@@ -16,6 +16,7 @@ export const GET_ALL_REPORTS = `${API_URL}/reports`;
 export const GET_REPORTS_BY_USER_ID = `${API_URL}/reports/user`;
 export const GET_REPORT_BY_ID = `${API_URL}/reports`;
 export const UPDATE_REPORT = `${API_URL}/reports`;
+export const DELETE_REPORT = `${API_URL}/reports`;
 
 export function getFacebookToken(jwtToken: string, code: string) {
   return axios.post(
@@ -94,4 +95,8 @@ export function updateReport(
     description: reportDescription,
     userId: userId,
   });
+}
+
+export function deleteReport(reportId: string) {
+  return axios.delete(`${DELETE_REPORT}/${reportId}`);
 }
