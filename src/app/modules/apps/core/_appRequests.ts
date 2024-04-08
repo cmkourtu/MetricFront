@@ -12,7 +12,8 @@ export const GET_FACEBOOK_ACCOUNTS = `${API_URL}/facebook/accounts/facebook`;
 export const GET_FACEBOOK_ADS = `${API_URL}/facebook/accounts/ad`;
 export const GET_FACEBOOK_ADS_BY_FACEBOOK_ID = `${API_URL}/facebook/accounts/ad`;
 export const CREATE_REPORT = `${API_URL}/reports`;
-export const GET_ALL_REPORTs = `${API_URL}/reports`;
+export const GET_ALL_REPORTS = `${API_URL}/reports`;
+export const GET_REPORT_BY_ID = `${API_URL}/reports`;
 
 export function getFacebookToken(jwtToken: string, code: string) {
   return axios.post(
@@ -69,5 +70,9 @@ export function createReport(
 }
 
 export function getAllReports() {
-  return axios.get<ReportsProps[]>(GET_ALL_REPORTs);
+  return axios.get<ReportsProps[]>(GET_ALL_REPORTS);
+}
+
+export function getReportsById(reportId: string) {
+  return axios.get<ReportsProps>(`${GET_REPORT_BY_ID}/${reportId}`);
 }
