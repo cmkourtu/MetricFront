@@ -38,7 +38,8 @@ const PrivateRoutes = () => {
           path="callback/facebook-callback"
           element={<FacebookCallback />}
         />
-        <Route path="reports" element={<Reports />} />
+        <Route path="reports/:reportId" element={<Reports />} />
+
         <Route path="builder" element={<BuilderPageWrapper />} />
         <Route path="menu-test" element={<MenuTestPage />} />
         {/* Lazy Modules */}

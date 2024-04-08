@@ -4,7 +4,15 @@
 
 import { FC, createContext, useContext, useEffect, useState } from 'react';
 import { WithChildren } from '../../helpers';
-import { FacebookAdsProps } from '../../../app/modules/apps/core/_appModels';
+import {
+  FacebookAdsProps,
+  ReportsProps,
+} from '../../../app/modules/apps/core/_appModels';
+import {
+  getAllReports,
+  getReportsByUserId,
+} from '../../../app/modules/apps/core/_appRequests';
+import { useAuth } from '../../../app/modules/auth';
 
 export interface PageLink {
   title: string;
@@ -22,6 +30,10 @@ export interface PageDataContextModel {
   setPageBreadcrumbs: (_breadcrumbs: Array<PageLink>) => void;
   facebookAds?: FacebookAdsProps[];
   setFacebookAds: (_facebookAds: FacebookAdsProps[]) => void;
+  reports?: ReportsProps[];
+  setReports: (_reports: ReportsProps[]) => void;
+  updateReportsTrigger?: boolean;
+  setUpdateReportsTrigger: (_updateReportsTrigger: boolean) => void;
 }
 
 const PageDataContext = createContext<PageDataContextModel>({
@@ -30,13 +42,39 @@ const PageDataContext = createContext<PageDataContextModel>({
   setPageDescription: (_description: string) => {},
   facebookAds: [],
   setFacebookAds: (_facebookAds: FacebookAdsProps[]) => {},
+  reports: [],
+  setReports: (_reports: ReportsProps[]) => {},
+  updateReportsTrigger: false,
+  setUpdateReportsTrigger: (_updateReportsTrigger: boolean) => {},
 });
 
 const PageDataProvider: FC<WithChildren> = ({ children }) => {
+  const { currentUser } = useAuth();
   const [pageTitle, setPageTitle] = useState<string>('');
   const [pageDescription, setPageDescription] = useState<string>('');
   const [pageBreadcrumbs, setPageBreadcrumbs] = useState<Array<PageLink>>([]);
   const [facebookAds, setFacebookAds] = useState<FacebookAdsProps[]>([]);
+  const [reports, setReports] = useState<ReportsProps[]>([]);
+  const [updateReportsTrigger, setUpdateReportsTrigger] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchReports = async () => {
+      const userId = currentUser?.id;
+
+      try {
+        const { data } = await getAllReports();
+        if (data) {
+          setReports(data);
+        }
+      } catch (error) {
+        console.log('Error fetching reports:', error);
+      }
+    };
+
+    fetchReports();
+  }, [updateReportsTrigger]);
+
   const value: PageDataContextModel = {
     pageTitle,
     setPageTitle,
@@ -46,6 +84,10 @@ const PageDataProvider: FC<WithChildren> = ({ children }) => {
     setPageBreadcrumbs,
     facebookAds,
     setFacebookAds,
+    reports,
+    setReports,
+    updateReportsTrigger,
+    setUpdateReportsTrigger,
   };
   return (
     <PageDataContext.Provider value={value}>
