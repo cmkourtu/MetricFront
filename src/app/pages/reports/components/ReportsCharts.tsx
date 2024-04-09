@@ -74,7 +74,7 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
 
   const seriesData = Object.keys(chosenReports[0])
     .map((key) => {
-      if (key === 'ads') {
+      if (key === 'ad_name') {
         return null;
       }
 
@@ -89,10 +89,10 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
     .filter((item) => item !== null);
 
   const categories = chosenReports.map((report) => {
-    if (report.ads.length > 8) {
-      return report.ads.substring(0, 8) + '...';
+    if (report?.ad_name?.length > 8) {
+      return report?.ad_name?.substring(0, 8) + '...';
     } else {
-      return report.ads;
+      return report?.ad_name;
     }
   });
 
