@@ -8,10 +8,7 @@ import {
   FacebookAdsProps,
   ReportsProps,
 } from '../../../app/modules/apps/core/_appModels';
-import {
-  getAllReports,
-  getReportsByUserId,
-} from '../../../app/modules/apps/core/_appRequests';
+import { getReportsByUserId } from '../../../app/modules/apps/core/_appRequests';
 import { useAuth } from '../../../app/modules/auth';
 
 export interface PageLink {
@@ -61,14 +58,15 @@ const PageDataProvider: FC<WithChildren> = ({ children }) => {
   useEffect(() => {
     const fetchReports = async () => {
       const userId = currentUser?.id;
-
-      try {
-        const { data } = await getAllReports();
-        if (data) {
-          setReports(data);
+      if (userId) {
+        try {
+          const { data } = await getReportsByUserId(userId);
+          if (data) {
+            setReports(data);
+          }
+        } catch (error) {
+          console.log('Error fetching reports:', error);
         }
-      } catch (error) {
-        console.log('Error fetching reports:', error);
       }
     };
 
