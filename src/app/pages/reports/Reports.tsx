@@ -33,6 +33,9 @@ const Reports: React.FC = () => {
     TemporaryAdsetsDataProps[]
   >([]);
 
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
+  const [sortColumn, setSortColumn] = useState<string>('');
+
   const location = useLocation();
   const pathnameParts = location.pathname.split('/');
   const reportId = pathnameParts[pathnameParts.length - 1];
@@ -42,6 +45,8 @@ const Reports: React.FC = () => {
     setTemporaryAdsetsData([]);
     setSimplifiedReportsTableData([]);
     setChosenReports([]);
+    setSortColumn('');
+    setSortOrder('ASC');
   }, [reportId]);
 
   useEffect(() => {
@@ -96,6 +101,30 @@ const Reports: React.FC = () => {
     }
   }, [temporaryAdsetsData, updateReportsTrigger]);
 
+  const handleSort = (column: string) => {
+    if (column === sortColumn) {
+      setSortOrder(sortOrder === 'ASC' ? 'DESC' : 'ASC');
+    } else {
+      setSortColumn(column);
+      setSortOrder('ASC');
+    }
+  };
+
+  const sortedData = simplifiedReportsTableData.sort((a, b) => {
+    const valueA = a[sortColumn];
+    const valueB = b[sortColumn];
+
+    if (typeof valueA === 'string' && typeof valueB === 'string') {
+      return sortOrder === 'ASC'
+        ? valueA.localeCompare(valueB)
+        : valueB.localeCompare(valueA);
+    } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+      return sortOrder === 'ASC' ? valueA - valueB : valueB - valueA;
+    } else {
+      return 0;
+    }
+  });
+
   return (
     <div>
       {reportById && <ReportsHeader reportById={reportById} />}
@@ -104,8 +133,11 @@ const Reports: React.FC = () => {
       )}
       {simplifiedReportsTableData?.length > 0 && (
         <ReportsTable
-          reportsTableData={simplifiedReportsTableData}
+          reportsTableData={sortedData}
           setChosenReports={setChosenReports}
+          handleSort={handleSort}
+          sortOrder={sortOrder}
+          sortColumn={sortColumn}
         />
       )}
     </div>

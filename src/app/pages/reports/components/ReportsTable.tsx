@@ -5,10 +5,14 @@ import {
   SimplifiedReportsTableDataProps,
 } from './reportsModels';
 import { ReportsTableConfig } from './ReportsConfig';
+import { KTIcon } from '../../../../_metronic/helpers';
 
 const ReportsTable: React.FC<ReportsTableDataProps> = ({
   reportsTableData,
   setChosenReports,
+  handleSort,
+  sortOrder,
+  sortColumn,
 }) => {
   const [updateReportsTrigger, setUpdateReportsTrigger] = useState(false);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
@@ -103,12 +107,28 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
             </th>
             <th className="min-w-250px">
               <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto ">
-                <span style={{ whiteSpace: 'nowrap' }}>Ads</span>
+                <div
+                  className="d-flex flex-row no-wrap text-hover-primary cursor-pointer"
+                  onClick={() => handleSort('ad_name')}
+                >
+                  <span
+                    className={`${sortColumn === 'ad_name' ? 'text-primary' : ''} me-2`}
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    Ads
+                  </span>
+                  {sortColumn === 'ad_name' && (
+                    <KTIcon
+                      iconName={sortOrder === 'ASC' ? 'black-up' : 'black-down'}
+                      className="text-primary me-2 fs-2"
+                    />
+                  )}
+                </div>
               </div>
             </th>
             {ReportsTableConfig.map((tableConfig) => (
               <th className="w-25px" key={tableConfig.key}>
-                <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto ">
+                <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto text-hover-primary cursor-pointer">
                   {tableConfig?.checkbox && (
                     <input
                       className="form-check-input me-2"
@@ -121,9 +141,25 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                       }
                     />
                   )}
-                  <span style={{ whiteSpace: 'nowrap' }}>
-                    {tableConfig?.title}
-                  </span>
+                  <div
+                    className="d-flex flex-row no-wrap"
+                    onClick={() => handleSort(tableConfig.value)}
+                  >
+                    <span
+                      className={`${sortColumn === tableConfig.value ? 'text-primary' : ''} me-2`}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      {tableConfig?.title}
+                    </span>
+                    {sortColumn === tableConfig.value && (
+                      <KTIcon
+                        iconName={
+                          sortOrder === 'ASC' ? 'black-up' : 'black-down'
+                        }
+                        className="text-primary me-2 fs-2"
+                      />
+                    )}
+                  </div>
                 </div>
               </th>
             ))}
@@ -144,10 +180,7 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                 </div>
               </td>
               <td>
-                <a
-                  href="#"
-                  className="text-gray-900 fw-bold text-hover-primary fs-6"
-                >
+                <a href="#" className="text-gray-900 fw-bold fs-6">
                   {data?.ad_name}
                 </a>
               </td>

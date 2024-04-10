@@ -126,6 +126,9 @@ export interface ReportsTableDataProps {
   setChosenReports?: React.Dispatch<
     React.SetStateAction<SimplifiedReportsTableDataProps[]>
   >;
+  handleSort: (key: string) => void;
+  sortOrder: string;
+  sortColumn: string;
 }
 
 export interface ReportsChartsProps {
