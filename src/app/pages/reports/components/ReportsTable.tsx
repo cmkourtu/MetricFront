@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { KTIcon } from '../../../../_metronic/helpers';
+//import { KTIcon } from '../../../../_metronic/helpers';
 import {
   ReportsTableDataProps,
   SimplifiedReportsTableDataProps,
 } from './reportsModels';
 import { ReportsTableConfig } from './ReportsConfig';
+import { KTIcon } from '../../../../_metronic/helpers';
 
 const ReportsTable: React.FC<ReportsTableDataProps> = ({
   reportsTableData,
   setChosenReports,
-  chosenReports,
+  handleSort,
+  sortOrder,
+  sortColumn,
 }) => {
   const [updateReportsTrigger, setUpdateReportsTrigger] = useState(false);
+  const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [checkedColumnTitles, setCheckedColumnTitles] = useState<string[]>([]);
   const [chosenRows, setChosenRows] = useState<
     SimplifiedReportsTableDataProps[]
@@ -19,15 +23,17 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
 
   const handleCheckboxChange = (index: number) => {
     const updatedChosenReports = [...reportsTableData];
-    if (!updatedChosenReports[index].selected) {
-      updatedChosenReports[index].selected = false;
+
+    if (!updatedChosenReports[index].checked) {
+      updatedChosenReports[index].checked = false;
+    } else if (selectAllChecked) {
+      updatedChosenReports[index].checked = true;
     }
-    updatedChosenReports[index].selected =
-      !updatedChosenReports[index].selected;
+    updatedChosenReports[index].checked = !updatedChosenReports[index].checked;
     const selectedReports = updatedChosenReports.filter(
-      (report) => report.selected
+      (report) => report.checked
     );
-    setChosenReports?.(selectedReports);
+    setSelectAllChecked(false);
     setChosenRows(selectedReports);
     setUpdateReportsTrigger(!updateReportsTrigger);
   };
@@ -43,22 +49,43 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
     setUpdateReportsTrigger(!updateReportsTrigger);
   };
 
+  const handleSelectAllChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const isChecked = event.target.checked;
+    setSelectAllChecked(isChecked);
+
+    const updatedReportsData = reportsTableData.map((report) => ({
+      ...report,
+      checked: isChecked,
+    }));
+    setChosenRows(isChecked ? updatedReportsData : []);
+    setUpdateReportsTrigger(!updateReportsTrigger);
+  };
+
   useEffect(() => {
-    if (chosenRows) {
+    if (chosenRows && checkedColumnTitles?.length > 0) {
       const filteredReports = chosenRows.map((report) => {
         const filteredReport: { [key: string]: any } = {
           ad_name: report.ad_name,
         };
-
         checkedColumnTitles.forEach((title) => {
           filteredReport[title] = report[title];
         });
-
         return filteredReport;
       });
       setChosenReports?.(filteredReports);
+    } else {
+      setChosenReports?.([]);
     }
   }, [updateReportsTrigger]);
+
+  const isRowChecked = (dataId: number) => {
+    const isSelected = chosenRows.some((chosenRow) => {
+      return chosenRow.ad_id === dataId;
+    });
+    return isSelected;
+  };
 
   return (
     <div className="table-responsive ">
@@ -73,17 +100,35 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                   value="1"
                   data-kt-check="true"
                   data-kt-check-target=".widget-13-check"
+                  checked={selectAllChecked}
+                  onChange={handleSelectAllChange}
                 />
               </div>
             </th>
             <th className="min-w-250px">
               <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto ">
-                <span style={{ whiteSpace: 'nowrap' }}>Ads</span>
+                <div
+                  className="d-flex flex-row no-wrap text-hover-primary cursor-pointer"
+                  onClick={() => handleSort('ad_name')}
+                >
+                  <span
+                    className={`${sortColumn === 'ad_name' ? 'text-primary' : ''} me-2`}
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    Ads
+                  </span>
+                  {sortColumn === 'ad_name' && (
+                    <KTIcon
+                      iconName={sortOrder === 'ASC' ? 'black-up' : 'black-down'}
+                      className="text-primary me-2 fs-2"
+                    />
+                  )}
+                </div>
               </div>
             </th>
             {ReportsTableConfig.map((tableConfig) => (
               <th className="w-25px" key={tableConfig.key}>
-                <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto ">
+                <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto text-hover-primary cursor-pointer">
                   {tableConfig?.checkbox && (
                     <input
                       className="form-check-input me-2"
@@ -96,9 +141,25 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                       }
                     />
                   )}
-                  <span style={{ whiteSpace: 'nowrap' }}>
-                    {tableConfig?.title}
-                  </span>
+                  <div
+                    className="d-flex flex-row no-wrap"
+                    onClick={() => handleSort(tableConfig.value)}
+                  >
+                    <span
+                      className={`${sortColumn === tableConfig.value ? 'text-primary' : ''} me-2`}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      {tableConfig?.title}
+                    </span>
+                    {sortColumn === tableConfig.value && (
+                      <KTIcon
+                        iconName={
+                          sortOrder === 'ASC' ? 'black-up' : 'black-down'
+                        }
+                        className="text-primary me-2 fs-2"
+                      />
+                    )}
+                  </div>
                 </div>
               </th>
             ))}
@@ -113,15 +174,13 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                     className="form-check-input widget-13-check"
                     type="checkbox"
                     value="1"
+                    checked={isRowChecked(data?.ad_id ? data?.ad_id : 0)}
                     onChange={() => handleCheckboxChange(index)}
                   />
                 </div>
               </td>
               <td>
-                <a
-                  href="#"
-                  className="text-gray-900 fw-bold text-hover-primary fs-6"
-                >
+                <a href="#" className="text-gray-900 fw-bold fs-6">
                   {data?.ad_name}
                 </a>
               </td>
@@ -131,9 +190,10 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                     href="#"
                     className="text-gray-900 fw-bold text-hover-primary fs-6"
                   >
-                    {data[tableConfig.value] === null || undefined
-                      ? '---'
-                      : data[tableConfig.value]}
+                    {data.hasOwnProperty(tableConfig.value) &&
+                    data[tableConfig.value] !== null
+                      ? data[tableConfig.value]
+                      : '---'}
                   </a>
                 </td>
               ))}

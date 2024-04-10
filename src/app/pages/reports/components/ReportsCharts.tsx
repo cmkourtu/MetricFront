@@ -71,6 +71,7 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
   const secondaryColor = getCSSVariableValue('--bs-success');
   const chartColor = getCSSVariableValue('--bs-warning');
   const chartColorSecondary = getCSSVariableValue('--bs-danger');
+  const chartColorPurple = getCSSVariableValue('--bs-info');
 
   const seriesData = Object.keys(chosenReports[0])
     .map((key) => {
@@ -177,11 +178,17 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
       },
       y: {
         formatter: function (val) {
-          return val + '%';
+          return val + '';
         },
       },
     },
-    colors: [baseColor, secondaryColor, chartColor, chartColorSecondary],
+    colors: [
+      baseColor,
+      secondaryColor,
+      chartColor,
+      chartColorSecondary,
+      chartColorPurple,
+    ],
     grid: {
       borderColor: borderColor,
       strokeDashArray: 4,
