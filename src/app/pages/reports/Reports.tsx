@@ -3,7 +3,7 @@ import {
   ReportsTable,
   ReportsCharts,
   ReportsHeader,
-  //TemporaryAdsetsData,
+  TemporaryAdsetsData,
 } from './components';
 import {
   TemporaryAdsetsDataProps,
@@ -28,6 +28,7 @@ const Reports: React.FC = () => {
   const [simplifiedReportsTableData, setSimplifiedReportsTableData] = useState<
     SimplifiedReportsTableDataProps[]
   >([]);
+
   const [temporaryAdsetsData, setTemporaryAdsetsData] = useState<
     TemporaryAdsetsDataProps[]
   >([]);
@@ -35,6 +36,13 @@ const Reports: React.FC = () => {
   const location = useLocation();
   const pathnameParts = location.pathname.split('/');
   const reportId = pathnameParts[pathnameParts.length - 1];
+
+  useEffect(() => {
+    setReportById(undefined);
+    setTemporaryAdsetsData([]);
+    setSimplifiedReportsTableData([]);
+    setChosenReports([]);
+  }, [reportId]);
 
   useEffect(() => {
     const userId = currentUser?.id;
@@ -59,16 +67,34 @@ const Reports: React.FC = () => {
 
   useEffect(() => {
     if (temporaryAdsetsData?.length > 0) {
-      const simplified = temporaryAdsetsData.map((data) => ({
-        facebookId: data.facebookAccount.facebookId,
-        firstName: data.facebookAccount.firstName,
-        lastName: data.facebookAccount.lastName,
-        checked: false,
-        ...data.adSets[0].insights,
-      }));
+      const simplified = temporaryAdsetsData.flatMap((data) => {
+        return data.adSets.map((adSet) => {
+          const { video_play_curve_actions, ...otherInsights } =
+            adSet.insights || {};
+          const roundedInsights: { [key: string]: any } = {};
+          for (const [key, value] of Object.entries(otherInsights)) {
+            if (typeof value === 'number') {
+              roundedInsights[key] =
+                Math.round((value + Number.EPSILON) * 100) / 100;
+            } else {
+              roundedInsights[key] = value;
+            }
+          }
+          return {
+            facebookId: data.facebookAccount.facebookId || '',
+            firstName: data.facebookAccount.firstName || '',
+            lastName: data.facebookAccount.lastName || '',
+            checked: false,
+            ...roundedInsights,
+          };
+        });
+      });
       setSimplifiedReportsTableData(simplified);
+    } else {
+      setSimplifiedReportsTableData([]);
+      setChosenReports([]);
     }
-  }, [temporaryAdsetsData]);
+  }, [temporaryAdsetsData, updateReportsTrigger]);
 
   return (
     <div>
@@ -76,10 +102,9 @@ const Reports: React.FC = () => {
       {chosenReports && chosenReports?.length > 0 && (
         <ReportsCharts chosenReports={chosenReports} />
       )}
-      {simplifiedReportsTableData && (
+      {simplifiedReportsTableData?.length > 0 && (
         <ReportsTable
           reportsTableData={simplifiedReportsTableData}
-          chosenReports={chosenReports}
           setChosenReports={setChosenReports}
         />
       )}
