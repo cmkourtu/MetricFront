@@ -118,6 +118,7 @@ export interface TemporaryAdsetsDataProps {
     adSet: AdSet;
     insights: Insights;
     ads: Ad[];
+    icon?: string;
   }[];
 }
 
@@ -208,6 +209,7 @@ export interface SimplifiedReportsTableDataProps {
   thumbstop?: number | null;
   thumbstop_clickrate?: number | null;
   atc?: number | null;
+  icon?: string | null;
   //video_play_curve_actions?: number[];
   [key: string]: string | number | boolean | null | undefined | string[];
 }

@@ -6,6 +6,7 @@ import {
   getCSSVariableValue,
 } from '../../../../_metronic/assets/ts/_utils';
 import { ReportsChartsProps } from './reportsModels';
+import { toAbsoluteUrl } from '../../../../_metronic/helpers';
 
 const ReportsCharts: FC<ReportsChartsProps> = ({ chosenReports }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
@@ -48,7 +49,7 @@ const ReportsCharts: FC<ReportsChartsProps> = ({ chosenReports }) => {
           </span>
           {/*<span className="text-muted fw-semibold fs-7">
             More than 400 new members
-  </span>*/}
+          </span>*/}
         </h3>
       </div>
       <div className="card-body">
@@ -57,6 +58,25 @@ const ReportsCharts: FC<ReportsChartsProps> = ({ chosenReports }) => {
           id="kt_charts_widget_1_chart"
           style={{ height: '350px' }}
         />
+        <div
+          className="d-flex justify-content-around"
+          style={{ paddingLeft: '70px' }}
+        >
+          {chosenReports.map((report, index) => (
+            <div key={index} className="d-flex flex-column align-items-center">
+              <img
+                src={
+                  report?.icon
+                    ? report?.icon
+                    : toAbsoluteUrl('media/auth/404-error.png')
+                }
+                alt=""
+                style={{ width: '64px', height: '64px', marginBottom: '5px' }}
+              />
+              <span>{report?.ad_name?.substring(0, 8) + '...'}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -115,7 +135,7 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
       },
     },
     legend: {
-      show: false,
+      show: true,
     },
     dataLabels: {
       enabled: false,
@@ -148,6 +168,7 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
         },
       },
     },
+
     fill: {
       opacity: 1,
     },

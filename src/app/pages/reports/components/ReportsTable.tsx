@@ -5,7 +5,7 @@ import {
   SimplifiedReportsTableDataProps,
 } from './reportsModels';
 import { ReportsTableConfig } from './ReportsConfig';
-import { KTIcon } from '../../../../_metronic/helpers';
+import { KTIcon, toAbsoluteUrl } from '../../../../_metronic/helpers';
 
 const ReportsTable: React.FC<ReportsTableDataProps> = ({
   reportsTableData,
@@ -68,6 +68,7 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
       const filteredReports = chosenRows.map((report) => {
         const filteredReport: { [key: string]: any } = {
           ad_name: report.ad_name,
+          icon: report.icon,
         };
         checkedColumnTitles.forEach((title) => {
           filteredReport[title] = report[title];
@@ -180,21 +181,33 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                 </div>
               </td>
               <td>
-                <a href="#" className="text-gray-900 fw-bold fs-6">
-                  {data?.ad_name}
-                </a>
-              </td>
-              {ReportsTableConfig.map((tableConfig) => (
-                <td key={tableConfig?.key}>
+                <div className="d-flex flex-row align-items-center text-hover-primary">
+                  <img
+                    src={
+                      data?.icon
+                        ? data?.icon
+                        : toAbsoluteUrl('media/auth/404-error.png')
+                    }
+                    alt=""
+                    className="me-3"
+                    style={{ width: '64px', height: '64px' }}
+                  />
                   <a
                     href="#"
                     className="text-gray-900 fw-bold text-hover-primary fs-6"
                   >
+                    {data?.ad_name}
+                  </a>
+                </div>
+              </td>
+              {ReportsTableConfig.map((tableConfig) => (
+                <td key={tableConfig?.key}>
+                  <span className="text-gray-900 fw-bold fs-6">
                     {data.hasOwnProperty(tableConfig.value) &&
                     data[tableConfig.value] !== null
                       ? data[tableConfig.value]
                       : '---'}
-                  </a>
+                  </span>
                 </td>
               ))}
             </tr>

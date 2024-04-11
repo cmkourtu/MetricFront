@@ -72,8 +72,8 @@ const Reports: React.FC = () => {
   }, [updateReportsTrigger, reportId, dateFilter]);
 
   useEffect(() => {
-    if (temporaryAdsetsData?.length > 0) {
-      const simplified = temporaryAdsetsData.flatMap((data) => {
+    if (TemporaryAdsetsData?.length > 0) {
+      const simplified = TemporaryAdsetsData.flatMap((data) => {
         return data.adSets.map((adSet) => {
           const { video_play_curve_actions, ...otherInsights } =
             adSet.insights || {};
@@ -92,6 +92,7 @@ const Reports: React.FC = () => {
             lastName: data.facebookAccount.lastName || '',
             checked: false,
             ...roundedInsights,
+            icon: adSet.icon || null,
           };
         });
       });
@@ -100,7 +101,7 @@ const Reports: React.FC = () => {
       setSimplifiedReportsTableData([]);
       setChosenReports([]);
     }
-  }, [temporaryAdsetsData, updateReportsTrigger]);
+  }, [TemporaryAdsetsData, updateReportsTrigger]);
 
   const handleSort = (column: string) => {
     if (column === sortColumn) {
