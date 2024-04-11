@@ -32,6 +32,7 @@ const Reports: React.FC = () => {
   const [temporaryAdsetsData, setTemporaryAdsetsData] = useState<
     TemporaryAdsetsDataProps[]
   >([]);
+  const [dateFilter, setDateFilter] = useState<string | null>(null);
 
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
   const [sortColumn, setSortColumn] = useState<string>('');
@@ -58,7 +59,7 @@ const Reports: React.FC = () => {
         if (data) {
           setReportById(data);
           if (userId && token) {
-            const ads = await getFacebookAdsByUserId(token, userId);
+            const ads = await getFacebookAdsByUserId(token, userId, dateFilter);
             setTemporaryAdsetsData(ads?.data);
           }
         }
@@ -68,7 +69,7 @@ const Reports: React.FC = () => {
     };
 
     fetchReports();
-  }, [updateReportsTrigger, reportId]);
+  }, [updateReportsTrigger, reportId, dateFilter]);
 
   useEffect(() => {
     if (temporaryAdsetsData?.length > 0) {
@@ -127,7 +128,9 @@ const Reports: React.FC = () => {
 
   return (
     <div>
-      {reportById && <ReportsHeader reportById={reportById} />}
+      {reportById && (
+        <ReportsHeader reportById={reportById} setDateFilter={setDateFilter} />
+      )}
       {chosenReports && chosenReports?.length > 0 && (
         <ReportsCharts chosenReports={chosenReports} />
       )}

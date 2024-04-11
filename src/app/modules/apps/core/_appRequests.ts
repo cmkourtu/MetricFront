@@ -61,12 +61,19 @@ export function getFacebookAdsByFacebookId(
   );
 }
 
-export function getFacebookAdsByUserId(jwtToken: string, userId: string) {
-  return axios.get(`${GET_FACEBOOK_ADS_BY_USER_ID}/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${jwtToken}`,
-    },
-  });
+export function getFacebookAdsByUserId(
+  jwtToken: string,
+  userId: string,
+  dateQueryString?: string | null
+) {
+  return axios.get(
+    `${GET_FACEBOOK_ADS_BY_USER_ID}/${userId}${dateQueryString ? `?${dateQueryString}` : ''}`,
+    {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    }
+  );
 }
 
 export function createReport(
