@@ -95,12 +95,16 @@ export function getAdsetsPreview(
 export function createReport(
   userId: string,
   reportTitle: string,
-  reportDescription?: string
+  reportDescription?: string,
+  startedDate?: string | null,
+  endedDate?: string | null
 ) {
   return axios.post(CREATE_REPORT, {
     name: reportTitle,
     description: reportDescription,
     userId: userId,
+    startDate: startedDate,
+    endDate: endedDate,
   });
 }
 
@@ -120,12 +124,16 @@ export function updateReport(
   reportId: string,
   userId: string,
   reportTitle: string,
-  reportDescription?: string
+  reportDescription?: string,
+  startedDate?: string | null,
+  endedDate?: string | null
 ) {
   return axios.put<ReportsProps>(`${UPDATE_REPORT}/${reportId}`, {
     name: reportTitle,
     description: reportDescription,
     userId: userId,
+    startDate: startedDate ? startedDate : null,
+    endDate: endedDate ? endedDate : null,
   });
 }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import moment, { Moment } from 'moment';
+import moment from 'moment';
 
 import 'flatpickr/dist/themes/material_blue.css';
 
@@ -165,6 +165,8 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
           reportId={reportById?.id}
           previousTitle={reportById?.name}
           previousDescription={reportById?.description}
+          startDate={startDate}
+          endDate={endDate}
         />
       )}
       {showDeleteReportModal && (
