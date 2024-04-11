@@ -32,9 +32,12 @@ const Reports: React.FC = () => {
   const [temporaryAdsetsData, setTemporaryAdsetsData] = useState<
     TemporaryAdsetsDataProps[]
   >([]);
+  const [dateFilter, setDateFilter] = useState<string | null>(null);
 
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
   const [sortColumn, setSortColumn] = useState<string>('');
+  const userId = currentUser?.id;
+  const token = auth?.accessToken;
 
   const location = useLocation();
   const pathnameParts = location.pathname.split('/');
@@ -50,25 +53,52 @@ const Reports: React.FC = () => {
   }, [reportId]);
 
   useEffect(() => {
-    const userId = currentUser?.id;
-    const token = auth?.accessToken;
     const fetchReports = async () => {
       try {
         const { data } = await getReportsById(reportId);
         if (data) {
           setReportById(data);
-          if (userId && token) {
-            const ads = await getFacebookAdsByUserId(token, userId);
-            setTemporaryAdsetsData(ads?.data);
+          if (data?.startDate && data?.endDate) {
+            const startDate = new Date(data.startDate);
+            const endDate = new Date(data.endDate);
+
+            // Extracting date components
+            const startYear = startDate.getFullYear();
+            const startMonth = String(startDate.getMonth() + 1).padStart(
+              2,
+              '0'
+            );
+            const startDay = String(startDate.getDate()).padStart(2, '0');
+
+            const endYear = endDate.getFullYear();
+            const endMonth = String(endDate.getMonth() + 1).padStart(2, '0');
+            const endDay = String(endDate.getDate()).padStart(2, '0');
+
+            // Creating query string
+            const queryString = `start=${startYear}-${startMonth}-${startDay}&end=${endYear}-${endMonth}-${endDay}`;
+            setDateFilter(queryString);
           }
         }
       } catch (error) {
         console.log('Error fetching reports:', error);
       }
     };
-
     fetchReports();
   }, [updateReportsTrigger, reportId]);
+
+  useEffect(() => {
+    const fetchAds = async () => {
+      try {
+        if (userId && token) {
+          const ads = await getFacebookAdsByUserId(token, userId, dateFilter);
+          setTemporaryAdsetsData(ads?.data);
+        }
+      } catch (error) {
+        console.log('Error fetching reports:', error);
+      }
+    };
+    fetchAds();
+  }, [updateReportsTrigger, reportId, dateFilter]);
 
   useEffect(() => {
     if (temporaryAdsetsData?.length > 0) {
@@ -91,6 +121,7 @@ const Reports: React.FC = () => {
             lastName: data.facebookAccount.lastName || '',
             checked: false,
             ...roundedInsights,
+            icon: adSet.icon || null,
           };
         });
       });
@@ -127,7 +158,9 @@ const Reports: React.FC = () => {
 
   return (
     <div>
-      {reportById && <ReportsHeader reportById={reportById} />}
+      {reportById && (
+        <ReportsHeader reportById={reportById} setDateFilter={setDateFilter} />
+      )}
       {chosenReports && chosenReports?.length > 0 && (
         <ReportsCharts chosenReports={chosenReports} />
       )}

@@ -5,7 +5,8 @@ import {
   SimplifiedReportsTableDataProps,
 } from './reportsModels';
 import { ReportsTableConfig } from './ReportsConfig';
-import { KTIcon } from '../../../../_metronic/helpers';
+import { KTIcon, toAbsoluteUrl } from '../../../../_metronic/helpers';
+import { useNavigate } from 'react-router-dom';
 
 const ReportsTable: React.FC<ReportsTableDataProps> = ({
   reportsTableData,
@@ -14,6 +15,7 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
   sortOrder,
   sortColumn,
 }) => {
+  const navigate = useNavigate();
   const [updateReportsTrigger, setUpdateReportsTrigger] = useState(false);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [checkedColumnTitles, setCheckedColumnTitles] = useState<string[]>([]);
@@ -68,6 +70,7 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
       const filteredReports = chosenRows.map((report) => {
         const filteredReport: { [key: string]: any } = {
           ad_name: report.ad_name,
+          icon: report.icon,
         };
         checkedColumnTitles.forEach((title) => {
           filteredReport[title] = report[title];
@@ -85,6 +88,10 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
       return chosenRow.ad_id === dataId;
     });
     return isSelected;
+  };
+
+  const handleNavigatetoPreview = (facebookId: string, adId: number) => {
+    navigate(`/reports/${facebookId}/ad/${adId}/preview`);
   };
 
   return (
@@ -180,21 +187,40 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                 </div>
               </td>
               <td>
-                <a href="#" className="text-gray-900 fw-bold fs-6">
-                  {data?.ad_name}
-                </a>
-              </td>
-              {ReportsTableConfig.map((tableConfig) => (
-                <td key={tableConfig?.key}>
+                <div
+                  className="d-flex flex-row align-items-center text-hover-primary cursor-pointer"
+                  onClick={() => {
+                    if (data?.facebookId && data?.ad_id) {
+                      handleNavigatetoPreview(data.facebookId, data.ad_id);
+                    }
+                  }}
+                >
+                  <img
+                    src={
+                      data?.icon
+                        ? data?.icon
+                        : toAbsoluteUrl('media/auth/404-error.png')
+                    }
+                    alt=""
+                    className="me-3"
+                    style={{ width: '64px', height: '64px' }}
+                  />
                   <a
                     href="#"
                     className="text-gray-900 fw-bold text-hover-primary fs-6"
                   >
+                    {data?.ad_name}
+                  </a>
+                </div>
+              </td>
+              {ReportsTableConfig.map((tableConfig) => (
+                <td key={tableConfig?.key}>
+                  <span className="text-gray-900 fw-bold fs-6">
                     {data.hasOwnProperty(tableConfig.value) &&
                     data[tableConfig.value] !== null
                       ? data[tableConfig.value]
                       : '---'}
-                  </a>
+                  </span>
                 </td>
               ))}
             </tr>

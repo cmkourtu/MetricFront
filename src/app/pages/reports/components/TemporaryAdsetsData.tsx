@@ -188,6 +188,7 @@ const TemporaryAdsetsData: TemporaryAdsetsDataProps[] = [
             id: '120209523006400651',
           },
         ],
+        icon: 'https://scontent-fra5-1.xx.fbcdn.net/v/t39.30808-1/262570662_436583048159828_812411569173481628_n.jpg?_nc_cat=110&ccb=1-7&_nc_ohc=BzuYGwQWlKQAb5Di5vS&_nc_ht=scontent-fra5-1.xx&edm=AEuWsiQEAAAA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75&ur=5f2048&_nc_sid=58080a&oh=00_AfDegDO9SKQtL72ebAc-c32h4XYS5wXeBE_zqeLOAwSw2Q&oe=661DA700',
       },
       {
         adSet: {
@@ -275,6 +276,7 @@ const TemporaryAdsetsData: TemporaryAdsetsDataProps[] = [
             id: '120206713949970651',
           },
         ],
+        icon: 'https://scontent-fra3-2.xx.fbcdn.net/v/t39.30808-6/264127658_436580361493430_2204435528839487456_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=H3ff_ZrKSVUAb5v2AIV&_nc_ht=scontent-fra3-2.xx&edm=AEuWsiQEAAAA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75&ur=5f2048&_nc_sid=58080a&oh=00_AfBIMVTC3YSBmzmTyTEqnxsbVkYLiI1ROSoVdJ2lvcbkbA&oe=661DAC10',
       },
     ],
   },

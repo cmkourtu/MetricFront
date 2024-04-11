@@ -6,6 +6,7 @@ import {
   getCSSVariableValue,
 } from '../../../../_metronic/assets/ts/_utils';
 import { ReportsChartsProps } from './reportsModels';
+import { toAbsoluteUrl } from '../../../../_metronic/helpers';
 
 const ReportsCharts: FC<ReportsChartsProps> = ({ chosenReports }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
@@ -48,7 +49,7 @@ const ReportsCharts: FC<ReportsChartsProps> = ({ chosenReports }) => {
           </span>
           {/*<span className="text-muted fw-semibold fs-7">
             More than 400 new members
-  </span>*/}
+          </span>*/}
         </h3>
       </div>
       <div className="card-body">
@@ -57,6 +58,25 @@ const ReportsCharts: FC<ReportsChartsProps> = ({ chosenReports }) => {
           id="kt_charts_widget_1_chart"
           style={{ height: '350px' }}
         />
+        <div
+          className="d-flex justify-content-around"
+          style={{ paddingLeft: '70px' }}
+        >
+          {chosenReports.map((report, index) => (
+            <div key={index} className="d-flex flex-column align-items-center">
+              <img
+                src={
+                  report?.icon
+                    ? report?.icon
+                    : toAbsoluteUrl('media/auth/404-error.png')
+                }
+                alt=""
+                style={{ width: '64px', height: '64px', marginBottom: '5px' }}
+              />
+              <span>{report?.ad_name?.substring(0, 8) + '...'}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -73,17 +93,24 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
   const chartColorSecondary = getCSSVariableValue('--bs-danger');
   const chartColorPurple = getCSSVariableValue('--bs-info');
 
+  const transformKey = (key: string) => {
+    return key
+      .replace(/_/g, ' ') // Replace underscores with spaces
+      .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
+  };
+
   const seriesData = Object.keys(chosenReports[0])
     .map((key) => {
-      if (key === 'ad_name') {
+      if (key === 'ad_name' || key === 'icon') {
         return null;
       }
 
       return {
-        name: key,
+        name: transformKey(key),
         data: chosenReports.map((report) => {
-          const value = report[key];
-          return typeof value === 'string' ? parseFloat(value) : value;
+          return typeof report[key] === 'string'
+            ? parseFloat(report[key])
+            : report[key];
         }),
       };
     })
@@ -115,7 +142,7 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
       },
     },
     legend: {
-      show: false,
+      show: true,
     },
     dataLabels: {
       enabled: false,
@@ -136,7 +163,7 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
       labels: {
         style: {
           colors: labelColor,
-          fontSize: '12px',
+          fontSize: '1px',
         },
       },
     },
@@ -148,6 +175,7 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
         },
       },
     },
+
     fill: {
       opacity: 1,
     },
