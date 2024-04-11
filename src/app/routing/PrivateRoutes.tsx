@@ -11,6 +11,7 @@ import FacebookAds from '../pages/facebook-ads/FacebookAds';
 import { FacebookCallback } from '../pages/facebook-ads/components';
 import FacebookAdAccount from '../pages/facebook-ads/FacebookAdAccount';
 import Reports from '../pages/reports/Reports';
+import ReportsPreview from '../pages/reports/ReportsPreview';
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'));
@@ -39,6 +40,10 @@ const PrivateRoutes = () => {
           element={<FacebookCallback />}
         />
         <Route path="reports/:reportId" element={<Reports />} />
+        <Route
+          path="reports/:facebookId/ad/:adId/preview"
+          element={<ReportsPreview />}
+        />
 
         <Route path="builder" element={<BuilderPageWrapper />} />
         <Route path="menu-test" element={<MenuTestPage />} />

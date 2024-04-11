@@ -72,8 +72,8 @@ const Reports: React.FC = () => {
   }, [updateReportsTrigger, reportId, dateFilter]);
 
   useEffect(() => {
-    if (TemporaryAdsetsData?.length > 0) {
-      const simplified = TemporaryAdsetsData.flatMap((data) => {
+    if (temporaryAdsetsData?.length > 0) {
+      const simplified = temporaryAdsetsData.flatMap((data) => {
         return data.adSets.map((adSet) => {
           const { video_play_curve_actions, ...otherInsights } =
             adSet.insights || {};
@@ -101,7 +101,7 @@ const Reports: React.FC = () => {
       setSimplifiedReportsTableData([]);
       setChosenReports([]);
     }
-  }, [TemporaryAdsetsData, updateReportsTrigger]);
+  }, [temporaryAdsetsData, updateReportsTrigger]);
 
   const handleSort = (column: string) => {
     if (column === sortColumn) {

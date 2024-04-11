@@ -6,6 +6,7 @@ import {
 } from './reportsModels';
 import { ReportsTableConfig } from './ReportsConfig';
 import { KTIcon, toAbsoluteUrl } from '../../../../_metronic/helpers';
+import { useNavigate } from 'react-router-dom';
 
 const ReportsTable: React.FC<ReportsTableDataProps> = ({
   reportsTableData,
@@ -14,6 +15,7 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
   sortOrder,
   sortColumn,
 }) => {
+  const navigate = useNavigate();
   const [updateReportsTrigger, setUpdateReportsTrigger] = useState(false);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [checkedColumnTitles, setCheckedColumnTitles] = useState<string[]>([]);
@@ -86,6 +88,10 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
       return chosenRow.ad_id === dataId;
     });
     return isSelected;
+  };
+
+  const handleNavigatetoPreview = (facebookId: string, adId: number) => {
+    navigate(`/reports/${facebookId}/ad/${adId}/preview`);
   };
 
   return (
@@ -181,7 +187,14 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                 </div>
               </td>
               <td>
-                <div className="d-flex flex-row align-items-center text-hover-primary">
+                <div
+                  className="d-flex flex-row align-items-center text-hover-primary cursor-pointer"
+                  onClick={() => {
+                    if (data?.facebookId && data?.ad_id) {
+                      handleNavigatetoPreview(data.facebookId, data.ad_id);
+                    }
+                  }}
+                >
                   <img
                     src={
                       data?.icon

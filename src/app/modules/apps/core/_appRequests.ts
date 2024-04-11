@@ -12,6 +12,7 @@ export const GET_FACEBOOK_ACCOUNTS = `${API_URL}/facebook/accounts/facebook`;
 export const GET_FACEBOOK_ADS = `${API_URL}/facebook/accounts/ad`;
 export const GET_FACEBOOK_ADS_BY_FACEBOOK_ID = `${API_URL}/facebook/accounts/ad`;
 export const GET_FACEBOOK_ADS_BY_USER_ID = `${API_URL}/facebook/adsets/user`;
+export const GET_ADSETS_PREVIEW = `${API_URL}/facebook/ads/insight/facebook`;
 export const CREATE_REPORT = `${API_URL}/reports`;
 export const GET_ALL_REPORTS = `${API_URL}/reports`;
 export const GET_REPORTS_BY_USER_ID = `${API_URL}/reports/user`;
@@ -68,6 +69,21 @@ export function getFacebookAdsByUserId(
 ) {
   return axios.get(
     `${GET_FACEBOOK_ADS_BY_USER_ID}/${userId}${dateQueryString ? `?${dateQueryString}` : ''}`,
+    {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    }
+  );
+}
+
+export function getAdsetsPreview(
+  jwtToken: string,
+  facebookId: string,
+  adId: string
+) {
+  return axios.get(
+    `${GET_ADSETS_PREVIEW}/${facebookId}/ad/${adId}/preview/icon`,
     {
       headers: {
         Authorization: `Bearer ${jwtToken}`,

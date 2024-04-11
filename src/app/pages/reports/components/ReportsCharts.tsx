@@ -93,17 +93,24 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
   const chartColorSecondary = getCSSVariableValue('--bs-danger');
   const chartColorPurple = getCSSVariableValue('--bs-info');
 
+  const transformKey = (key: string) => {
+    return key
+      .replace(/_/g, ' ') // Replace underscores with spaces
+      .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
+  };
+
   const seriesData = Object.keys(chosenReports[0])
     .map((key) => {
-      if (key === 'ad_name') {
+      if (key === 'ad_name' || key === 'icon') {
         return null;
       }
 
       return {
-        name: key,
+        name: transformKey(key),
         data: chosenReports.map((report) => {
-          const value = report[key];
-          return typeof value === 'string' ? parseFloat(value) : value;
+          return typeof report[key] === 'string'
+            ? parseFloat(report[key])
+            : report[key];
         }),
       };
     })
@@ -156,7 +163,7 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
       labels: {
         style: {
           colors: labelColor,
-          fontSize: '12px',
+          fontSize: '1px',
         },
       },
     },
