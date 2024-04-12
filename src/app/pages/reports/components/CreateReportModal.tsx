@@ -9,16 +9,11 @@ import {
   updateReport,
 } from '../../../modules/apps/core/_appRequests';
 import { usePageData } from '../../../../_metronic/layout/core';
-
-interface CreateReportModalProps {
-  closeCreateReportModal: () => void;
-  isUpdate: boolean;
-  reportId?: string;
-  previousTitle?: string;
-  previousDescription?: string;
-  startDate?: Date | null;
-  endDate?: Date | null;
-}
+import { CreateReportModalProps } from './reportsModels';
+import {
+  getFormattedDate,
+  getFormattedDateForInput,
+} from '../../../../_metronic/helpers/reportsHelpers';
 
 const CreateReportModal: React.FC<CreateReportModalProps> = ({
   closeCreateReportModal,
@@ -26,8 +21,10 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
   reportId,
   previousTitle,
   previousDescription,
-  startDate,
-  endDate,
+  startDateFilter,
+  endDateFilter,
+  availableAds,
+  savedAdId,
 }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -37,16 +34,8 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
   const [reportDescription, setReportDescription] = useState<string>(
     previousDescription || ''
   );
+  const [chosenAdId, setChosenAdId] = useState<number[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  function getFormattedDate(date: Date | null): string | null {
-    if (!date) {
-      return null;
-    }
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
 
   const handleReportTitleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -89,7 +78,8 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
             reportTitle,
             reportDescription,
             startedDate,
-            endedDate
+            endedDate,
+            chosenAdId
           );
           if (data) {
             setUpdateReportsTrigger(!updateReportsTrigger);
@@ -107,10 +97,16 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
   };
 
   useEffect(() => {
-    if (startDate && endDate) {
-      setSelectedDates([startDate, endDate]);
+    if (startDateFilter && endDateFilter) {
+      setSelectedDates([startDateFilter, endDateFilter]);
     }
-  }, [startDate, endDate]);
+  }, [startDateFilter, endDateFilter]);
+
+  useEffect(() => {
+    if (savedAdId) {
+      setChosenAdId(savedAdId.map(Number));
+    }
+  }, [savedAdId]);
 
   const handleDateChange = (selected: Date[]) => {
     if (selected.length === 2) {
@@ -124,6 +120,18 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
 
   const minDateThreeYearsAgo = moment().subtract(3, 'years').format('Y-MM-DD');
   const currentDate = moment().format('Y-MM-DD');
+
+  const handleCheckboxChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    adId: number
+  ) => {
+    const isChecked = e.target.checked;
+    if (isChecked) {
+      setChosenAdId((prevIds) => [...prevIds, adId]);
+    } else {
+      setChosenAdId((prevIds) => prevIds.filter((id) => id !== adId));
+    }
+  };
 
   return (
     <>
@@ -188,23 +196,31 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
                   />
                   <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                 </div>
-                <div className="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
+                <div className="d-flex flex-column fv-row fv-plugins-icon-container">
                   <label className="d-flex align-items-center fs-6 fw-semibold mb-2">
                     <span>Select a period</span>
                   </label>
-                  <div className="d-flex flex-row mb-10">
-                    <Flatpickr
-                      className="form-calendar-flatpickr fs-8 fw-bold me-4 h-45px"
-                      options={{
-                        mode: 'range',
-                        dateFormat: 'Y-m-d',
-                        onClose: handleDateChange,
-                        minDate: minDateThreeYearsAgo,
-                        maxDate: currentDate,
-                        defaultDate: selectedDates,
-                      }}
-                      placeholder="Select a period"
-                    />{' '}
+                  <div className="d-flex flex-row align-items-center mb-10">
+                    {selectedDates && selectedDates.length === 2 ? (
+                      <span className="fw-bold fs-7 me-4">
+                        {getFormattedDateForInput(selectedDates[0])}
+                        {' to '}
+                        {getFormattedDateForInput(selectedDates[1])}
+                      </span>
+                    ) : (
+                      <Flatpickr
+                        className="form-calendar-flatpickr fs-8 fw-bold me-4 h-45px"
+                        options={{
+                          mode: 'range',
+                          dateFormat: 'Y-m-d',
+                          onClose: handleDateChange,
+                          minDate: minDateThreeYearsAgo,
+                          maxDate: currentDate,
+                          defaultDate: selectedDates,
+                        }}
+                        placeholder="Select a period"
+                      />
+                    )}
                     <a
                       href="#"
                       className="btn btn-secondary fw-bold"
@@ -214,7 +230,40 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
                     </a>
                   </div>
                 </div>
-
+                {isUpdate && (
+                  <div className="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
+                    <label className="d-flex align-items-center fs-6 fw-semibold mb-4">
+                      <span>Available ads</span>
+                    </label>
+                    <div
+                      className="d-flex flex-column overflow-auto"
+                      style={{ maxHeight: '200px' }}
+                    >
+                      {availableAds?.map((ads) => (
+                        <div
+                          className="form-check form-check-sm form-check-custom form-check-solid mb-4"
+                          key={ads.ad_id}
+                        >
+                          <input
+                            className="form-check-input me-2"
+                            type="checkbox"
+                            value="1"
+                            data-kt-check="true"
+                            data-kt-check-target=".widget-13-check"
+                            onChange={(e) => handleCheckboxChange(e, ads.ad_id)}
+                            checked={chosenAdId.includes(ads.ad_id)}
+                          />
+                          <label
+                            className="form-check-label fw-bold"
+                            htmlFor="widget-13-check"
+                          >
+                            {ads.ad_name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="text-center">
                   <button
                     type="reset"

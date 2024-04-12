@@ -1,3 +1,5 @@
+import { ReportsProps } from '../../../modules/apps/core/_appModels';
+
 export interface TemporaryReportsDataProps {
   [key: string]: any;
   ads: string;
@@ -113,13 +115,14 @@ export interface Ad {
 }
 
 export interface TemporaryAdsetsDataProps {
-  facebookAccount: FacebookAccount;
-  adSets: {
+  facebookAccount?: FacebookAccount;
+  adSets?: {
     adSet: AdSet;
     insights: Insights;
     ads: Ad[];
     icon?: string;
   }[];
+  updatedAt?: string;
 }
 
 export interface ReportsTableDataProps {
@@ -210,6 +213,33 @@ export interface SimplifiedReportsTableDataProps {
   thumbstop_clickrate?: number | null;
   atc?: number | null;
   icon?: string | null;
+  updatedAt?: string | null;
   //video_play_curve_actions?: number[];
   [key: string]: string | number | boolean | null | undefined | string[];
+}
+
+export interface AvailableAdsProps {
+  ad_name: string;
+  ad_id: number;
+}
+
+export interface ReportsHeaderProps {
+  reportById: ReportsProps;
+  setDateFilter: React.Dispatch<React.SetStateAction<string | null>>;
+  availableAds: AvailableAdsProps[];
+  savedAdId: string[];
+  startDateFilter: Date | null;
+  endDateFilter: Date | null;
+}
+
+export interface CreateReportModalProps {
+  closeCreateReportModal: () => void;
+  isUpdate: boolean;
+  reportId?: string;
+  previousTitle?: string;
+  previousDescription?: string;
+  availableAds?: AvailableAdsProps[];
+  savedAdId?: string[];
+  startDateFilter?: Date | null;
+  endDateFilter?: Date | null;
 }

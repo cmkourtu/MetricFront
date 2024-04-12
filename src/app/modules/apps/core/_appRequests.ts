@@ -11,7 +11,7 @@ export const GET_FACEBOOK_TOKEN = `${API_URL}/auth/facebook `;
 export const GET_FACEBOOK_ACCOUNTS = `${API_URL}/facebook/accounts/facebook`;
 export const GET_FACEBOOK_ADS = `${API_URL}/facebook/accounts/ad`;
 export const GET_FACEBOOK_ADS_BY_FACEBOOK_ID = `${API_URL}/facebook/accounts/ad`;
-export const GET_FACEBOOK_ADS_BY_USER_ID = `${API_URL}/facebook/adsets/user`;
+export const GET_FACEBOOK_ADS_BY_USER_ID = `${API_URL}/facebook/adsets/report`;
 export const GET_ADSETS_PREVIEW = `${API_URL}/facebook/ads/insight/facebook`;
 export const CREATE_REPORT = `${API_URL}/reports`;
 export const GET_ALL_REPORTS = `${API_URL}/reports`;
@@ -64,11 +64,11 @@ export function getFacebookAdsByFacebookId(
 
 export function getFacebookAdsByUserId(
   jwtToken: string,
-  userId: string,
+  reportId: string,
   dateQueryString?: string | null
 ) {
   return axios.get(
-    `${GET_FACEBOOK_ADS_BY_USER_ID}/${userId}${dateQueryString ? `?${dateQueryString}` : ''}`,
+    `${GET_FACEBOOK_ADS_BY_USER_ID}/${reportId}${dateQueryString ? `?${dateQueryString}` : ''}`,
     {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -126,7 +126,8 @@ export function updateReport(
   reportTitle: string,
   reportDescription?: string,
   startedDate?: string | null,
-  endedDate?: string | null
+  endedDate?: string | null,
+  chosenAdId?: number[] | []
 ) {
   return axios.put<ReportsProps>(`${UPDATE_REPORT}/${reportId}`, {
     name: reportTitle,
@@ -134,6 +135,7 @@ export function updateReport(
     userId: userId,
     startDate: startedDate ? startedDate : null,
     endDate: endedDate ? endedDate : null,
+    adSets: chosenAdId ? chosenAdId : null,
   });
 }
 

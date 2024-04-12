@@ -1,30 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-
 import 'flatpickr/dist/themes/material_blue.css';
-
 import Flatpickr from 'react-flatpickr';
 
-import { ReportsProps } from '../../../modules/apps/core/_appModels';
 import { CreateReportModal } from '.';
 import { KTIcon } from '../../../../_metronic/helpers';
 import ConfirmModal from '../../../../_metronic/partials/modals/ConfirmModal/ConfirmModal';
 import { usePageData } from '../../../../_metronic/layout/core';
 import { useNavigate } from 'react-router-dom';
 import { deleteReport } from '../../../modules/apps/core/_appRequests';
-
-interface ReportsHeaderProps {
-  reportById: ReportsProps;
-  setDateFilter: React.Dispatch<React.SetStateAction<string | null>>;
-}
+import { ReportsHeaderProps } from './reportsModels';
+import { getFormattedDateForInput } from '../../../../_metronic/helpers/reportsHelpers';
 
 const ReportsHeader: React.FC<ReportsHeaderProps> = ({
   reportById,
   setDateFilter,
+  availableAds,
+  savedAdId,
+  startDateFilter,
+  endDateFilter,
 }) => {
   const navigate = useNavigate();
   const { updateReportsTrigger, setUpdateReportsTrigger } = usePageData();
-
   const [showCreateReportModal, setShowCreateReportModal] =
     useState<boolean>(false);
   const [showDeleteReportModal, setShowDeleteReportModal] =
@@ -32,9 +29,13 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
+  const [showSaveButton, setShowSaveButton] = useState<boolean>(false);
+  const minDateThreeYearsAgo = moment().subtract(3, 'years').format('Y-MM-DD');
+  const currentDate = moment().format('Y-MM-DD');
 
   const handleShowCalendar = () => {
     setShowCalendar(true);
+    setShowSaveButton(true);
   };
 
   const handleHideCalendar = () => {
@@ -42,6 +43,14 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
     setStartDate(null);
     setEndDate(null);
     setDateFilter(null);
+    setShowSaveButton(true);
+  };
+
+  const handleClearPeriod = () => {
+    setStartDate(null);
+    setEndDate(null);
+    handleShowCalendar();
+    setShowSaveButton(true);
   };
 
   const handleDateChange = (selectedDates: Date[]) => {
@@ -49,6 +58,7 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
       setStartDate(selectedDates[0]);
       setEndDate(selectedDates[1]);
     }
+    setShowSaveButton(true);
   };
 
   const openCreateReportModal = () => {
@@ -94,53 +104,84 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
     } else {
       setDateFilter(null);
     }
+    setShowSaveButton(false);
+    setShowCalendar(false);
   };
 
-  const minDateThreeYearsAgo = moment().subtract(3, 'years').format('Y-MM-DD');
-  const currentDate = moment().format('Y-MM-DD');
-
+  useEffect(() => {
+    if (startDateFilter && endDateFilter) {
+      setStartDate(startDateFilter);
+      setEndDate(endDateFilter);
+    } else {
+      setStartDate(null);
+      setEndDate(null);
+    }
+  }, [startDateFilter, endDateFilter]);
   return (
     <>
-      <div className="d-flex fv-rowrow align-items-center justify-content-between cursor-pointer mb-6">
+      <div className="d-flex fv-rowrow align-items-center justify-content-between mb-6">
         <h1>{reportById?.name}</h1>
         <div className="d-flex flex-row">
-          {!showCalendar && (
-            <a
-              href="#"
-              className="btn btn-sm btn-flex btn-light fw-bold me-4"
-              onClick={handleShowCalendar}
-            >
-              Choose date
-            </a>
-          )}
-          {showCalendar && (
-            <div className="d-flex flex-row">
-              <Flatpickr
-                className="form-calendar-flatpickr fs-7 fw-bold me-2"
-                options={{
-                  mode: 'range',
-                  dateFormat: 'Y-m-d',
-                  onClose: handleDateChange,
-                  minDate: minDateThreeYearsAgo,
-                  maxDate: currentDate,
-                }}
-                placeholder="Select a period"
-              />
+          {startDate && endDate ? (
+            <div className="d-flex flex-row align-items-center">
+              <span>
+                <span className="fw-bold fs-7 me-4">
+                  {getFormattedDateForInput(startDate)}
+                  {' to '}
+                  {getFormattedDateForInput(endDate)}
+                </span>
+              </span>
               <a
                 href="#"
                 className="btn btn-sm btn-flex btn-light fw-bold me-4"
-                onClick={handleHideCalendar}
+                onClick={handleClearPeriod}
               >
                 Clear
               </a>
-              <a
-                href="#"
-                className="btn btn-sm fw-bold btn-primary me-4"
-                onClick={handleSaveDateFilter}
-              >
-                Save
-              </a>
             </div>
+          ) : (
+            <>
+              {!showCalendar && (
+                <a
+                  href="#"
+                  className="btn btn-sm btn-flex btn-light fw-bold me-4"
+                  onClick={handleShowCalendar}
+                >
+                  Choose date
+                </a>
+              )}
+              {showCalendar && (
+                <div className="d-flex flex-row">
+                  <Flatpickr
+                    className="form-calendar-flatpickr fs-7 fw-bold me-2"
+                    options={{
+                      mode: 'range',
+                      dateFormat: 'Y-m-d',
+                      onClose: handleDateChange,
+                      minDate: minDateThreeYearsAgo,
+                      maxDate: currentDate,
+                    }}
+                    placeholder="Select a period"
+                  />
+                  <a
+                    href="#"
+                    className="btn btn-sm btn-flex btn-light fw-bold me-4"
+                    onClick={handleHideCalendar}
+                  >
+                    Clear
+                  </a>
+                </div>
+              )}
+            </>
+          )}
+          {showSaveButton && (
+            <a
+              href="#"
+              className="btn btn-sm fw-bold btn-primary me-4"
+              onClick={handleSaveDateFilter}
+            >
+              Apply
+            </a>
           )}
           <a
             href="#"
@@ -165,8 +206,10 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
           reportId={reportById?.id}
           previousTitle={reportById?.name}
           previousDescription={reportById?.description}
-          startDate={startDate}
-          endDate={endDate}
+          availableAds={availableAds}
+          savedAdId={savedAdId}
+          startDateFilter={startDateFilter}
+          endDateFilter={endDateFilter}
         />
       )}
       {showDeleteReportModal && (
