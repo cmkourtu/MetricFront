@@ -4,11 +4,13 @@ import { KTIcon } from '../../../../_metronic/helpers';
 interface ReportsToolbarProps {
   searchInput: string;
   setSearchInput: (value: string) => void;
+  generatePDF: () => void;
 }
 
 const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
   searchInput,
   setSearchInput,
+  generatePDF,
 }) => {
   const handleSearchInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -32,6 +34,12 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
             onChange={handleSearchInputChange}
           />
         </div>
+        <button
+          className="btn btn-sm btn-primary fw-bold"
+          onClick={generatePDF}
+        >
+          Download PDF
+        </button>
       </div>
     </div>
   );

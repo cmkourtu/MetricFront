@@ -244,3 +244,7 @@ export interface CreateReportModalProps {
   startDateFilter?: Date | null;
   endDateFilter?: Date | null;
 }
+
+export interface PDFContentProps {
+  chosenReports: SimplifiedReportsTableDataProps[];
+}

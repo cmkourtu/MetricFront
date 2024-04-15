@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useReactToPrint } from 'react-to-print';
+
 import {
   ReportsTable,
   ReportsCharts,
@@ -51,6 +53,7 @@ const Reports: React.FC = () => {
   const location = useLocation();
   const pathnameParts = location.pathname.split('/');
   const reportId = pathnameParts[pathnameParts.length - 1];
+  const pdfContentRef = useRef(null);
 
   useEffect(() => {
     setReportById(undefined);
@@ -223,8 +226,13 @@ const Reports: React.FC = () => {
     }
   });
 
+  const generatePDF = useReactToPrint({
+    content: () => pdfContentRef.current,
+    documentTitle: 'Results',
+  });
+
   return (
-    <div>
+    <div className="p-10" ref={pdfContentRef}>
       {reportById && (
         <ReportsHeader
           reportById={reportById}
@@ -241,6 +249,7 @@ const Reports: React.FC = () => {
       <ReportsToolbar
         searchInput={searchInput}
         setSearchInput={setSearchInput}
+        generatePDF={generatePDF}
       />
       {simplifiedReportsTableData?.length > 0 && (
         <ReportsTable

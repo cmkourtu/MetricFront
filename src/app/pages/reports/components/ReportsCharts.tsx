@@ -1,5 +1,6 @@
 import { useEffect, useRef, FC } from 'react';
 import ApexCharts, { ApexOptions } from 'apexcharts';
+
 import { useThemeMode } from '../../../../_metronic/partials';
 import {
   getCSS,
@@ -42,11 +43,12 @@ const ReportsCharts: FC<ReportsChartsProps> = ({ chosenReports }) => {
 
   return (
     <div className="card mb-15">
-      <div className="card-header border-0 pt-5">
+      <div className="card-body d-flex align-items-center justify-content-between flex-wrap">
         <h3 className="card-title align-items-start flex-column">
           <span className="card-label fw-bold fs-3 mb-1">
             Recent Statistics
           </span>
+
           {/*<span className="text-muted fw-semibold fs-7">
             More than 400 new members
           </span>*/}
