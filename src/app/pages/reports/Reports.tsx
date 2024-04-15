@@ -4,6 +4,7 @@ import {
   ReportsCharts,
   ReportsHeader,
   TemporaryAdsetsData,
+  ReportPreviewModal,
 } from './components';
 import {
   TemporaryAdsetsDataProps,
@@ -155,6 +156,7 @@ const Reports: React.FC = () => {
               ...roundedInsights,
               icon: adSet?.icon || null,
               updatedAt: data.updatedAt || '',
+              ads_id: adSet.ads[0]?.id || null,
             };
           });
         });

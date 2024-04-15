@@ -214,6 +214,7 @@ export interface SimplifiedReportsTableDataProps {
   atc?: number | null;
   icon?: string | null;
   updatedAt?: string | null;
+  ads_id?: string | null;
   //video_play_curve_actions?: number[];
   [key: string]: string | number | boolean | null | undefined | string[];
 }
