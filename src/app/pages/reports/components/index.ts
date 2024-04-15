@@ -5,6 +5,7 @@ import ReportsTable from './ReportsTable';
 import TemporaryAdsetsData from './TemporaryAdsetsData';
 import TemporaryReportsData from './TemporaryReportsData';
 import ReportPreviewModal from './ReportPreviewModal';
+import ReportsToolbar from './ReportsToolbar';
 
 export {
   ReportsTable,
@@ -14,4 +15,5 @@ export {
   CreateReportModal,
   TemporaryAdsetsData,
   ReportPreviewModal,
+  ReportsToolbar,
 };

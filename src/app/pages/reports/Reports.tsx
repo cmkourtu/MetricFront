@@ -5,6 +5,7 @@ import {
   ReportsHeader,
   TemporaryAdsetsData,
   ReportPreviewModal,
+  ReportsToolbar,
 } from './components';
 import {
   TemporaryAdsetsDataProps,
@@ -27,13 +28,16 @@ const Reports: React.FC = () => {
     SimplifiedReportsTableDataProps[]
   >([]);
   const [reportById, setReportById] = useState<ReportsProps>();
-  const [simplifiedReportsTableData, setSimplifiedReportsTableData] = useState<
-    SimplifiedReportsTableDataProps[]
-  >([]);
-
   const [temporaryAdsetsData, setTemporaryAdsetsData] = useState<
     TemporaryAdsetsDataProps[]
   >([]);
+  const [simplifiedReportsTableData, setSimplifiedReportsTableData] = useState<
+    SimplifiedReportsTableDataProps[]
+  >([]);
+  const [searchedData, setSearchedData] = useState<
+    SimplifiedReportsTableDataProps[]
+  >([]);
+
   const [dateFilter, setDateFilter] = useState<string | null>(null);
   const [availableAds, setAvailableAds] = useState<AvailableAdsProps[]>([]);
   const [savedAdId, setSavedAdId] = useState<string[]>([]);
@@ -41,6 +45,7 @@ const Reports: React.FC = () => {
   const [endDateFilter, setEndDateFilter] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
   const [sortColumn, setSortColumn] = useState<string>('');
+  const [searchInput, setSearchInput] = useState<string>('');
   const userId = currentUser?.id;
   const token = auth?.accessToken;
   const location = useLocation();
@@ -58,6 +63,7 @@ const Reports: React.FC = () => {
     setStartDateFilter(null);
     setEndDateFilter(null);
     setDateFilter(null);
+    setSearchInput('');
   }, [reportId]);
 
   useEffect(() => {
@@ -173,7 +179,25 @@ const Reports: React.FC = () => {
       setSimplifiedReportsTableData([]);
       setChosenReports([]);
     }
-  }, [temporaryAdsetsData, updateReportsTrigger]);
+  }, [temporaryAdsetsData]);
+
+  useEffect(() => {
+    if (simplifiedReportsTableData.length < 1) {
+      return;
+    } else if (
+      simplifiedReportsTableData.length > 0 &&
+      searchInput.length > 0
+    ) {
+      const filteredData = simplifiedReportsTableData.filter(
+        (item) =>
+          item.ad_name &&
+          item.ad_name.toLowerCase().includes(searchInput.toLowerCase())
+      );
+      setSearchedData(filteredData);
+    } else {
+      setSearchedData(simplifiedReportsTableData);
+    }
+  }, [simplifiedReportsTableData, searchInput]);
 
   const handleSort = (column: string) => {
     if (column === sortColumn) {
@@ -184,7 +208,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  const sortedData = simplifiedReportsTableData.sort((a, b) => {
+  const sortedData = searchedData.sort((a, b) => {
     const valueA = a[sortColumn];
     const valueB = b[sortColumn];
 
@@ -214,6 +238,10 @@ const Reports: React.FC = () => {
       {chosenReports && chosenReports?.length > 0 && (
         <ReportsCharts chosenReports={chosenReports} />
       )}
+      <ReportsToolbar
+        searchInput={searchInput}
+        setSearchInput={setSearchInput}
+      />
       {simplifiedReportsTableData?.length > 0 && (
         <ReportsTable
           reportsTableData={sortedData}
