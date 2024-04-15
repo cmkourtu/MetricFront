@@ -228,7 +228,7 @@ const Reports: React.FC = () => {
 
   const generatePDF = useReactToPrint({
     content: () => pdfContentRef.current,
-    documentTitle: 'Results',
+    documentTitle: reportById?.name || 'Report',
   });
 
   return (
