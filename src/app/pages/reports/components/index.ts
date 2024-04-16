@@ -7,6 +7,9 @@ import TemporaryReportsData from './TemporaryReportsData';
 import ReportPreviewModal from './ReportPreviewModal';
 import ReportsToolbar from './ReportsToolbar';
 import AddReportsColumnsDropdown from './AddReportsColumnsDropdown';
+import DateRangeSelector from './DateRangeSelector';
+import { defaultStaticRanges } from './defaultStaticRanges';
+defaultStaticRanges;
 
 export {
   ReportsTable,
@@ -18,4 +21,6 @@ export {
   ReportPreviewModal,
   ReportsToolbar,
   AddReportsColumnsDropdown,
+  DateRangeSelector,
+  defaultStaticRanges,
 };

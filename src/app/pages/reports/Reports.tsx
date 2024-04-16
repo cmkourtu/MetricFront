@@ -18,10 +18,12 @@ import { usePageData } from '../../../_metronic/layout/core';
 import {
   getFacebookAdsByUserId,
   getReportsById,
+  updateReport,
 } from '../../modules/apps/core/_appRequests';
 import { ReportsProps } from '../../modules/apps/core/_appModels';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../modules/auth';
+import { getFormattedDate } from '../../../_metronic/helpers/reportsHelpers';
 
 const Reports: React.FC = () => {
   const { currentUser, auth } = useAuth();
@@ -55,6 +57,9 @@ const Reports: React.FC = () => {
   const pathnameParts = location.pathname.split('/');
   const reportId = pathnameParts[pathnameParts.length - 1];
   const pdfContentRef = useRef(null);
+  const reportTitle = reportById?.name;
+  const reportDescription = reportById?.description;
+  const chosenAdId = reportById?.adSets;
 
   useEffect(() => {
     setReportById(undefined);
@@ -79,27 +84,11 @@ const Reports: React.FC = () => {
           if (data?.startDate && data?.endDate) {
             const startDate = new Date(data.startDate);
             const endDate = new Date(data.endDate);
-            setStartDateFilter(data.startDate);
-            setEndDateFilter(data.endDate);
-
-            // Extracting date components
-            const startYear = startDate.getFullYear();
-            const startMonth = String(startDate.getMonth() + 1).padStart(
-              2,
-              '0'
-            );
-            const startDay = String(startDate.getDate()).padStart(2, '0');
-
-            const endYear = endDate.getFullYear();
-            const endMonth = String(endDate.getMonth() + 1).padStart(2, '0');
-            const endDay = String(endDate.getDate()).padStart(2, '0');
-            // Creating query string
-            const queryString = `start=${startYear}-${startMonth}-${startDay}&end=${endYear}-${endMonth}-${endDay}`;
-            setDateFilter(queryString);
+            setStartDateFilter(startDate);
+            setEndDateFilter(endDate);
           } else {
             setEndDateFilter(null);
             setStartDateFilter(null);
-            setDateFilter(null);
           }
           if (data?.adSets?.length > 0) {
             const adIdToSave = data.adSets;
@@ -112,6 +101,43 @@ const Reports: React.FC = () => {
     };
     fetchReports();
   }, [updateReportsTrigger, reportId]);
+
+  useEffect(() => {
+    const startDate = getFormattedDate(startDateFilter);
+    const endDate = getFormattedDate(endDateFilter);
+    const fetchReports = async () => {
+      try {
+        if (reportId && userId && reportTitle) {
+          const { data } = await updateReport(
+            reportId,
+            userId,
+            reportTitle,
+            reportDescription,
+            startDate,
+            endDate,
+            chosenAdId
+          );
+          if (data) {
+            setReportById(data);
+            if (data?.startDate && data?.endDate) {
+              setStartDateFilter(data.startDate);
+              setEndDateFilter(data.endDate);
+            } else {
+              setEndDateFilter(null);
+              setStartDateFilter(null);
+            }
+            if (data?.adSets?.length > 0) {
+              const adIdToSave = data.adSets;
+              setSavedAdId(adIdToSave);
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Error fetching reports:', error);
+      }
+    };
+    fetchReports();
+  }, [dateFilter]);
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -140,7 +166,7 @@ const Reports: React.FC = () => {
       }
     };
     fetchAds();
-  }, [updateReportsTrigger, reportId, dateFilter]);
+  }, [updateReportsTrigger, reportById]);
 
   useEffect(() => {
     if (temporaryAdsetsData?.length > 0) {
@@ -242,6 +268,8 @@ const Reports: React.FC = () => {
           savedAdId={savedAdId}
           startDateFilter={startDateFilter}
           endDateFilter={endDateFilter}
+          setStartDateFilter={setStartDateFilter}
+          setEndDateFilter={setEndDateFilter}
         />
       )}
       {chosenReports && chosenReports?.length > 0 && (

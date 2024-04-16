@@ -54,7 +54,6 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
           <div className="modal-header pb-0 border-0 justify-content-end">
             <div
               className="btn btn-sm btn-icon btn-active-color-primary "
-              data-bs-dismiss="modal"
               onClick={handleClearSearchInput}
             >
               <i className="ki-duotone ki-cross fs-1">

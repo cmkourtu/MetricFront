@@ -231,7 +231,9 @@ export interface ReportsHeaderProps {
   setDateFilter: React.Dispatch<React.SetStateAction<string | null>>;
   availableAds: AvailableAdsProps[];
   savedAdId: string[];
+  setStartDateFilter: React.Dispatch<React.SetStateAction<Date | null>>;
   startDateFilter: Date | null;
+  setEndDateFilter: React.Dispatch<React.SetStateAction<Date | null>>;
   endDateFilter: Date | null;
 }
 
