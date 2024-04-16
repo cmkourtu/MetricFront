@@ -133,6 +133,8 @@ export interface ReportsTableDataProps {
   handleSort: (key: string) => void;
   sortOrder: string;
   sortColumn: string;
+  checkedColumnTitles: string[];
+  setCheckedColumnTitles: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export interface ReportsChartsProps {
@@ -214,6 +216,7 @@ export interface SimplifiedReportsTableDataProps {
   atc?: number | null;
   icon?: string | null;
   updatedAt?: string | null;
+  ads_id?: string | null;
   //video_play_curve_actions?: number[];
   [key: string]: string | number | boolean | null | undefined | string[];
 }
@@ -228,7 +231,9 @@ export interface ReportsHeaderProps {
   setDateFilter: React.Dispatch<React.SetStateAction<string | null>>;
   availableAds: AvailableAdsProps[];
   savedAdId: string[];
+  setStartDateFilter: React.Dispatch<React.SetStateAction<Date | null>>;
   startDateFilter: Date | null;
+  setEndDateFilter: React.Dispatch<React.SetStateAction<Date | null>>;
   endDateFilter: Date | null;
 }
 
@@ -242,4 +247,15 @@ export interface CreateReportModalProps {
   savedAdId?: string[];
   startDateFilter?: Date | null;
   endDateFilter?: Date | null;
+}
+
+export interface PDFContentProps {
+  chosenReports: SimplifiedReportsTableDataProps[];
+}
+
+export interface ReportsTableConfigProps {
+  key: number;
+  title: string;
+  value: string;
+  checkbox: boolean;
 }

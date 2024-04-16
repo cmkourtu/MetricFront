@@ -82,14 +82,11 @@ export function getAdsetsPreview(
   facebookId: string,
   adId: string
 ) {
-  return axios.get(
-    `${GET_ADSETS_PREVIEW}/${facebookId}/ad/${adId}/preview/icon`,
-    {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-    }
-  );
+  return axios.get(`${GET_ADSETS_PREVIEW}/${facebookId}/ad/${adId}/preview`, {
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+    },
+  });
 }
 
 export function createReport(

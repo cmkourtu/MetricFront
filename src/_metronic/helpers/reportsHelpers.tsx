@@ -18,3 +18,9 @@ export const getFormattedDateForInput = (date: Date | null) => {
   const day = dateString.getDate().toString().padStart(2, '0');
   return `${year}-${month}-${day}`;
 };
+
+export const capitalizeTitle = (key: string) => {
+  return key
+    .replace(/_/g, ' ') // Replace underscores with spaces
+    .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
+};

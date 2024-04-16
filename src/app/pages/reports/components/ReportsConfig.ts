@@ -1,9 +1,4 @@
-interface ReportsTableConfigProps {
-  key: number;
-  title: string;
-  value: string;
-  checkbox: boolean;
-}
+import { ReportsTableConfigProps } from './reportsModels';
 
 export const ReportsTableConfig: ReportsTableConfigProps[] = [
   /*{

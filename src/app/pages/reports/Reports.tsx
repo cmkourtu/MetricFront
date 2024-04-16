@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useReactToPrint } from 'react-to-print';
+
 import {
   ReportsTable,
   ReportsCharts,
   ReportsHeader,
   TemporaryAdsetsData,
+  ReportPreviewModal,
+  ReportsToolbar,
 } from './components';
 import {
   TemporaryAdsetsDataProps,
@@ -14,10 +18,12 @@ import { usePageData } from '../../../_metronic/layout/core';
 import {
   getFacebookAdsByUserId,
   getReportsById,
+  updateReport,
 } from '../../modules/apps/core/_appRequests';
 import { ReportsProps } from '../../modules/apps/core/_appModels';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../modules/auth';
+import { getFormattedDate } from '../../../_metronic/helpers/reportsHelpers';
 
 const Reports: React.FC = () => {
   const { currentUser, auth } = useAuth();
@@ -26,13 +32,17 @@ const Reports: React.FC = () => {
     SimplifiedReportsTableDataProps[]
   >([]);
   const [reportById, setReportById] = useState<ReportsProps>();
-  const [simplifiedReportsTableData, setSimplifiedReportsTableData] = useState<
-    SimplifiedReportsTableDataProps[]
-  >([]);
-
   const [temporaryAdsetsData, setTemporaryAdsetsData] = useState<
     TemporaryAdsetsDataProps[]
   >([]);
+  const [simplifiedReportsTableData, setSimplifiedReportsTableData] = useState<
+    SimplifiedReportsTableDataProps[]
+  >([]);
+  const [searchedData, setSearchedData] = useState<
+    SimplifiedReportsTableDataProps[]
+  >([]);
+  const [checkedColumnTitles, setCheckedColumnTitles] = useState<string[]>([]);
+
   const [dateFilter, setDateFilter] = useState<string | null>(null);
   const [availableAds, setAvailableAds] = useState<AvailableAdsProps[]>([]);
   const [savedAdId, setSavedAdId] = useState<string[]>([]);
@@ -40,11 +50,16 @@ const Reports: React.FC = () => {
   const [endDateFilter, setEndDateFilter] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
   const [sortColumn, setSortColumn] = useState<string>('');
+  const [searchInput, setSearchInput] = useState<string>('');
   const userId = currentUser?.id;
   const token = auth?.accessToken;
   const location = useLocation();
   const pathnameParts = location.pathname.split('/');
   const reportId = pathnameParts[pathnameParts.length - 1];
+  const pdfContentRef = useRef(null);
+  const reportTitle = reportById?.name;
+  const reportDescription = reportById?.description;
+  const chosenAdId = reportById?.adSets;
 
   useEffect(() => {
     setReportById(undefined);
@@ -57,6 +72,7 @@ const Reports: React.FC = () => {
     setStartDateFilter(null);
     setEndDateFilter(null);
     setDateFilter(null);
+    setSearchInput('');
   }, [reportId]);
 
   useEffect(() => {
@@ -68,27 +84,11 @@ const Reports: React.FC = () => {
           if (data?.startDate && data?.endDate) {
             const startDate = new Date(data.startDate);
             const endDate = new Date(data.endDate);
-            setStartDateFilter(data.startDate);
-            setEndDateFilter(data.endDate);
-
-            // Extracting date components
-            const startYear = startDate.getFullYear();
-            const startMonth = String(startDate.getMonth() + 1).padStart(
-              2,
-              '0'
-            );
-            const startDay = String(startDate.getDate()).padStart(2, '0');
-
-            const endYear = endDate.getFullYear();
-            const endMonth = String(endDate.getMonth() + 1).padStart(2, '0');
-            const endDay = String(endDate.getDate()).padStart(2, '0');
-            // Creating query string
-            const queryString = `start=${startYear}-${startMonth}-${startDay}&end=${endYear}-${endMonth}-${endDay}`;
-            setDateFilter(queryString);
+            setStartDateFilter(startDate);
+            setEndDateFilter(endDate);
           } else {
             setEndDateFilter(null);
             setStartDateFilter(null);
-            setDateFilter(null);
           }
           if (data?.adSets?.length > 0) {
             const adIdToSave = data.adSets;
@@ -101,6 +101,43 @@ const Reports: React.FC = () => {
     };
     fetchReports();
   }, [updateReportsTrigger, reportId]);
+
+  useEffect(() => {
+    const startDate = getFormattedDate(startDateFilter);
+    const endDate = getFormattedDate(endDateFilter);
+    const fetchReports = async () => {
+      try {
+        if (reportId && userId && reportTitle) {
+          const { data } = await updateReport(
+            reportId,
+            userId,
+            reportTitle,
+            reportDescription,
+            startDate,
+            endDate,
+            chosenAdId
+          );
+          if (data) {
+            setReportById(data);
+            if (data?.startDate && data?.endDate) {
+              setStartDateFilter(data.startDate);
+              setEndDateFilter(data.endDate);
+            } else {
+              setEndDateFilter(null);
+              setStartDateFilter(null);
+            }
+            if (data?.adSets?.length > 0) {
+              const adIdToSave = data.adSets;
+              setSavedAdId(adIdToSave);
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Error fetching reports:', error);
+      }
+    };
+    fetchReports();
+  }, [dateFilter]);
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -129,7 +166,7 @@ const Reports: React.FC = () => {
       }
     };
     fetchAds();
-  }, [updateReportsTrigger, reportId, dateFilter]);
+  }, [updateReportsTrigger, reportById]);
 
   useEffect(() => {
     if (temporaryAdsetsData?.length > 0) {
@@ -155,6 +192,7 @@ const Reports: React.FC = () => {
               ...roundedInsights,
               icon: adSet?.icon || null,
               updatedAt: data.updatedAt || '',
+              ads_id: adSet.ads[0]?.id || null,
             };
           });
         });
@@ -171,7 +209,25 @@ const Reports: React.FC = () => {
       setSimplifiedReportsTableData([]);
       setChosenReports([]);
     }
-  }, [temporaryAdsetsData, updateReportsTrigger]);
+  }, [temporaryAdsetsData]);
+
+  useEffect(() => {
+    if (simplifiedReportsTableData.length < 1) {
+      return;
+    } else if (
+      simplifiedReportsTableData.length > 0 &&
+      searchInput.length > 0
+    ) {
+      const filteredData = simplifiedReportsTableData.filter(
+        (item) =>
+          item.ad_name &&
+          item.ad_name.toLowerCase().includes(searchInput.toLowerCase())
+      );
+      setSearchedData(filteredData);
+    } else {
+      setSearchedData(simplifiedReportsTableData);
+    }
+  }, [simplifiedReportsTableData, searchInput]);
 
   const handleSort = (column: string) => {
     if (column === sortColumn) {
@@ -182,7 +238,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  const sortedData = simplifiedReportsTableData.sort((a, b) => {
+  const sortedData = searchedData.sort((a, b) => {
     const valueA = a[sortColumn];
     const valueB = b[sortColumn];
 
@@ -197,8 +253,13 @@ const Reports: React.FC = () => {
     }
   });
 
+  const generatePDF = useReactToPrint({
+    content: () => pdfContentRef.current,
+    documentTitle: reportById?.name || 'Report',
+  });
+
   return (
-    <div>
+    <div className="p-10" ref={pdfContentRef}>
       {reportById && (
         <ReportsHeader
           reportById={reportById}
@@ -207,11 +268,20 @@ const Reports: React.FC = () => {
           savedAdId={savedAdId}
           startDateFilter={startDateFilter}
           endDateFilter={endDateFilter}
+          setStartDateFilter={setStartDateFilter}
+          setEndDateFilter={setEndDateFilter}
         />
       )}
       {chosenReports && chosenReports?.length > 0 && (
         <ReportsCharts chosenReports={chosenReports} />
       )}
+      <ReportsToolbar
+        searchInput={searchInput}
+        setSearchInput={setSearchInput}
+        generatePDF={generatePDF}
+        setCheckedColumnTitles={setCheckedColumnTitles}
+        checkedColumnTitles={checkedColumnTitles}
+      />
       {simplifiedReportsTableData?.length > 0 && (
         <ReportsTable
           reportsTableData={sortedData}
@@ -219,6 +289,8 @@ const Reports: React.FC = () => {
           handleSort={handleSort}
           sortOrder={sortOrder}
           sortColumn={sortColumn}
+          setCheckedColumnTitles={setCheckedColumnTitles}
+          checkedColumnTitles={checkedColumnTitles}
         />
       )}
     </div>

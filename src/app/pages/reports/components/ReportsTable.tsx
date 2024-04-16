@@ -6,7 +6,7 @@ import {
 } from './reportsModels';
 import { ReportsTableConfig } from './ReportsConfig';
 import { KTIcon, toAbsoluteUrl } from '../../../../_metronic/helpers';
-import { useNavigate } from 'react-router-dom';
+import { ReportPreviewModal } from '.';
 
 const ReportsTable: React.FC<ReportsTableDataProps> = ({
   reportsTableData,
@@ -14,14 +14,31 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
   handleSort,
   sortOrder,
   sortColumn,
+  setCheckedColumnTitles,
+  checkedColumnTitles,
 }) => {
-  const navigate = useNavigate();
   const [updateReportsTrigger, setUpdateReportsTrigger] = useState(false);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
-  const [checkedColumnTitles, setCheckedColumnTitles] = useState<string[]>([]);
+  const [openReportPreviewModal, setOpenReportPreviewModal] = useState(false);
+  const [facebookId, setFacebookId] = useState<string | null>(null);
+  const [adsId, setAdsId] = useState<string | null>(null);
   const [chosenRows, setChosenRows] = useState<
     SimplifiedReportsTableDataProps[]
   >([]);
+
+  const handleCloseReportPreviewModal = () => {
+    setOpenReportPreviewModal(false);
+    setFacebookId(null);
+    setAdsId(null);
+  };
+
+  const handleOpenReportPreviewModal = (facebookId: string, adsId: string) => {
+    setFacebookId(facebookId);
+    setAdsId(adsId);
+    if (adsId && facebookId) {
+      setOpenReportPreviewModal(true);
+    }
+  };
 
   const handleCheckboxChange = (index: number) => {
     const updatedChosenReports = [...reportsTableData];
@@ -48,7 +65,6 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
         prevTitles.filter((title) => title !== columnTitle)
       );
     }
-    setUpdateReportsTrigger(!updateReportsTrigger);
   };
 
   const handleSelectAllChange = (
@@ -81,7 +97,7 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
     } else {
       setChosenReports?.([]);
     }
-  }, [updateReportsTrigger]);
+  }, [updateReportsTrigger, checkedColumnTitles]);
 
   const isRowChecked = (dataId: number) => {
     const isSelected = chosenRows.some((chosenRow) => {
@@ -90,75 +106,42 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
     return isSelected;
   };
 
-  const handleNavigatetoPreview = (facebookId: string, adId: number) => {
-    navigate(`/reports/${facebookId}/ad/${adId}/preview`);
-  };
+  function isCheckedColumn(value: string, checkedColumnTitles: string[]) {
+    return checkedColumnTitles.includes(value);
+  }
 
   return (
-    <div className="table-responsive ">
-      <table className="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3 overflow-auto">
-        <thead>
-          <tr className="fw-bold text-muted">
-            <th className="w-25px">
-              <div className="form-check form-check-sm form-check-custom form-check-solid">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value="1"
-                  data-kt-check="true"
-                  data-kt-check-target=".widget-13-check"
-                  checked={selectAllChecked}
-                  onChange={handleSelectAllChange}
-                />
-              </div>
-            </th>
-            <th className="min-w-250px">
-              <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto ">
-                <div
-                  className="d-flex flex-row no-wrap text-hover-primary cursor-pointer"
-                  onClick={() => handleSort('ad_name')}
-                >
-                  <span
-                    className={`${sortColumn === 'ad_name' ? 'text-primary' : ''} me-2`}
-                    style={{ whiteSpace: 'nowrap' }}
-                  >
-                    Ads
-                  </span>
-                  {sortColumn === 'ad_name' && (
-                    <KTIcon
-                      iconName={sortOrder === 'ASC' ? 'black-up' : 'black-down'}
-                      className="text-primary me-2 fs-2"
-                    />
-                  )}
+    <>
+      <div className="table-responsive ">
+        <table className="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3 overflow-auto">
+          <thead>
+            <tr className="fw-bold text-muted">
+              <th className="w-25px">
+                <div className="form-check form-check-sm form-check-custom form-check-solid">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value="1"
+                    data-kt-check="true"
+                    data-kt-check-target=".widget-13-check"
+                    checked={selectAllChecked}
+                    onChange={handleSelectAllChange}
+                  />
                 </div>
-              </div>
-            </th>
-            {ReportsTableConfig.map((tableConfig) => (
-              <th className="w-25px" key={tableConfig.key}>
-                <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto text-hover-primary cursor-pointer">
-                  {tableConfig?.checkbox && (
-                    <input
-                      className="form-check-input me-2"
-                      type="checkbox"
-                      value="1"
-                      data-kt-check="true"
-                      data-kt-check-target=".widget-13-check"
-                      onChange={(e) =>
-                        handleColumnCheck(tableConfig.value, e.target.checked)
-                      }
-                    />
-                  )}
+              </th>
+              <th className="min-w-250px">
+                <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto ">
                   <div
-                    className="d-flex flex-row no-wrap"
-                    onClick={() => handleSort(tableConfig.value)}
+                    className="d-flex flex-row no-wrap text-hover-primary cursor-pointer"
+                    onClick={() => handleSort('ad_name')}
                   >
                     <span
-                      className={`${sortColumn === tableConfig.value ? 'text-primary' : ''} me-2`}
+                      className={`${sortColumn === 'ad_name' ? 'text-primary' : ''} me-2`}
                       style={{ whiteSpace: 'nowrap' }}
                     >
-                      {tableConfig?.title}
+                      Ads
                     </span>
-                    {sortColumn === tableConfig.value && (
+                    {sortColumn === 'ad_name' && (
                       <KTIcon
                         iconName={
                           sortOrder === 'ASC' ? 'black-up' : 'black-down'
@@ -169,65 +152,116 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                   </div>
                 </div>
               </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {reportsTableData.map((data, index) => (
-            <tr key={index}>
-              <td>
-                <div className="form-check form-check-sm form-check-custom form-check-solid">
-                  <input
-                    className="form-check-input widget-13-check"
-                    type="checkbox"
-                    value="1"
-                    checked={isRowChecked(data?.ad_id ? data?.ad_id : 0)}
-                    onChange={() => handleCheckboxChange(index)}
-                  />
-                </div>
-              </td>
-              <td>
-                <div
-                  className="d-flex flex-row align-items-center text-hover-primary cursor-pointer"
-                  onClick={() => {
-                    if (data?.facebookId && data?.ad_id) {
-                      handleNavigatetoPreview(data.facebookId, data.ad_id);
-                    }
-                  }}
-                >
-                  <img
-                    src={
-                      data?.icon
-                        ? data?.icon
-                        : toAbsoluteUrl('media/auth/404-error.png')
-                    }
-                    alt=""
-                    className="me-3"
-                    style={{ width: '64px', height: '64px' }}
-                  />
-                  <a
-                    href="#"
-                    className="text-gray-900 fw-bold text-hover-primary fs-6"
-                  >
-                    {data?.ad_name}
-                  </a>
-                </div>
-              </td>
               {ReportsTableConfig.map((tableConfig) => (
-                <td key={tableConfig?.key}>
-                  <span className="text-gray-900 fw-bold fs-6">
-                    {data.hasOwnProperty(tableConfig.value) &&
-                    data[tableConfig.value] !== null
-                      ? data[tableConfig.value]
-                      : '---'}
-                  </span>
-                </td>
+                <th className="w-25px" key={tableConfig.key}>
+                  <div className="form-check form-check-sm form-check-custom form-check-solid ms-auto text-hover-primary cursor-pointer">
+                    {tableConfig?.checkbox && (
+                      <input
+                        className="form-check-input me-2"
+                        type="checkbox"
+                        value="1"
+                        data-kt-check="true"
+                        data-kt-check-target=".widget-13-check"
+                        onChange={(e) =>
+                          handleColumnCheck(tableConfig.value, e.target.checked)
+                        }
+                        checked={isCheckedColumn(
+                          tableConfig.value,
+                          checkedColumnTitles
+                        )}
+                      />
+                    )}
+                    <div
+                      className="d-flex flex-row no-wrap"
+                      onClick={() => handleSort(tableConfig.value)}
+                    >
+                      <span
+                        className={`${sortColumn === tableConfig.value ? 'text-primary' : ''} me-2`}
+                        style={{ whiteSpace: 'nowrap' }}
+                      >
+                        {tableConfig?.title}
+                      </span>
+                      {sortColumn === tableConfig.value && (
+                        <KTIcon
+                          iconName={
+                            sortOrder === 'ASC' ? 'black-up' : 'black-down'
+                          }
+                          className="text-primary me-2 fs-2"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {reportsTableData.map((data, index) => (
+              <tr key={index}>
+                <td>
+                  <div className="form-check form-check-sm form-check-custom form-check-solid">
+                    <input
+                      className="form-check-input widget-13-check"
+                      type="checkbox"
+                      value="1"
+                      checked={isRowChecked(data?.ad_id ? data?.ad_id : 0)}
+                      onChange={() => handleCheckboxChange(index)}
+                    />
+                  </div>
+                </td>
+                <td>
+                  <div
+                    className="d-flex flex-row align-items-center text-hover-primary cursor-pointer"
+                    onClick={() => {
+                      if (data?.facebookId && data.ads_id) {
+                        handleOpenReportPreviewModal(
+                          data?.facebookId,
+                          data?.ads_id
+                        );
+                      }
+                    }}
+                  >
+                    <img
+                      src={
+                        data?.icon
+                          ? data?.icon
+                          : toAbsoluteUrl('media/auth/404-error.png')
+                      }
+                      alt=""
+                      className="me-3"
+                      style={{ width: '64px', height: '64px' }}
+                    />
+                    <a
+                      href="#"
+                      className="text-gray-900 fw-bold text-hover-primary fs-6"
+                    >
+                      {data?.ad_name}
+                    </a>
+                  </div>
+                </td>
+                {ReportsTableConfig.map((tableConfig) => (
+                  <td key={tableConfig?.key}>
+                    <span className="text-gray-900 fw-bold fs-6">
+                      {data.hasOwnProperty(tableConfig.value) &&
+                      data[tableConfig.value] !== null
+                        ? data[tableConfig.value]
+                        : '---'}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {openReportPreviewModal && (
+        <ReportPreviewModal
+          closeReportPreviewModal={handleCloseReportPreviewModal}
+          facebookId={facebookId}
+          adsId={adsId}
+        />
+      )}
+    </>
   );
 };
 
