@@ -2,14 +2,14 @@ import React from 'react';
 
 import { KTIcon } from '../../../../_metronic/helpers';
 import { capitalizeTitle } from '../../../../_metronic/helpers/reportsHelpers';
-import { Dropdown1 } from '../../../../_metronic/partials';
+import { AddReportsColumnsDropdown } from '.';
 
 interface ReportsToolbarProps {
   searchInput: string;
   setSearchInput: (value: string) => void;
   generatePDF: () => void;
   checkedColumnTitles: string[];
-  setCheckedColumnTitles: (value: string[]) => void;
+  setCheckedColumnTitles: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
@@ -32,6 +32,10 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
     setCheckedColumnTitles(updatedTitles);
   };
 
+  const handleClearSearchInput = () => {
+    setSearchInput('');
+  };
+
   return (
     <div className="card-body py-3">
       <div className="d-flex justify-content-between align-items-center flex-wrap mb-3">
@@ -47,6 +51,18 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
             value={searchInput}
             onChange={handleSearchInputChange}
           />
+          <div className="modal-header pb-0 border-0 justify-content-end">
+            <div
+              className="btn btn-sm btn-icon btn-active-color-primary "
+              data-bs-dismiss="modal"
+              onClick={handleClearSearchInput}
+            >
+              <i className="ki-duotone ki-cross fs-1">
+                <span className="path1"></span>
+                <span className="path2"></span>
+              </i>
+            </div>
+          </div>
         </div>
         <button
           className="btn btn-sm btn-primary fw-bold"
@@ -75,20 +91,11 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
                 </i>
               </div>
             </div>
-          ))}{' '}
-        <div className="d-flex my-4">
-          <div className="me-0">
-            <button
-              className="btn btn-sm btn-secondary btn-active-color-primary"
-              data-kt-menu-trigger="click"
-              data-kt-menu-placement="bottom-end"
-              data-kt-menu-flip="top-end"
-            >
-              Add column
-            </button>
-            <Dropdown1 />
-          </div>
-        </div>
+          ))}
+        <AddReportsColumnsDropdown
+          checkedColumnTitles={checkedColumnTitles}
+          setCheckedColumnTitles={setCheckedColumnTitles}
+        />
       </div>
     </div>
   );

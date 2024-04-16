@@ -250,3 +250,10 @@ export interface CreateReportModalProps {
 export interface PDFContentProps {
   chosenReports: SimplifiedReportsTableDataProps[];
 }
+
+export interface ReportsTableConfigProps {
+  key: number;
+  title: string;
+  value: string;
+  checkbox: boolean;
+}
