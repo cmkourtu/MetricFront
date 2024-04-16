@@ -46,7 +46,7 @@ const ReportPreviewModal: React.FC<ReportPreviewModalProps> = ({
         role="dialog"
         style={{ display: 'block', paddingLeft: '0px' }}
       >
-        <div className="modal-dialog modal-dialog-centered mw-400px">
+        <div className="modal-dialog modal-dialog-centered mw-450px">
           <div className="modal-content rounded">
             <div className="modal-header pb-0 border-0 justify-content-end">
               <div

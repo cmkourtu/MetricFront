@@ -133,6 +133,8 @@ export interface ReportsTableDataProps {
   handleSort: (key: string) => void;
   sortOrder: string;
   sortColumn: string;
+  checkedColumnTitles: string[];
+  setCheckedColumnTitles: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export interface ReportsChartsProps {

@@ -39,6 +39,7 @@ const Reports: React.FC = () => {
   const [searchedData, setSearchedData] = useState<
     SimplifiedReportsTableDataProps[]
   >([]);
+  const [checkedColumnTitles, setCheckedColumnTitles] = useState<string[]>([]);
 
   const [dateFilter, setDateFilter] = useState<string | null>(null);
   const [availableAds, setAvailableAds] = useState<AvailableAdsProps[]>([]);
@@ -250,6 +251,8 @@ const Reports: React.FC = () => {
         searchInput={searchInput}
         setSearchInput={setSearchInput}
         generatePDF={generatePDF}
+        setCheckedColumnTitles={setCheckedColumnTitles}
+        checkedColumnTitles={checkedColumnTitles}
       />
       {simplifiedReportsTableData?.length > 0 && (
         <ReportsTable
@@ -258,6 +261,8 @@ const Reports: React.FC = () => {
           handleSort={handleSort}
           sortOrder={sortOrder}
           sortColumn={sortColumn}
+          setCheckedColumnTitles={setCheckedColumnTitles}
+          checkedColumnTitles={checkedColumnTitles}
         />
       )}
     </div>

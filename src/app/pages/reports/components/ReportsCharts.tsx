@@ -8,6 +8,7 @@ import {
 } from '../../../../_metronic/assets/ts/_utils';
 import { ReportsChartsProps } from './reportsModels';
 import { toAbsoluteUrl } from '../../../../_metronic/helpers';
+import { capitalizeTitle } from '../../../../_metronic/helpers/reportsHelpers';
 
 const ReportsCharts: FC<ReportsChartsProps> = ({ chosenReports }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
@@ -95,12 +96,6 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
   const chartColorSecondary = getCSSVariableValue('--bs-danger');
   const chartColorPurple = getCSSVariableValue('--bs-info');
 
-  const transformKey = (key: string) => {
-    return key
-      .replace(/_/g, ' ') // Replace underscores with spaces
-      .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
-  };
-
   const seriesData = Object.keys(chosenReports[0])
     .map((key) => {
       if (key === 'ad_name' || key === 'icon') {
@@ -108,7 +103,7 @@ function getChartOptions(height: number, chosenReports: any[]): ApexOptions {
       }
 
       return {
-        name: transformKey(key),
+        name: capitalizeTitle(key),
         data: chosenReports.map((report) => {
           return typeof report[key] === 'string'
             ? parseFloat(report[key])

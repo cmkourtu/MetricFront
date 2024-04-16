@@ -14,10 +14,11 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
   handleSort,
   sortOrder,
   sortColumn,
+  setCheckedColumnTitles,
+  checkedColumnTitles,
 }) => {
   const [updateReportsTrigger, setUpdateReportsTrigger] = useState(false);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
-  const [checkedColumnTitles, setCheckedColumnTitles] = useState<string[]>([]);
   const [openReportPreviewModal, setOpenReportPreviewModal] = useState(false);
   const [facebookId, setFacebookId] = useState<string | null>(null);
   const [adsId, setAdsId] = useState<string | null>(null);
@@ -64,7 +65,6 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
         prevTitles.filter((title) => title !== columnTitle)
       );
     }
-    setUpdateReportsTrigger(!updateReportsTrigger);
   };
 
   const handleSelectAllChange = (
@@ -97,7 +97,7 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
     } else {
       setChosenReports?.([]);
     }
-  }, [updateReportsTrigger]);
+  }, [updateReportsTrigger, checkedColumnTitles]);
 
   const isRowChecked = (dataId: number) => {
     const isSelected = chosenRows.some((chosenRow) => {
@@ -105,6 +105,10 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
     });
     return isSelected;
   };
+
+  function isCheckedColumn(value: string, checkedColumnTitles: string[]) {
+    return checkedColumnTitles.includes(value);
+  }
 
   return (
     <>
@@ -161,6 +165,10 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                         onChange={(e) =>
                           handleColumnCheck(tableConfig.value, e.target.checked)
                         }
+                        checked={isCheckedColumn(
+                          tableConfig.value,
+                          checkedColumnTitles
+                        )}
                       />
                     )}
                     <div

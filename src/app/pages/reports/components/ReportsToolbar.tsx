@@ -1,21 +1,35 @@
 import React from 'react';
+
 import { KTIcon } from '../../../../_metronic/helpers';
+import { capitalizeTitle } from '../../../../_metronic/helpers/reportsHelpers';
+import { Dropdown1 } from '../../../../_metronic/partials';
 
 interface ReportsToolbarProps {
   searchInput: string;
   setSearchInput: (value: string) => void;
   generatePDF: () => void;
+  checkedColumnTitles: string[];
+  setCheckedColumnTitles: (value: string[]) => void;
 }
 
 const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
   searchInput,
   setSearchInput,
   generatePDF,
+  checkedColumnTitles,
+  setCheckedColumnTitles,
 }) => {
   const handleSearchInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setSearchInput(event.target.value);
+  };
+
+  const handleRemoveTag = (titleToRemove: string) => {
+    const updatedTitles: string[] = checkedColumnTitles.filter(
+      (title) => title !== titleToRemove
+    );
+    setCheckedColumnTitles(updatedTitles);
   };
 
   return (
@@ -40,6 +54,41 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
         >
           Download PDF
         </button>
+      </div>
+      <div className="d-flex flex-start align-items-center flex-wrap mb-3">
+        {checkedColumnTitles?.length > 0 &&
+          checkedColumnTitles.map((title, index) => (
+            <div
+              className="d-flex justify-content-between align-items-center me-4 mb-4 bg-light-primary rounded"
+              key={index}
+            >
+              <span className="p-2 fw-semibold fs-6 text-gray-700">
+                {capitalizeTitle(title)}
+              </span>
+              <div
+                className="btn btn-sm btn-icon btn-active-color-primary"
+                onClick={() => handleRemoveTag(title)}
+              >
+                <i className="ki-duotone ki-cross fs-1">
+                  <span className="path1"></span>
+                  <span className="path2"></span>
+                </i>
+              </div>
+            </div>
+          ))}{' '}
+        <div className="d-flex my-4">
+          <div className="me-0">
+            <button
+              className="btn btn-sm btn-secondary btn-active-color-primary"
+              data-kt-menu-trigger="click"
+              data-kt-menu-placement="bottom-end"
+              data-kt-menu-flip="top-end"
+            >
+              Add column
+            </button>
+            <Dropdown1 />
+          </div>
+        </div>
       </div>
     </div>
   );
