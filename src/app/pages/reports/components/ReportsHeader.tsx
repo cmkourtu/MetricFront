@@ -10,7 +10,6 @@ import { usePageData } from '../../../../_metronic/layout/core';
 import { useNavigate } from 'react-router-dom';
 import { deleteReport } from '../../../modules/apps/core/_appRequests';
 import { ReportsHeaderProps } from './reportsModels';
-import { getFormattedDateForInput } from '../../../../_metronic/helpers/reportsHelpers';
 
 const ReportsHeader: React.FC<ReportsHeaderProps> = ({
   reportById,

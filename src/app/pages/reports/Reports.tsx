@@ -6,8 +6,8 @@ import {
   ReportsCharts,
   ReportsHeader,
   TemporaryAdsetsData,
-  ReportPreviewModal,
   ReportsToolbar,
+  ReportsTileView,
 } from './components';
 import {
   TemporaryAdsetsDataProps,
@@ -51,6 +51,9 @@ const Reports: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
   const [sortColumn, setSortColumn] = useState<string>('');
   const [searchInput, setSearchInput] = useState<string>('');
+  const [typeOfView, setTypeOfView] = useState<'chart' | 'chart-pie' | 'tile'>(
+    'chart'
+  );
   const userId = currentUser?.id;
   const token = auth?.accessToken;
   const location = useLocation();
@@ -73,6 +76,7 @@ const Reports: React.FC = () => {
     setEndDateFilter(null);
     setDateFilter(null);
     setSearchInput('');
+    setCheckedColumnTitles([]);
   }, [reportId]);
 
   useEffect(() => {
@@ -272,15 +276,22 @@ const Reports: React.FC = () => {
           setEndDateFilter={setEndDateFilter}
         />
       )}
-      {chosenReports && chosenReports?.length > 0 && (
+      {chosenReports && chosenReports?.length > 0 && typeOfView === 'chart' && (
         <ReportsCharts chosenReports={chosenReports} />
       )}
+      {chosenReports && chosenReports?.length > 0 && typeOfView === 'tile' && (
+        <ReportsTileView chosenReports={chosenReports} />
+      )}
+
       <ReportsToolbar
         searchInput={searchInput}
         setSearchInput={setSearchInput}
         generatePDF={generatePDF}
         setCheckedColumnTitles={setCheckedColumnTitles}
         checkedColumnTitles={checkedColumnTitles}
+        updatedAt={reportById?.updatedAt ?? ''}
+        typeOfView={typeOfView}
+        setTypeOfView={setTypeOfView}
       />
       {simplifiedReportsTableData?.length > 0 && (
         <ReportsTable

@@ -259,3 +259,20 @@ export interface ReportsTableConfigProps {
   value: string;
   checkbox: boolean;
 }
+
+export interface ReportsToolbarProps {
+  searchInput: string;
+  setSearchInput: (value: string) => void;
+  generatePDF: () => void;
+  checkedColumnTitles: string[];
+  setCheckedColumnTitles: React.Dispatch<React.SetStateAction<string[]>>;
+  updatedAt: string;
+  typeOfView: 'chart' | 'chart-pie' | 'tile';
+  setTypeOfView: React.Dispatch<
+    React.SetStateAction<'chart' | 'chart-pie' | 'tile'>
+  >;
+}
+
+export interface ReportsTileViewProps {
+  chosenReports: SimplifiedReportsTableDataProps[];
+}
