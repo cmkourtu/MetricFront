@@ -9,7 +9,7 @@ const HomeReportsList: React.FC = () => {
   const navigate = useNavigate();
   const { reports } = usePageData();
   const [searchInput, setSearchInput] = useState('');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
   const [sortedColumn, setSortedColumn] = useState<
     'name' | 'createdAt' | 'updatedAt' | 'startDate' | 'endDate'
   >('updatedAt');
@@ -32,19 +32,17 @@ const HomeReportsList: React.FC = () => {
     column: 'name' | 'createdAt' | 'updatedAt' | 'startDate' | 'endDate'
   ) => {
     if (sortedColumn === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === 'ASC' ? 'DESC' : 'ASC');
     } else {
       setSortedColumn(column);
-      setSortOrder('asc');
+      setSortOrder('ASC');
     }
   };
 
-  // Filter reports by name based on search input
   let filteredReports = reports?.filter((report) =>
     report.name.toLowerCase().includes(searchInput.toLowerCase())
   );
 
-  // Apply sorting
   if (sortedColumn) {
     filteredReports = filteredReports?.sort((a, b) => {
       const aValue =
@@ -55,7 +53,7 @@ const HomeReportsList: React.FC = () => {
         sortedColumn === 'startDate' || sortedColumn === 'endDate'
           ? b[sortedColumn] || ''
           : b[sortedColumn];
-      if (sortOrder === 'asc') {
+      if (sortOrder === 'ASC') {
         return aValue.localeCompare(bValue);
       } else {
         return bValue.localeCompare(aValue);
@@ -76,7 +74,7 @@ const HomeReportsList: React.FC = () => {
           />
           <input
             type="text"
-            className="form-control form-control-solid w-300px ps-14"
+            className="form-control form-control-solid  ps-14"
             placeholder="Search"
             value={searchInput}
             onChange={handleSearchInputChange}
@@ -100,34 +98,108 @@ const HomeReportsList: React.FC = () => {
             <thead>
               <tr className="fw-bold text-muted bg-light">
                 <th
-                  className="ps-4 min-w-325px rounded-start"
+                  className="ps-4 min-w-150px rounded-start text-hover-primary cursor-pointer"
                   onClick={() => handleSort('name')}
                 >
-                  Name
+                  <div className="d-flex flex-row justify-content-start align-items-center">
+                    <span
+                      className={`${sortedColumn === 'name' && 'text-primary'}`}
+                    >
+                      Name
+                    </span>
+                    {sortedColumn === 'name' && (
+                      <KTIcon
+                        iconName={
+                          sortOrder === 'ASC' ? 'black-up' : 'black-down'
+                        }
+                        className="text-primary me-2 fs-2"
+                      />
+                    )}
+                  </div>
                 </th>
                 <th
-                  className="min-w-100px"
+                  className=" min-w-100px text-hover-primary cursor-pointer"
                   onClick={() => handleSort('createdAt')}
                 >
-                  Created At
+                  <div className="d-flex flex-row justify-content-start align-items-center">
+                    <span
+                      className={`${sortedColumn === 'createdAt' && 'text-primary'}`}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      Created At
+                    </span>
+                    {sortedColumn === 'createdAt' && (
+                      <KTIcon
+                        iconName={
+                          sortOrder === 'ASC' ? 'black-up' : 'black-down'
+                        }
+                        className="text-primary me-2 fs-2"
+                      />
+                    )}
+                  </div>
                 </th>
                 <th
-                  className="min-w-100px"
+                  className="min-w-100px text-hover-primary cursor-pointer"
                   onClick={() => handleSort('updatedAt')}
                 >
-                  Updated At
+                  <div className="d-flex flex-row justify-content-start align-items-center">
+                    <span
+                      className={`${sortedColumn === 'updatedAt' && 'text-primary'}`}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      Updated At
+                    </span>
+                    {sortedColumn === 'updatedAt' && (
+                      <KTIcon
+                        iconName={
+                          sortOrder === 'ASC' ? 'black-up' : 'black-down'
+                        }
+                        className="text-primary me-2 fs-2"
+                      />
+                    )}
+                  </div>
                 </th>
                 <th
-                  className="min-w-100px"
+                  className="min-w-100px text-hover-primary cursor-pointer"
                   onClick={() => handleSort('startDate')}
                 >
-                  Start Date
+                  <div className="d-flex flex-row justify-content-start align-items-center">
+                    <span
+                      className={`${sortedColumn === 'startDate' && 'text-primary'}`}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      Start Date
+                    </span>
+                    {sortedColumn === 'startDate' && (
+                      <KTIcon
+                        iconName={
+                          sortOrder === 'ASC' ? 'black-up' : 'black-down'
+                        }
+                        className="text-primary me-2 fs-2"
+                      />
+                    )}
+                  </div>
                 </th>
                 <th
-                  className="min-w-100px rounded-end text-end pe-4"
+                  className="min-w-100px rounded-end text-end pe-4 text-hover-primary cursor-pointer"
                   onClick={() => handleSort('endDate')}
                 >
-                  End Date
+                  <div className="d-flex flex-row justify-content-end align-items-center">
+                    {sortedColumn === 'endDate' && (
+                      <KTIcon
+                        iconName={
+                          sortOrder === 'ASC' ? 'black-up' : 'black-down'
+                        }
+                        className="text-primary me-2 fs-2"
+                      />
+                    )}
+                    <span
+                      className={`${sortedColumn === 'endDate' && 'text-primary'}`}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      End Date
+                    </span>
+                  </div>
                 </th>
               </tr>
             </thead>
