@@ -15,6 +15,8 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
   checkedColumnTitles,
   setCheckedColumnTitles,
   updatedAt,
+  typeOfView,
+  setTypeOfView,
 }) => {
   const handleSearchInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -31,6 +33,12 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
 
   const handleClearSearchInput = () => {
     setSearchInput('');
+  };
+
+  const handleChangeTypeOfView = (
+    typeOfView: 'chart' | 'chart-pie' | 'tile'
+  ) => {
+    setTypeOfView(typeOfView);
   };
 
   return (
@@ -104,8 +112,26 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
             setCheckedColumnTitles={setCheckedColumnTitles}
           />
         </div>
-        <div className="d-flex flex-row align-items-center justify-content-center no-wrap min-w-100px">
-          3 Types of view
+        <div className="d-flex flex-row align-items-center justify-content-center no-wrap ">
+          <button
+            className={`${typeOfView === 'chart' && 'active'} btn btn-sm btn-icon btn-active-color-primary me-2`}
+            onClick={() => handleChangeTypeOfView('chart')}
+          >
+            <KTIcon iconName="chart-simple" className="fs-2x" />
+          </button>
+          <button
+            className={`${typeOfView === 'chart-pie' && 'active'} btn btn-sm btn-icon btn-active-color-primary me-2`}
+            onClick={() => handleChangeTypeOfView('chart-pie')}
+            disabled
+          >
+            <KTIcon iconName="chart-pie-simple" className="fs-2x" />
+          </button>
+          <button
+            className={`${typeOfView === 'tile' && 'active'} btn btn-sm btn-icon btn-active-color-primary me-2`}
+            onClick={() => handleChangeTypeOfView('tile')}
+          >
+            <KTIcon iconName="element-plus" className="fs-2x" />
+          </button>
         </div>
       </div>
     </div>

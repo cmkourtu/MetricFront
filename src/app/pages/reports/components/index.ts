@@ -9,7 +9,7 @@ import ReportsToolbar from './ReportsToolbar';
 import AddReportsColumnsDropdown from './AddReportsColumnsDropdown';
 import DateRangeSelector from './DateRangeSelector';
 import { defaultStaticRanges } from './defaultStaticRanges';
-defaultStaticRanges;
+import ReportsTileView from './ReportsTileView';
 
 export {
   ReportsTable,
@@ -22,5 +22,6 @@ export {
   ReportsToolbar,
   AddReportsColumnsDropdown,
   DateRangeSelector,
+  ReportsTileView,
   defaultStaticRanges,
 };
