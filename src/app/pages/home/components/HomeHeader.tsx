@@ -33,10 +33,7 @@ const HomeHeader: React.FC = () => {
                     <span className="pb-1 fw-semibold fs-4 text-gray-800">
                       Create new report
                     </span>
-                    <span
-                      className="fw-semibold fs-8 text-gray-600 left-start"
-                      style={{ textAlign: 'left' }}
-                    >
+                    <span className="fw-semibold fs-8 text-gray-600  text-start">
                       Build a report and grab insights into your creative
                       performance
                     </span>
@@ -56,10 +53,7 @@ const HomeHeader: React.FC = () => {
                     <span className="pb-1 fw-semibold fs-4 text-gray-300">
                       Invite team members
                     </span>
-                    <span
-                      className="fw-semibold fs-8 text-gray-300 left-start"
-                      style={{ textAlign: 'left' }}
-                    >
+                    <span className="fw-semibold fs-8 text-gray-300 text-start">
                       Collaborate with your team members and build better
                       reports together
                     </span>
@@ -79,10 +73,7 @@ const HomeHeader: React.FC = () => {
                     <span className="pb-1 fw-semibold fs-4 text-gray-300">
                       Book a call with a Motion expert
                     </span>
-                    <span
-                      className="fw-semibold fs-8 text-gray-300 left-start"
-                      style={{ textAlign: 'left' }}
-                    >
+                    <span className="fw-semibold fs-8 text-gray-300 text-start">
                       Improve your creative strategy skills with a personalized
                       call with a Motion expert
                     </span>

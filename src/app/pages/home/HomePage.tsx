@@ -1,19 +1,12 @@
 import { FC } from 'react';
 
-import {
-  ListsWidget6,
-  TablesWidget5,
-} from '../../../_metronic/partials/widgets';
-import { HomeHeader } from './components';
+import { HomeHeader, HomeReportsList } from './components';
 
 const HomePage: FC = () => (
-  <>
+  <div className="p-10">
     <HomeHeader />
-
-    <div className="col-xxl-8">
-      <TablesWidget5 className="card-xxl-stretch mb-5 mb-xxl-8" />
-    </div>
-  </>
+    <HomeReportsList />
+  </div>
 );
 
 export default HomePage;
