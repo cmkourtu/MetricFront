@@ -18,10 +18,10 @@ const ReportsTileView: React.FC<ReportsTileViewProps> = ({ chosenReports }) => {
   return (
     <div className="row g-5 g-xl-8">
       {chosenReports.map((ads, index) => (
-        <div className="col-xl-4" key={index}>
+        <div className="col-xl-4" style={{ maxWidth: '400px' }} key={index}>
           <div className="card bgi-no-repeat bgi-position-y-top bgi-position-x-end statistics-widget-1 card-xl-stretch mb-xl-8">
             <div className="card-body">
-              <span className="card-title fw-bold text-muted text-hover-primary fs-4">
+              <span className="card-title fw-bold text-muted fs-4">
                 {cropString(ads?.ad_name)}
               </span>
               <div className="fw-bold text-primary my-6">
@@ -31,7 +31,11 @@ const ReportsTileView: React.FC<ReportsTileViewProps> = ({ chosenReports }) => {
                       ? ads?.icon
                       : toAbsoluteUrl('media/auth/404-error.png')
                   }
-                  style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    objectFit: 'cover',
+                  }}
                 />
               </div>
               {Object.entries(ads).map(

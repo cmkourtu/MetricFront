@@ -76,6 +76,7 @@ const Reports: React.FC = () => {
     setEndDateFilter(null);
     setDateFilter(null);
     setSearchInput('');
+    setCheckedColumnTitles([]);
   }, [reportId]);
 
   useEffect(() => {
