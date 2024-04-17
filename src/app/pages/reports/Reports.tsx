@@ -6,7 +6,6 @@ import {
   ReportsCharts,
   ReportsHeader,
   TemporaryAdsetsData,
-  ReportPreviewModal,
   ReportsToolbar,
 } from './components';
 import {
@@ -281,6 +280,7 @@ const Reports: React.FC = () => {
         generatePDF={generatePDF}
         setCheckedColumnTitles={setCheckedColumnTitles}
         checkedColumnTitles={checkedColumnTitles}
+        updatedAt={reportById?.updatedAt ?? ''}
       />
       {simplifiedReportsTableData?.length > 0 && (
         <ReportsTable

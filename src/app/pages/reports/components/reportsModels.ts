@@ -259,3 +259,12 @@ export interface ReportsTableConfigProps {
   value: string;
   checkbox: boolean;
 }
+
+export interface ReportsToolbarProps {
+  searchInput: string;
+  setSearchInput: (value: string) => void;
+  generatePDF: () => void;
+  checkedColumnTitles: string[];
+  setCheckedColumnTitles: React.Dispatch<React.SetStateAction<string[]>>;
+  updatedAt: string;
+}
