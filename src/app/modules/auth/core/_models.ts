@@ -100,4 +100,5 @@ export interface UserByIdProps {
   jobTitle?: string;
   registeredAt?: string;
   subscription?: UserSubscriptionModel;
+  avatar?: string;
 }
