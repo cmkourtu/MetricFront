@@ -20,14 +20,17 @@ const SidebarLogo = (props: PropsType) => {
   const toggleType = appSidebarDefaultCollapseDesktopEnabled
     ? 'collapse'
     : appSidebarDefaultMinimizeDesktopEnabled
-    ? 'minimize'
-    : '';
+      ? 'minimize'
+      : '';
   const toggleState = appSidebarDefaultMinimizeDesktopEnabled ? 'active' : '';
-  const appSidebarDefaultMinimizeDefault = config.app?.sidebar?.default?.minimize?.desktop?.default;
+  const appSidebarDefaultMinimizeDefault =
+    config.app?.sidebar?.default?.minimize?.desktop?.default;
 
   useEffect(() => {
     setTimeout(() => {
-      const toggleObj = ToggleComponent.getInstance(toggleRef.current!) as ToggleComponent | null;
+      const toggleObj = ToggleComponent.getInstance(
+        toggleRef.current!
+      ) as ToggleComponent | null;
 
       if (toggleObj === null) {
         return;
@@ -49,7 +52,7 @@ const SidebarLogo = (props: PropsType) => {
 
   return (
     <div className="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
-      <Link to="/dashboard">
+      <Link to="/home">
         {config.layoutType === 'dark-sidebar' ? (
           <>
             {/*<img
@@ -81,16 +84,19 @@ const SidebarLogo = (props: PropsType) => {
           src={toAbsoluteUrl('media/logos/default-small.svg')}
           className="h-20px app-sidebar-logo-minimize"
         />*/}
-        <h1 className="text-white fs-1qx fw-bolder text-center app-sidebar-logo-minimize">SA</h1>
+        <h1 className="text-white fs-1qx fw-bolder text-center app-sidebar-logo-minimize">
+          SA
+        </h1>
       </Link>
 
-      {(appSidebarDefaultMinimizeDesktopEnabled || appSidebarDefaultCollapseDesktopEnabled) && (
+      {(appSidebarDefaultMinimizeDesktopEnabled ||
+        appSidebarDefaultCollapseDesktopEnabled) && (
         <div
           ref={toggleRef}
           id="kt_app_sidebar_toggle"
           className={clsx(
             'app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate',
-            { active: appSidebarDefaultMinimizeDefault },
+            { active: appSidebarDefaultMinimizeDefault }
           )}
           data-kt-toggle="true"
           data-kt-toggle-state={toggleState}

@@ -67,6 +67,30 @@ export interface UserModel {
   socialNetworks?: UserSocialNetworksModel;
 }
 
+interface UserSubscriptionPlanModel {
+  id: string;
+  stripeSubscriptionPlanId: string;
+  name: string;
+  description: string;
+  price: number;
+  interval: 'month' | 'year';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserSubscriptionModel {
+  id: string;
+  stripeSubscriptionId: string;
+  stripeCustomerId: string;
+  isGroupSubscription: boolean;
+  userId: string;
+  status: string;
+  end: number;
+  subscriptionPlan: UserSubscriptionPlanModel;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface UserByIdProps {
   id: string;
   email: string;
@@ -75,5 +99,5 @@ export interface UserByIdProps {
   companyName: string;
   jobTitle?: string;
   registeredAt?: string;
-  subscription?: string;
+  subscription?: UserSubscriptionModel;
 }

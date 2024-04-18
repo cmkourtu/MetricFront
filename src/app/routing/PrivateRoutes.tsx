@@ -11,8 +11,11 @@ import FacebookAds from '../pages/facebook-ads/FacebookAds';
 import { FacebookCallback } from '../pages/facebook-ads/components';
 import FacebookAdAccount from '../pages/facebook-ads/FacebookAdAccount';
 import Reports from '../pages/reports/Reports';
+import { useAuth } from '../modules/auth';
+import Subscriptions from '../pages/subscriptions/Subscriptions';
 
 const PrivateRoutes = () => {
+  const { isSubscriptionActive, currentUser } = useAuth();
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'));
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'));
   const AccountPage = lazy(() => import('../modules/accounts/AccountPage'));
@@ -25,20 +28,63 @@ const PrivateRoutes = () => {
   return (
     <Routes>
       <Route element={<MasterLayout />}>
-        {/* Redirect to Dashboard after success login/registartion */}
-        <Route path="auth/*" element={<Navigate to="/dashboard" />} />
+        {/* Redirect to Home after success login/registartion */}
+        <Route
+          path="auth/*"
+          element={
+            currentUser?.subscription?.status === 'active' ? (
+              <Navigate to="/home" />
+            ) : (
+              <Navigate to="/subscriptions" />
+            )
+          }
+        />
         {/* Pages */}
-        <Route path="dashboard" element={<HomePage />} />
-        <Route path="facebook-ads" element={<FacebookAds />} />
+        <Route
+          path="home"
+          element={
+            isSubscriptionActive ? (
+              <HomePage />
+            ) : (
+              <Navigate to="/subscriptions" />
+            )
+          }
+        />
+        <Route
+          path="facebook-ads"
+          element={
+            isSubscriptionActive ? (
+              <FacebookAds />
+            ) : (
+              <Navigate to="/subscriptions" />
+            )
+          }
+        />
         <Route
           path="/facebook-ads/:facebookId"
-          element={<FacebookAdAccount />}
+          element={
+            isSubscriptionActive ? (
+              <FacebookAdAccount />
+            ) : (
+              <Navigate to="/subscriptions" />
+            )
+          }
         />
         <Route
           path="callback/facebook-callback"
           element={<FacebookCallback />}
         />
-        <Route path="reports/:reportId" element={<Reports />} />
+        <Route
+          path="reports/:reportId"
+          element={
+            isSubscriptionActive ? (
+              <Reports />
+            ) : (
+              <Navigate to="/subscriptions" />
+            )
+          }
+        />
+        <Route path="subscriptions" element={<Subscriptions />} />
         <Route path="builder" element={<BuilderPageWrapper />} />
         <Route path="menu-test" element={<MenuTestPage />} />
         {/* Lazy Modules */}

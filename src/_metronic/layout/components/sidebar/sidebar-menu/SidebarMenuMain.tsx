@@ -4,8 +4,10 @@ import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub';
 import { SidebarMenuItem } from './SidebarMenuItem';
 import { CreateReportModal } from '../../../../../app/pages/reports/components';
 import { usePageData } from '../../../core';
+import { useAuth } from '../../../../../app/modules/auth';
 
 const SidebarMenuMain: React.FC = () => {
+  const { isSubscriptionActive } = useAuth();
   const { reports } = usePageData();
   const [showCreateReportModal, setShowCreateReportModal] =
     useState<boolean>(false);
@@ -21,17 +23,18 @@ const SidebarMenuMain: React.FC = () => {
   return (
     <>
       <SidebarMenuItem
-        to="/dashboard"
+        to={isSubscriptionActive ? '/home' : '#'}
         icon="home"
         title="Home"
         fontIcon="bi-app-indicator"
+        disabled={!isSubscriptionActive}
       />
-
       <SidebarMenuItem
-        to="/facebook-ads"
+        to={isSubscriptionActive ? '/facebook-ads' : '#'}
         icon="facebook"
         title="Facebook Ads"
         fontIcon="bi-layers"
+        disabled={!isSubscriptionActive}
       />
 
       <div className="menu-item">
@@ -47,6 +50,7 @@ const SidebarMenuMain: React.FC = () => {
         title="Folders"
         fontIcon="bi-sticky"
         icon="folder"
+        disabled={!isSubscriptionActive}
       >
         <SidebarMenuItem to="/error/404" title="Folder 1" hasBullet={true} />
         <SidebarMenuItem to="/error/404" title="Folder 2" hasBullet={true} />
@@ -60,8 +64,11 @@ const SidebarMenuMain: React.FC = () => {
         </div>
       </div>
 
-      <div className="menu-item">
-        <div className="menu-link without-sub" onClick={openCreateReportModal}>
+      <div className="menu-item ">
+        <div
+          className={`menu-link without-sub ${!isSubscriptionActive && 'disabled'}`}
+          onClick={isSubscriptionActive ? openCreateReportModal : () => {}}
+        >
           <span className="menu-icon">
             {' '}
             <KTIcon iconName="plus-square" className="fs-2" />
@@ -76,6 +83,7 @@ const SidebarMenuMain: React.FC = () => {
         title="Reports"
         icon="element-7"
         fontIcon="bi-layers"
+        disabled={!isSubscriptionActive}
       >
         {reports &&
           reports.map((report) => (
@@ -94,6 +102,20 @@ const SidebarMenuMain: React.FC = () => {
           isUpdate={false}
         />
       )}
+
+      <div className="menu-item">
+        <div className="menu-content pt-8 pb-2">
+          <span className="menu-section text-muted text-uppercase fs-8 ls-1">
+            Subscriptions
+          </span>
+        </div>
+      </div>
+      <SidebarMenuItem
+        to="/subscriptions"
+        icon="dollar"
+        title="Subscriptions"
+        fontIcon="bi-layers"
+      />
     </>
   );
 };

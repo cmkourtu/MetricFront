@@ -13,6 +13,7 @@ import { AuthModel, UserByIdProps, UserModel } from './_models';
 import * as authHelper from './AuthHelpers';
 import { getUserById, getUserByToken } from './_requests';
 import { WithChildren } from '../../../../_metronic/helpers';
+import { getSubscriptionStatus } from '../../../../_metronic/helpers/subscriptions-helpers/SubscriptionsHelpers';
 
 type AuthContextProps = {
   auth: AuthModel | undefined;
@@ -22,6 +23,8 @@ type AuthContextProps = {
   logout: () => void;
   facebookAuthCode: string;
   setFacebookAuthCode: Dispatch<SetStateAction<string>>;
+  isSubscriptionActive: boolean;
+  setIsSubscriptionActive: Dispatch<SetStateAction<boolean>>;
 };
 
 const initAuthContextPropsState = {
@@ -32,6 +35,8 @@ const initAuthContextPropsState = {
   logout: () => {},
   facebookAuthCode: '',
   setFacebookAuthCode: () => {},
+  isSubscriptionActive: false,
+  setIsSubscriptionActive: () => {},
 };
 
 const AuthContext = createContext<AuthContextProps>(initAuthContextPropsState);
@@ -48,6 +53,16 @@ const AuthProvider: FC<WithChildren> = ({ children }) => {
     storedCurrentUser ? JSON.parse(storedCurrentUser) : undefined
   );
   const [facebookAuthCode, setFacebookAuthCode] = useState<string>('');
+  const [isSubscriptionActive, setIsSubscriptionActive] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    const subscriptionStatus = currentUser?.subscription?.status;
+    const statusIsActive = getSubscriptionStatus(subscriptionStatus);
+
+    setIsSubscriptionActive(statusIsActive);
+  }, [currentUser?.subscription?.status]);
+
   const saveAuth = (auth: AuthModel | undefined) => {
     setAuth(auth);
     if (auth) {
@@ -73,6 +88,8 @@ const AuthProvider: FC<WithChildren> = ({ children }) => {
         logout,
         facebookAuthCode,
         setFacebookAuthCode,
+        isSubscriptionActive,
+        setIsSubscriptionActive,
       }}
     >
       {children}
