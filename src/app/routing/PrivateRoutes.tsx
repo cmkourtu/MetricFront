@@ -32,7 +32,7 @@ const PrivateRoutes = () => {
         <Route
           path="auth/*"
           element={
-            currentUser?.subscription?.status === 'active' ? (
+            isSubscriptionActive ? (
               <Navigate to="/home" />
             ) : (
               <Navigate to="/subscriptions" />
