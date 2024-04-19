@@ -40,7 +40,7 @@ const HomeReportsList: React.FC = () => {
   };
 
   let filteredReports = reports?.filter((report) =>
-    report.name.toLowerCase().includes(searchInput.toLowerCase())
+    report?.name?.toLowerCase().includes(searchInput.toLowerCase())
   );
 
   if (sortedColumn) {
@@ -209,7 +209,9 @@ const HomeReportsList: React.FC = () => {
                   <tr key={report?.id}>
                     <td
                       className="cursor-pointer"
-                      onClick={() => handleNavigateToReport(report?.id)}
+                      onClick={() =>
+                        handleNavigateToReport(report?.id ? report?.id : '')
+                      }
                     >
                       <span className="text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6 ps-4 cursor-pointer">
                         {report?.name}
@@ -217,12 +219,16 @@ const HomeReportsList: React.FC = () => {
                     </td>
                     <td>
                       <span className="text-muted fw-semibold text-muted d-block fs-7">
-                        {getFormattedDateFromString(report?.createdAt)}
+                        {getFormattedDateFromString(
+                          report?.createdAt ? report?.createdAt : ''
+                        )}
                       </span>
                     </td>
                     <td>
                       <span className="text-muted fw-semibold text-muted d-block fs-7">
-                        {getFormattedDateFromString(report?.updatedAt)}
+                        {getFormattedDateFromString(
+                          report?.updatedAt ? report?.updatedAt : ''
+                        )}
                       </span>
                     </td>
                     <td>

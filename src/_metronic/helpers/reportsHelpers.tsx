@@ -48,3 +48,24 @@ export const getFormattedDateFromString = (dateString: string) => {
 
   return `${year}-${month}-${day}`;
 };
+
+export const getQueryString = (
+  startDate: Date | null,
+  endDate: Date | null
+) => {
+  let queryString;
+  if (startDate && endDate) {
+    const startYear = startDate.getFullYear();
+    const startMonth = String(startDate.getMonth() + 1).padStart(2, '0');
+    const startDay = String(startDate.getDate()).padStart(2, '0');
+
+    const endYear = endDate.getFullYear();
+    const endMonth = String(endDate.getMonth() + 1).padStart(2, '0');
+    const endDay = String(endDate.getDate()).padStart(2, '0');
+
+    queryString = `start=${startYear}-${startMonth}-${startDay}&end=${endYear}-${endMonth}-${endDay}`;
+  } else {
+    queryString = '';
+  }
+  return queryString;
+};

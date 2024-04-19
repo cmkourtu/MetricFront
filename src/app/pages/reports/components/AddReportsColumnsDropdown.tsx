@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { KTIcon } from '../../../../_metronic/helpers';
 import { ReportsTableConfig } from './ReportsConfig';
-import { ReportsTableConfigProps } from './reportsModels';
+import { ReportsTableConfigProps, ReportsProps } from './reportsModels';
+import { usePageData } from '../../../../_metronic/layout/core';
 
-export interface AddReportsColumnsDropdownProps {
-  checkedColumnTitles: string[];
-  setCheckedColumnTitles: React.Dispatch<React.SetStateAction<string[]>>;
-}
-
-const AddReportsColumnsDropdown: React.FC<AddReportsColumnsDropdownProps> = ({
-  checkedColumnTitles,
-  setCheckedColumnTitles,
-}) => {
+const AddReportsColumnsDropdown: React.FC = () => {
+  const { reportByIdPayload, setReportByIdPayload } = usePageData();
   const [searchInputDropdown, setSearchInputDropdown] = useState<string>('');
   const [searchedReportsTableConfig, setSearchedReportsTableConfig] = useState<
     ReportsTableConfigProps[]
@@ -42,7 +36,10 @@ const AddReportsColumnsDropdown: React.FC<AddReportsColumnsDropdownProps> = ({
   };
 
   const handleDropdownApply = () => {
-    setCheckedColumnTitles(temporaryCheckedColumnTitles);
+    setReportByIdPayload((prevPayload: ReportsProps) => ({
+      ...prevPayload,
+      chosenMetrics: temporaryCheckedColumnTitles,
+    }));
   };
 
   const handleClearSearchInput = () => {
@@ -66,11 +63,13 @@ const AddReportsColumnsDropdown: React.FC<AddReportsColumnsDropdownProps> = ({
   }, [searchInputDropdown]);
 
   useEffect(() => {
-    setTemporaryCheckedColumnTitles(checkedColumnTitles);
-  }, [checkedColumnTitles]);
+    setTemporaryCheckedColumnTitles(
+      reportByIdPayload?.chosenMetrics ? reportByIdPayload?.chosenMetrics : []
+    );
+  }, [reportByIdPayload?.chosenMetrics]);
 
   function isCheckedColumn(value: string, checkedColumnTitles: string[]) {
-    return checkedColumnTitles.includes(value);
+    return checkedColumnTitles?.includes(value);
   }
 
   return (

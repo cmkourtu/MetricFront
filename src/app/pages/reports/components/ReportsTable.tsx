@@ -3,21 +3,20 @@ import React, { useState, useEffect } from 'react';
 import {
   ReportsTableDataProps,
   SimplifiedReportsTableDataProps,
+  ReportsProps,
 } from './reportsModels';
 import { ReportsTableConfig } from './ReportsConfig';
 import { KTIcon, toAbsoluteUrl } from '../../../../_metronic/helpers';
 import { ReportPreviewModal } from '.';
+import { usePageData } from '../../../../_metronic/layout/core';
 
 const ReportsTable: React.FC<ReportsTableDataProps> = ({
   reportsTableData,
   setChosenReports,
   handleSort,
   sortOrder,
-  sortColumn,
-  setCheckedColumnTitles,
-  checkedColumnTitles,
 }) => {
-  const [updateReportsTrigger, setUpdateReportsTrigger] = useState(false);
+  const { reportByIdPayload, setReportByIdPayload } = usePageData();
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [openReportPreviewModal, setOpenReportPreviewModal] = useState(false);
   const [facebookId, setFacebookId] = useState<string | null>(null);
@@ -25,6 +24,20 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
   const [chosenRows, setChosenRows] = useState<
     SimplifiedReportsTableDataProps[]
   >([]);
+
+  useEffect(() => {
+    if (
+      reportByIdPayload?.chosenAdSets &&
+      reportByIdPayload?.chosenAdSets.length > 0
+    ) {
+      const filteredRows = reportsTableData.filter(
+        (report) =>
+          report?.ad_id !== null &&
+          reportByIdPayload.chosenAdSets?.includes(report?.ad_id as number)
+      );
+      setChosenRows(filteredRows);
+    }
+  }, [reportsTableData]);
 
   const handleCloseReportPreviewModal = () => {
     setOpenReportPreviewModal(false);
@@ -42,7 +55,6 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
 
   const handleCheckboxChange = (index: number) => {
     const updatedChosenReports = [...reportsTableData];
-
     if (!updatedChosenReports[index].checked) {
       updatedChosenReports[index].checked = false;
     } else if (selectAllChecked) {
@@ -52,19 +64,30 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
     const selectedReports = updatedChosenReports.filter(
       (report) => report.checked
     );
+    const chosenAdId = selectedReports.map((report) => report.ad_id);
     setSelectAllChecked(false);
+    setReportByIdPayload((prevPayload: ReportsProps) => {
+      return {
+        ...prevPayload,
+        chosenAdSets: chosenAdId as number[],
+      };
+    });
     setChosenRows(selectedReports);
-    setUpdateReportsTrigger(!updateReportsTrigger);
   };
 
   const handleColumnCheck = (columnTitle: string, isChecked: boolean) => {
+    let updatedColumns: string[] = [
+      ...(reportByIdPayload?.chosenMetrics || []),
+    ];
     if (isChecked) {
-      setCheckedColumnTitles((prevTitles) => [...prevTitles, columnTitle]);
+      updatedColumns.push(columnTitle);
     } else {
-      setCheckedColumnTitles((prevTitles) =>
-        prevTitles.filter((title) => title !== columnTitle)
-      );
+      updatedColumns = updatedColumns.filter((title) => title !== columnTitle);
     }
+    setReportByIdPayload((prevPayload: ReportsProps) => ({
+      ...prevPayload,
+      chosenMetrics: updatedColumns,
+    }));
   };
 
   const handleSelectAllChange = (
@@ -78,17 +101,20 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
       checked: isChecked,
     }));
     setChosenRows(isChecked ? updatedReportsData : []);
-    setUpdateReportsTrigger(!updateReportsTrigger);
   };
 
   useEffect(() => {
-    if (chosenRows && checkedColumnTitles?.length > 0) {
+    if (
+      chosenRows &&
+      reportByIdPayload?.chosenMetrics &&
+      reportByIdPayload?.chosenMetrics?.length > 0
+    ) {
       const filteredReports = chosenRows.map((report) => {
         const filteredReport: { [key: string]: any } = {
           ad_name: report.ad_name,
           icon: report.icon,
         };
-        checkedColumnTitles.forEach((title) => {
+        reportByIdPayload?.chosenMetrics.forEach((title) => {
           filteredReport[title] = report[title];
         });
         return filteredReport;
@@ -97,7 +123,11 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
     } else {
       setChosenReports?.([]);
     }
-  }, [updateReportsTrigger, checkedColumnTitles]);
+  }, [chosenRows, reportByIdPayload?.chosenMetrics]);
+
+  function isCheckedColumn(value: string, checkedColumnTitles: string[]) {
+    return checkedColumnTitles.includes(value);
+  }
 
   const isRowChecked = (dataId: number) => {
     const isSelected = chosenRows.some((chosenRow) => {
@@ -105,10 +135,6 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
     });
     return isSelected;
   };
-
-  function isCheckedColumn(value: string, checkedColumnTitles: string[]) {
-    return checkedColumnTitles.includes(value);
-  }
 
   return (
     <>
@@ -136,12 +162,12 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                     onClick={() => handleSort('ad_name')}
                   >
                     <span
-                      className={`${sortColumn === 'ad_name' ? 'text-primary' : ''} me-2`}
+                      className={`${reportByIdPayload?.groupBy === 'ad_name' ? 'text-primary' : ''} me-2`}
                       style={{ whiteSpace: 'nowrap' }}
                     >
                       Ads
                     </span>
-                    {sortColumn === 'ad_name' && (
+                    {reportByIdPayload?.groupBy === 'ad_name' && (
                       <KTIcon
                         iconName={
                           sortOrder === 'ASC' ? 'black-up' : 'black-down'
@@ -167,7 +193,9 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                         }
                         checked={isCheckedColumn(
                           tableConfig.value,
-                          checkedColumnTitles
+                          reportByIdPayload?.chosenMetrics
+                            ? reportByIdPayload?.chosenMetrics
+                            : []
                         )}
                       />
                     )}
@@ -176,12 +204,12 @@ const ReportsTable: React.FC<ReportsTableDataProps> = ({
                       onClick={() => handleSort(tableConfig.value)}
                     >
                       <span
-                        className={`${sortColumn === tableConfig.value ? 'text-primary' : ''} me-2`}
+                        className={`${reportByIdPayload?.groupBy === tableConfig.value ? 'text-primary' : ''} me-2`}
                         style={{ whiteSpace: 'nowrap' }}
                       >
                         {tableConfig?.title}
                       </span>
-                      {sortColumn === tableConfig.value && (
+                      {reportByIdPayload?.groupBy === tableConfig.value && (
                         <KTIcon
                           iconName={
                             sortOrder === 'ASC' ? 'black-up' : 'black-down'

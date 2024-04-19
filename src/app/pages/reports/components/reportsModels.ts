@@ -1,5 +1,7 @@
 import { ReportsProps } from '../../../modules/apps/core/_appModels';
 
+export type { ReportsProps };
+
 export interface TemporaryReportsDataProps {
   [key: string]: any;
   ads: string;
@@ -132,9 +134,6 @@ export interface ReportsTableDataProps {
   >;
   handleSort: (key: string) => void;
   sortOrder: string;
-  sortColumn: string;
-  checkedColumnTitles: string[];
-  setCheckedColumnTitles: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export interface ReportsChartsProps {
@@ -228,25 +227,21 @@ export interface AvailableAdsProps {
 
 export interface ReportsHeaderProps {
   reportById: ReportsProps;
+  updateReportById: (report: ReportsProps) => void;
   setDateFilter: React.Dispatch<React.SetStateAction<string | null>>;
   availableAds: AvailableAdsProps[];
-  savedAdId: string[];
-  setStartDateFilter: React.Dispatch<React.SetStateAction<Date | null>>;
-  startDateFilter: Date | null;
-  setEndDateFilter: React.Dispatch<React.SetStateAction<Date | null>>;
-  endDateFilter: Date | null;
+  savedAdId: number[];
 }
 
 export interface CreateReportModalProps {
   closeCreateReportModal: () => void;
   isUpdate: boolean;
-  reportId?: string;
   previousTitle?: string;
   previousDescription?: string;
   availableAds?: AvailableAdsProps[];
-  savedAdId?: string[];
-  startDateFilter?: Date | null;
-  endDateFilter?: Date | null;
+  savedAdId?: number[];
+  updateReportById?: (report: ReportsProps) => void;
+  setDateFilter?: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export interface PDFContentProps {
@@ -264,15 +259,24 @@ export interface ReportsToolbarProps {
   searchInput: string;
   setSearchInput: (value: string) => void;
   generatePDF: () => void;
-  checkedColumnTitles: string[];
-  setCheckedColumnTitles: React.Dispatch<React.SetStateAction<string[]>>;
   updatedAt: string;
-  typeOfView: 'chart' | 'chart-pie' | 'tile';
-  setTypeOfView: React.Dispatch<
-    React.SetStateAction<'chart' | 'chart-pie' | 'tile'>
-  >;
 }
 
 export interface ReportsTileViewProps {
   chosenReports: SimplifiedReportsTableDataProps[];
+}
+
+export interface DateRangeProps {
+  startDate: Date;
+  endDate: Date;
+  key: string;
+}
+
+export interface DateRangeSelectorProps {
+  onSubmit?: (selectedDateRange: DateRangeProps) => void;
+  setDateFilter?: React.Dispatch<React.SetStateAction<string | null>>;
+  updateReportById?: (report: ReportsProps) => void;
+  selectedDateRange: DateRangeProps;
+  setSelectedDateRange: React.Dispatch<React.SetStateAction<DateRangeProps>>;
+  isModal?: boolean;
 }

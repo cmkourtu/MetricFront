@@ -6,18 +6,16 @@ import {
   getFormattedDateWithTime,
 } from '../../../../_metronic/helpers/reportsHelpers';
 import { AddReportsColumnsDropdown } from '.';
-import { ReportsToolbarProps } from './reportsModels';
+import { ReportsToolbarProps, ReportsProps } from './reportsModels';
+import { usePageData } from '../../../../_metronic/layout/core';
 
 const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
   searchInput,
   setSearchInput,
   generatePDF,
-  checkedColumnTitles,
-  setCheckedColumnTitles,
   updatedAt,
-  typeOfView,
-  setTypeOfView,
 }) => {
+  const { reportByIdPayload, setReportByIdPayload } = usePageData();
   const handleSearchInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -25,20 +23,26 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
   };
 
   const handleRemoveTag = (titleToRemove: string) => {
-    const updatedTitles: string[] = checkedColumnTitles.filter(
-      (title) => title !== titleToRemove
-    );
-    setCheckedColumnTitles(updatedTitles);
+    if (reportByIdPayload?.chosenMetrics) {
+      const updatedTitles: string[] = reportByIdPayload?.chosenMetrics.filter(
+        (title) => title !== titleToRemove
+      );
+      setReportByIdPayload((prevPayload: ReportsProps) => ({
+        ...prevPayload,
+        chosenMetrics: updatedTitles,
+      }));
+    }
   };
 
   const handleClearSearchInput = () => {
     setSearchInput('');
   };
 
-  const handleChangeTypeOfView = (
-    typeOfView: 'chart' | 'chart-pie' | 'tile'
-  ) => {
-    setTypeOfView(typeOfView);
+  const handleChangeTypeOfView = (typeOfView: string) => {
+    setReportByIdPayload((prevPayload: ReportsProps) => ({
+      ...prevPayload,
+      viewMode: typeOfView,
+    }));
   };
 
   return (
@@ -87,8 +91,9 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
       </div>
       <div className="d-flex flex-row align-items-start justify-content-between">
         <div className="d-flex flex-start align-items-center flex-wrap mb-3">
-          {checkedColumnTitles?.length > 0 &&
-            checkedColumnTitles.map((title, index) => (
+          {reportByIdPayload?.chosenMetrics &&
+            reportByIdPayload?.chosenMetrics?.length > 0 &&
+            reportByIdPayload?.chosenMetrics.map((title, index) => (
               <div
                 className="d-flex justify-content-between align-items-center me-4 mb-4 bg-light-primary rounded"
                 key={index}
@@ -107,27 +112,24 @@ const ReportsToolbar: React.FC<ReportsToolbarProps> = ({
                 </div>
               </div>
             ))}
-          <AddReportsColumnsDropdown
-            checkedColumnTitles={checkedColumnTitles}
-            setCheckedColumnTitles={setCheckedColumnTitles}
-          />
+          <AddReportsColumnsDropdown />
         </div>
         <div className="d-flex flex-row align-items-center justify-content-center no-wrap ">
           <button
-            className={`${typeOfView === 'chart' && 'active'} btn btn-sm btn-icon btn-active-color-primary me-2`}
+            className={`${(reportByIdPayload?.viewMode === 'chart' || reportByIdPayload?.viewMode === null) && 'active'} btn btn-sm btn-icon btn-active-color-primary me-2`}
             onClick={() => handleChangeTypeOfView('chart')}
           >
             <KTIcon iconName="chart-simple" className="fs-2x" />
           </button>
           <button
-            className={`${typeOfView === 'chart-pie' && 'active'} btn btn-sm btn-icon btn-active-color-primary me-2`}
+            className={`${reportByIdPayload?.viewMode === 'chart-pie' && 'active'} btn btn-sm btn-icon btn-active-color-primary me-2`}
             onClick={() => handleChangeTypeOfView('chart-pie')}
             disabled
           >
             <KTIcon iconName="chart-pie-simple" className="fs-2x" />
           </button>
           <button
-            className={`${typeOfView === 'tile' && 'active'} btn btn-sm btn-icon btn-active-color-primary me-2`}
+            className={`${reportByIdPayload?.viewMode === 'tile' && 'active'} btn btn-sm btn-icon btn-active-color-primary me-2`}
             onClick={() => handleChangeTypeOfView('tile')}
           >
             <KTIcon iconName="element-plus" className="fs-2x" />

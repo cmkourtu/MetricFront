@@ -7,7 +7,7 @@ import { useLayout } from '../../../core';
 
 type Props = {
   to: string;
-  title: string;
+  title: string | null;
   icon?: string;
   fontIcon?: string;
   hasBullet?: boolean;

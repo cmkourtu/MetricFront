@@ -28,16 +28,18 @@ export interface PaginationProps {
 }
 
 export interface ReportsProps {
-  id: string;
-  name: string;
-  description: string;
-  metrics: any | null;
-  adSets: any | null;
-  viewMode: any | null;
+  id: string | null;
+  name: string | null;
+  description: string | null;
+  metrics: string[] | [];
+  adSets: number[] | [];
+  viewMode: string | null;
   startDate: any | null;
   endDate: any | null;
-  groupBy: any | null;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
+  groupBy: string | null;
+  chosenMetrics: string[] | [];
+  chosenAdSets: number[] | null;
+  userId: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
 }

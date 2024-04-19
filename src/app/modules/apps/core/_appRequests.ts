@@ -4,6 +4,7 @@ import {
   FacebookAdsProps,
   ReportsProps,
 } from '../core/_appModels';
+import { getFormattedDate } from '../../../../_metronic/helpers/reportsHelpers';
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -93,15 +94,15 @@ export function createReport(
   userId: string,
   reportTitle: string,
   reportDescription?: string,
-  startedDate?: string | null,
-  endedDate?: string | null
+  startedDate?: string | null | Date,
+  endedDate?: string | null | Date
 ) {
   return axios.post(CREATE_REPORT, {
     name: reportTitle,
     description: reportDescription,
     userId: userId,
-    startDate: startedDate,
-    endDate: endedDate,
+    startDate: getFormattedDate(startedDate ? new Date(startedDate) : null),
+    endDate: getFormattedDate(endedDate ? new Date(endedDate) : null),
   });
 }
 
@@ -117,22 +118,30 @@ export function getReportsById(reportId: string) {
   return axios.get<ReportsProps>(`${GET_REPORT_BY_ID}/${reportId}`);
 }
 
-export function updateReport(
-  reportId: string,
-  userId: string,
-  reportTitle: string,
-  reportDescription?: string,
-  startedDate?: string | null,
-  endedDate?: string | null,
-  chosenAdId?: number[] | []
-) {
-  return axios.put<ReportsProps>(`${UPDATE_REPORT}/${reportId}`, {
-    name: reportTitle,
-    description: reportDescription,
-    userId: userId,
-    startDate: startedDate ? startedDate : null,
-    endDate: endedDate ? endedDate : null,
-    adSets: chosenAdId ? chosenAdId : null,
+export function updateReport(reportByIdPayload: ReportsProps) {
+  return axios.put<ReportsProps>(`${UPDATE_REPORT}/${reportByIdPayload?.id}`, {
+    id: reportByIdPayload?.id,
+    name: reportByIdPayload?.name,
+    description: reportByIdPayload?.description,
+    userId: reportByIdPayload?.userId,
+    startDate: getFormattedDate(
+      reportByIdPayload?.startDate
+        ? new Date(reportByIdPayload?.startDate)
+        : null
+    ),
+    endDate: getFormattedDate(
+      reportByIdPayload?.endDate ? new Date(reportByIdPayload?.endDate) : null
+    ),
+    adSets: reportByIdPayload?.adSets,
+    metrics: reportByIdPayload?.metrics,
+    viewMode: reportByIdPayload?.viewMode
+      ? reportByIdPayload?.viewMode
+      : 'chart',
+    groupBy: reportByIdPayload?.groupBy,
+    chosenMetrics: reportByIdPayload?.chosenMetrics,
+    chosenAdSets: reportByIdPayload?.chosenAdSets,
+    createdAt: reportByIdPayload?.createdAt,
+    updatedAt: reportByIdPayload?.updatedAt,
   });
 }
 

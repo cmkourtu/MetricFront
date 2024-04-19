@@ -9,33 +9,49 @@ import {
   updateReport,
 } from '../../../modules/apps/core/_appRequests';
 import { usePageData } from '../../../../_metronic/layout/core';
-import { CreateReportModalProps } from './reportsModels';
-import {
-  getFormattedDate,
-  getFormattedDateForInput,
-} from '../../../../_metronic/helpers/reportsHelpers';
+import { CreateReportModalProps, DateRangeProps } from './reportsModels';
+import DateRangeSelector from './DateRangeSelector';
 
 const CreateReportModal: React.FC<CreateReportModalProps> = ({
   closeCreateReportModal,
   isUpdate,
-  reportId,
   previousTitle,
   previousDescription,
-  startDateFilter,
-  endDateFilter,
+  setDateFilter,
+  updateReportById,
   availableAds,
   savedAdId,
 }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { updateReportsTrigger, setUpdateReportsTrigger } = usePageData();
-  const [selectedDates, setSelectedDates] = useState<Date[] | null>(null);
+  const {
+    reportByIdPayload,
+    setReportByIdPayload,
+    setUpdateReportsTrigger,
+    updateReportsTrigger,
+  } = usePageData();
   const [reportTitle, setReportTitle] = useState<string>(previousTitle || '');
   const [reportDescription, setReportDescription] = useState<string>(
     previousDescription || ''
   );
   const [chosenAdId, setChosenAdId] = useState<number[]>([]);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRangeProps>(
+    () => {
+      const defaultStartDate = reportByIdPayload?.startDate
+        ? new Date(reportByIdPayload?.startDate)
+        : new Date();
+      const defaultEndDate = reportByIdPayload?.endDate
+        ? new Date(reportByIdPayload?.endDate)
+        : new Date();
+
+      return {
+        startDate: defaultStartDate,
+        endDate: defaultEndDate,
+        key: 'selection',
+      };
+    }
+  );
 
   const handleReportTitleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -50,41 +66,32 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
   };
 
   const handleCreateReport = async () => {
-    const startedDate = selectedDates
-      ? getFormattedDate(selectedDates[0])
-      : null;
-    const endedDate = selectedDates ? getFormattedDate(selectedDates[1]) : null;
     const userId = currentUser?.id;
     try {
+      setSubmitting(true);
       if (reportTitle && userId && !submitting) {
-        setSubmitting(true);
         if (!isUpdate) {
           const { data } = await createReport(
             userId,
             reportTitle,
             reportDescription,
-            startedDate,
-            endedDate
+            selectedDateRange?.startDate,
+            selectedDateRange?.endDate
           );
           if (data) {
-            setUpdateReportsTrigger(!updateReportsTrigger);
+            setReportByIdPayload(data);
             closeCreateReportModal();
             navigate(`/reports/${data.id}`);
           }
-        } else if (reportId) {
-          const { data } = await updateReport(
-            reportId,
-            userId,
-            reportTitle,
-            reportDescription,
-            startedDate,
-            endedDate,
-            chosenAdId
-          );
-          if (data) {
-            setUpdateReportsTrigger(!updateReportsTrigger);
-            closeCreateReportModal();
-          }
+        } else if (reportByIdPayload && updateReportById) {
+          updateReportById({
+            ...reportByIdPayload,
+            name: reportTitle,
+            description: reportDescription,
+            startDate: selectedDateRange.startDate,
+            endDate: selectedDateRange.endDate,
+          });
+          closeCreateReportModal();
         }
         setReportTitle('');
         setReportDescription('');
@@ -93,14 +100,11 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
       console.log('Error creating report:', error);
     } finally {
       setSubmitting(false);
+      if (!submitting) {
+        setUpdateReportsTrigger(!updateReportsTrigger);
+      }
     }
   };
-
-  useEffect(() => {
-    if (startDateFilter && endDateFilter) {
-      setSelectedDates([startDateFilter, endDateFilter]);
-    }
-  }, [startDateFilter, endDateFilter]);
 
   useEffect(() => {
     if (savedAdId) {
@@ -108,18 +112,18 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
     }
   }, [savedAdId]);
 
-  const handleDateChange = (selected: Date[]) => {
-    if (selected.length === 2) {
-      setSelectedDates(selected);
+  const handleClearDate = () => {
+    if (setDateFilter) {
+      setDateFilter(null);
+    }
+    if (reportByIdPayload && updateReportById) {
+      updateReportById({
+        ...reportByIdPayload,
+        startDate: null,
+        endDate: null,
+      });
     }
   };
-
-  const handleClearDate = () => {
-    setSelectedDates(null);
-  };
-
-  const minDateThreeYearsAgo = moment().subtract(3, 'years').format('Y-MM-DD');
-  const currentDate = moment().format('Y-MM-DD');
 
   const handleCheckboxChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -161,7 +165,6 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
               <form
                 id="kt_modal_new_target_form"
                 className="form fv-plugins-bootstrap5 fv-plugins-framework"
-                action="#"
               >
                 <div className="mb-13 text-center">
                   <h1 className="mb-3">
@@ -201,33 +204,22 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
                     <span>Select a period</span>
                   </label>
                   <div className="d-flex flex-row align-items-center mb-10">
-                    {selectedDates && selectedDates.length === 2 ? (
-                      <span className="fw-bold fs-7 me-4">
-                        {getFormattedDateForInput(selectedDates[0])}
-                        {' to '}
-                        {getFormattedDateForInput(selectedDates[1])}
-                      </span>
-                    ) : (
-                      <Flatpickr
-                        className="form-calendar-flatpickr fs-8 fw-bold me-4 h-45px"
-                        options={{
-                          mode: 'range',
-                          dateFormat: 'Y-m-d',
-                          onClose: handleDateChange,
-                          minDate: minDateThreeYearsAgo,
-                          maxDate: currentDate,
-                          defaultDate: selectedDates,
-                        }}
-                        placeholder="Select a period"
-                      />
+                    <DateRangeSelector
+                      setDateFilter={setDateFilter}
+                      updateReportById={updateReportById}
+                      selectedDateRange={selectedDateRange}
+                      setSelectedDateRange={setSelectedDateRange}
+                      isModal={true}
+                    />
+                    {reportByIdPayload?.startDate && (
+                      <a
+                        href="#"
+                        className="btn btn-sm fw-bold btn-secondary me-4"
+                        onClick={handleClearDate}
+                      >
+                        Clear
+                      </a>
                     )}
-                    <a
-                      href="#"
-                      className="btn btn-secondary fw-bold"
-                      onClick={handleClearDate}
-                    >
-                      Clear
-                    </a>
                   </div>
                 </div>
                 {isUpdate && (

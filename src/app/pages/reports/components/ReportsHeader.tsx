@@ -1,7 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import moment from 'moment';
-import 'flatpickr/dist/themes/material_blue.css';
-import Flatpickr from 'react-flatpickr';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { CreateReportModal, DateRangeSelector } from '.';
 import { KTIcon } from '../../../../_metronic/helpers';
@@ -9,29 +6,59 @@ import ConfirmModal from '../../../../_metronic/partials/modals/ConfirmModal/Con
 import { usePageData } from '../../../../_metronic/layout/core';
 import { useNavigate } from 'react-router-dom';
 import { deleteReport } from '../../../modules/apps/core/_appRequests';
-import { ReportsHeaderProps } from './reportsModels';
+import { ReportsHeaderProps, DateRangeProps } from './reportsModels';
 
 const ReportsHeader: React.FC<ReportsHeaderProps> = ({
   reportById,
   setDateFilter,
   availableAds,
   savedAdId,
-  setStartDateFilter,
-  startDateFilter,
-  setEndDateFilter,
-  endDateFilter,
+  updateReportById,
 }) => {
   const navigate = useNavigate();
-  const { updateReportsTrigger, setUpdateReportsTrigger } = usePageData();
+  const { updateReportsTrigger, setUpdateReportsTrigger, reportByIdPayload } =
+    usePageData();
   const [showCreateReportModal, setShowCreateReportModal] =
     useState<boolean>(false);
   const [showDeleteReportModal, setShowDeleteReportModal] =
     useState<boolean>(false);
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRangeProps>(
+    () => {
+      const defaultStartDate = reportByIdPayload?.startDate
+        ? new Date(reportByIdPayload?.startDate)
+        : new Date();
+      const defaultEndDate = reportByIdPayload?.endDate
+        ? new Date(reportByIdPayload?.endDate)
+        : new Date();
+
+      return {
+        startDate: defaultStartDate,
+        endDate: defaultEndDate,
+        key: 'selection',
+      };
+    }
+  );
 
   const handleClearDate = () => {
     setDateFilter(null);
-    setStartDateFilter(null);
-    setEndDateFilter(null);
+    setSelectedDateRange({
+      startDate: new Date(),
+      endDate: new Date(),
+      key: 'selection',
+    });
+    if (reportByIdPayload) {
+      updateReportById({
+        ...reportByIdPayload,
+        startDate: null,
+        endDate: null,
+      });
+    }
+  };
+
+  const handleSaveReportById = () => {
+    if (reportByIdPayload) {
+      updateReportById(reportByIdPayload);
+    }
   };
 
   const openCreateReportModal = () => {
@@ -56,7 +83,7 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
       const response = await deleteReport(reportId);
       if (response) {
         setUpdateReportsTrigger(!updateReportsTrigger);
-        navigate('/dashboard');
+        navigate('/home');
         closeDeleteReportModal();
       }
     }
@@ -68,13 +95,13 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
         <h1>{reportById?.name}</h1>
         <div className="d-flex flex-row position-relative">
           <DateRangeSelector
-            setStartDateFilter={setStartDateFilter}
-            startDateFilter={startDateFilter}
-            setEndDateFilter={setEndDateFilter}
-            endDateFilter={endDateFilter}
             setDateFilter={setDateFilter}
+            updateReportById={updateReportById}
+            selectedDateRange={selectedDateRange}
+            setSelectedDateRange={setSelectedDateRange}
+            isModal={false}
           />
-          {startDateFilter && (
+          {reportByIdPayload?.startDate && (
             <a
               href="#"
               className="btn btn-sm fw-bold btn-secondary me-4"
@@ -92,6 +119,13 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
           </a>
           <a
             href="#"
+            className="btn btn-sm fw-bold btn-primary me-4"
+            onClick={handleSaveReportById}
+          >
+            Save
+          </a>
+          <a
+            href="#"
             className="btn btn-sm btn-icon btn-active-color-danger "
             onClick={openDeleteReportModal}
           >
@@ -103,13 +137,14 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
         <CreateReportModal
           closeCreateReportModal={closeCreateReportModal}
           isUpdate={true}
-          reportId={reportById?.id}
-          previousTitle={reportById?.name}
-          previousDescription={reportById?.description}
+          previousTitle={reportById?.name ? reportById?.name : ''}
+          previousDescription={
+            reportById?.description ? reportById?.description : ''
+          }
           availableAds={availableAds}
           savedAdId={savedAdId}
-          startDateFilter={startDateFilter}
-          endDateFilter={endDateFilter}
+          setDateFilter={setDateFilter}
+          updateReportById={updateReportById}
         />
       )}
       {showDeleteReportModal && (

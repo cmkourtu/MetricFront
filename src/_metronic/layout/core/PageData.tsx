@@ -18,6 +18,23 @@ export interface PageLink {
   isSeparator?: boolean;
 }
 
+const initialReportByIdPayload: ReportsProps = {
+  id: null,
+  name: null,
+  description: null,
+  metrics: [],
+  adSets: [],
+  viewMode: 'chart',
+  startDate: null,
+  endDate: null,
+  groupBy: null,
+  chosenMetrics: [],
+  chosenAdSets: null,
+  userId: null,
+  createdAt: null,
+  updatedAt: null,
+};
+
 export interface PageDataContextModel {
   pageTitle?: string;
   setPageTitle: (_title: string) => void;
@@ -31,6 +48,8 @@ export interface PageDataContextModel {
   setReports: (_reports: ReportsProps[]) => void;
   updateReportsTrigger?: boolean;
   setUpdateReportsTrigger: (_updateReportsTrigger: boolean) => void;
+  reportByIdPayload?: ReportsProps | null;
+  setReportByIdPayload: React.Dispatch<React.SetStateAction<ReportsProps>>;
 }
 
 const PageDataContext = createContext<PageDataContextModel>({
@@ -43,6 +62,8 @@ const PageDataContext = createContext<PageDataContextModel>({
   setReports: (_reports: ReportsProps[]) => {},
   updateReportsTrigger: false,
   setUpdateReportsTrigger: (_updateReportsTrigger: boolean) => {},
+  reportByIdPayload: initialReportByIdPayload,
+  setReportByIdPayload: () => {},
 });
 
 const PageDataProvider: FC<WithChildren> = ({ children }) => {
@@ -52,6 +73,9 @@ const PageDataProvider: FC<WithChildren> = ({ children }) => {
   const [pageBreadcrumbs, setPageBreadcrumbs] = useState<Array<PageLink>>([]);
   const [facebookAds, setFacebookAds] = useState<FacebookAdsProps[]>([]);
   const [reports, setReports] = useState<ReportsProps[]>([]);
+  const [reportByIdPayload, setReportByIdPayload] = useState<ReportsProps>(
+    initialReportByIdPayload
+  );
   const [updateReportsTrigger, setUpdateReportsTrigger] =
     useState<boolean>(false);
 
@@ -86,6 +110,8 @@ const PageDataProvider: FC<WithChildren> = ({ children }) => {
     setReports,
     updateReportsTrigger,
     setUpdateReportsTrigger,
+    reportByIdPayload,
+    setReportByIdPayload,
   };
   return (
     <PageDataContext.Provider value={value}>
