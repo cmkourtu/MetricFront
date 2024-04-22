@@ -43,3 +43,18 @@ export interface ReportsProps {
   createdAt: string | null;
   updatedAt: string | null;
 }
+
+export interface SubscriptionPlansDataProps {
+  id: string;
+  stripeSubscriptionPlanId: string;
+  name: string;
+  description: string | null;
+  price: string;
+  interval: 'month' | 'year';
+  userLimit: number | null;
+  isActive: boolean;
+  trialPeriodDays: number | null;
+  isTrialPeriodAllowed: boolean;
+  createdAt: string;
+  updatedAt: string;
+}

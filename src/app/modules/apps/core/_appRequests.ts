@@ -3,6 +3,7 @@ import {
   FacebookAccountsProps,
   FacebookAdsProps,
   ReportsProps,
+  SubscriptionPlansDataProps,
 } from '../core/_appModels';
 import { getFormattedDate } from '../../../../_metronic/helpers/reportsHelpers';
 
@@ -20,6 +21,9 @@ export const GET_REPORTS_BY_USER_ID = `${API_URL}/reports/user`;
 export const GET_REPORT_BY_ID = `${API_URL}/reports`;
 export const UPDATE_REPORT = `${API_URL}/reports`;
 export const DELETE_REPORT = `${API_URL}/reports`;
+export const GET_SUBSCRIPTION_PLANS_URL = `${API_URL}/subscriptionPlans`;
+export const SUBSCRIBE_URL = `${API_URL}/subscriptions`;
+export const UNSUBSCRIBE_URL = `${API_URL}/subscriptions`;
 
 export function getFacebookToken(jwtToken: string, code: string) {
   return axios.post(
@@ -147,4 +151,16 @@ export function updateReport(reportByIdPayload: ReportsProps) {
 
 export function deleteReport(reportId: string) {
   return axios.delete(`${DELETE_REPORT}/${reportId}`);
+}
+
+export function getSubscriptionPlans() {
+  return axios.get<SubscriptionPlansDataProps[]>(GET_SUBSCRIPTION_PLANS_URL);
+}
+
+export function subscribe(subscriptionPlanId: string) {
+  return axios.post(SUBSCRIBE_URL, { subscriptionPlanId });
+}
+
+export function unsubscribe() {
+  return axios.delete(UNSUBSCRIBE_URL);
 }

@@ -1,18 +1,7 @@
-export interface TemporarySubscriptionsDataProps {
-  id: string;
-  stripeSubscriptionPlanId: string;
-  name: string;
-  description: string | null;
-  price: string;
-  interval: 'month' | 'year';
-  userLimit: number | null;
-  isActive: boolean;
-  trialPeriodDays: number | null;
-  isTrialPeriodAllowed: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { SubscriptionPlansDataProps } from '../../../modules/apps/core/_appModels';
+
+export type { SubscriptionPlansDataProps };
 
 export interface SubscriptionPlanCardProps {
-  subscriptionPlan: TemporarySubscriptionsDataProps;
+  subscriptionPlan: SubscriptionPlansDataProps;
 }

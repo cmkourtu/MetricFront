@@ -111,7 +111,7 @@ const SidebarMenuMain: React.FC = () => {
         </div>
       </div>
       <SidebarMenuItem
-        to="/subscriptions"
+        to="/pricing"
         icon="dollar"
         title="Subscriptions"
         fontIcon="bi-layers"

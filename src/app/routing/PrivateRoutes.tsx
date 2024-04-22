@@ -35,7 +35,7 @@ const PrivateRoutes = () => {
             isSubscriptionActive ? (
               <Navigate to="/home" />
             ) : (
-              <Navigate to="/subscriptions" />
+              <Navigate to="/pricing" />
             )
           }
         />
@@ -43,21 +43,13 @@ const PrivateRoutes = () => {
         <Route
           path="home"
           element={
-            isSubscriptionActive ? (
-              <HomePage />
-            ) : (
-              <Navigate to="/subscriptions" />
-            )
+            isSubscriptionActive ? <HomePage /> : <Navigate to="/pricing" />
           }
         />
         <Route
           path="facebook-ads"
           element={
-            isSubscriptionActive ? (
-              <FacebookAds />
-            ) : (
-              <Navigate to="/subscriptions" />
-            )
+            isSubscriptionActive ? <FacebookAds /> : <Navigate to="/pricing" />
           }
         />
         <Route
@@ -66,7 +58,7 @@ const PrivateRoutes = () => {
             isSubscriptionActive ? (
               <FacebookAdAccount />
             ) : (
-              <Navigate to="/subscriptions" />
+              <Navigate to="/pricing" />
             )
           }
         />
@@ -77,14 +69,10 @@ const PrivateRoutes = () => {
         <Route
           path="reports/:reportId"
           element={
-            isSubscriptionActive ? (
-              <Reports />
-            ) : (
-              <Navigate to="/subscriptions" />
-            )
+            isSubscriptionActive ? <Reports /> : <Navigate to="/pricing" />
           }
         />
-        <Route path="subscriptions" element={<Subscriptions />} />
+        <Route path="pricing" element={<Subscriptions />} />
         <Route path="builder" element={<BuilderPageWrapper />} />
         <Route path="menu-test" element={<MenuTestPage />} />
         {/* Lazy Modules */}

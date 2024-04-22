@@ -6,10 +6,10 @@ import { useAuth } from '../../modules/auth';
 const Subscriptions: React.FC = () => {
   const { isSubscriptionActive } = useAuth();
 
-  return { isSubscriptionActive } ? (
-    <SubscriptionDetails />
-  ) : (
-    <SubscriptionsPlans />
+  return (
+    <>
+      {isSubscriptionActive ? <SubscriptionDetails /> : <SubscriptionsPlans />}
+    </>
   );
 };
 

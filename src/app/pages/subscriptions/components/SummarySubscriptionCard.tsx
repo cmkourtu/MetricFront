@@ -1,6 +1,7 @@
 import React from 'react';
 import { toAbsoluteUrl } from '../../../../_metronic/helpers';
 import { useAuth } from '../../../modules/auth';
+import { getFormattedDateWithMonth } from '../../../../_metronic/helpers/reportsHelpers';
 
 const SummarySubscriptionCard: React.FC = () => {
   const { currentUser } = useAuth();
@@ -56,7 +57,18 @@ const SummarySubscriptionCard: React.FC = () => {
             <h5 className="mb-4">Product details</h5>
             <div className="mb-0">
               <span className="badge badge-light-info me-2">Basic Bundle</span>
-              <span className="fw-semibold text-gray-600">$149.99 / Year</span>
+              {currentUser?.subscription?.status === 'active' ? (
+                <span className="fw-semibold text-gray-600">
+                  ${currentUser?.subscription?.subscriptionPlan?.price} /{' '}
+                  {currentUser?.subscription?.subscriptionPlan?.name}
+                </span>
+              ) : (
+                <span className="fw-semibold text-gray-600">
+                  Trial:{' '}
+                  {currentUser?.subscription?.subscriptionPlan?.trialPeriodDays}{' '}
+                  days left
+                </span>
+              )}
             </div>
           </div>
           <div className="separator separator-dashed mb-7"></div>
@@ -79,13 +91,17 @@ const SummarySubscriptionCard: React.FC = () => {
             <h5 className="mb-4">Subscription Details</h5>
             <table className="table fs-6 fw-semibold gs-0 gy-2 gx-2">
               <tbody>
-                <tr className="">
+                {/*<tr className="">
                   <td className="text-gray-500">Subscription ID:</td>
                   <td className="text-gray-800">sub_4567_8765</td>
-                </tr>
+            </tr>*/}
                 <tr className="">
                   <td className="text-gray-500">Started:</td>
-                  <td className="text-gray-800">15 Apr 2021</td>
+                  <td className="text-gray-800">
+                    {getFormattedDateWithMonth(
+                      currentUser?.subscription?.createdAt
+                    )}
+                  </td>
                 </tr>
                 <tr className="">
                   <td className="text-gray-500">Status:</td>
@@ -95,7 +111,12 @@ const SummarySubscriptionCard: React.FC = () => {
                 </tr>
                 <tr className="">
                   <td className="text-gray-500">Next Invoice:</td>
-                  <td className="text-gray-800">15 Apr 2022</td>
+                  <td className="text-gray-800">
+                    {getFormattedDateWithMonth(
+                      currentUser?.subscription?.end &&
+                        currentUser?.subscription?.end * 1000
+                    )}
+                  </td>
                 </tr>
               </tbody>
             </table>

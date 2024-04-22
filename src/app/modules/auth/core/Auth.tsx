@@ -11,7 +11,7 @@ import {
 import { LayoutSplashScreen } from '../../../../_metronic/layout/core';
 import { AuthModel, UserByIdProps, UserModel } from './_models';
 import * as authHelper from './AuthHelpers';
-import { getUserById, getUserByToken } from './_requests';
+import { getCurrentUser, getUserById, getUserByToken } from './_requests';
 import { WithChildren } from '../../../../_metronic/helpers';
 import { getSubscriptionStatus } from '../../../../_metronic/helpers/subscriptions-helpers/SubscriptionsHelpers';
 

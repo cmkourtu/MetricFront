@@ -68,27 +68,27 @@ export interface UserModel {
 }
 
 interface UserSubscriptionPlanModel {
-  id: string;
-  stripeSubscriptionPlanId: string;
-  name: string;
-  description: string;
-  price: number;
-  interval: 'month' | 'year';
   createdAt: string;
+  description: string;
+  id: string;
+  interval: 'month' | 'year';
+  isActive: boolean;
+  isTrialPeriodAllowed: boolean;
+  name: string;
+  price: number;
+  stripeSubscriptionPlanId: string;
+  trialPeriodDays: number;
   updatedAt: string;
 }
 
 export interface UserSubscriptionModel {
-  id: string;
-  stripeSubscriptionId: string;
-  stripeCustomerId: string;
-  isGroupSubscription: boolean;
-  userId: string;
-  status: string;
-  end: number;
-  subscriptionPlan: UserSubscriptionPlanModel;
   createdAt: string;
-  updatedAt: string;
+  end: number;
+  id: string;
+  status: string;
+  stripeCustomerId: string;
+  stripeSubscriptionId: string;
+  subscriptionPlan: UserSubscriptionPlanModel;
 }
 
 export interface UserByIdProps {
@@ -99,6 +99,6 @@ export interface UserByIdProps {
   companyName: string;
   jobTitle?: string;
   registeredAt?: string;
-  subscription?: UserSubscriptionModel;
+  subscription?: UserSubscriptionModel | null;
   avatar?: string;
 }

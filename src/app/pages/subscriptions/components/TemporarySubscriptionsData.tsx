@@ -1,6 +1,6 @@
-import { TemporarySubscriptionsDataProps } from './subscriptionsModels';
+import { SubscriptionPlansDataProps } from './subscriptionsModels';
 
-export const TemporarySubscriptionsData: TemporarySubscriptionsDataProps[] = [
+export const TemporarySubscriptionsData: SubscriptionPlansDataProps[] = [
   {
     id: 'eeecc9d0-fbfc-11ee-bfc5-479a5f1a5f9f',
     stripeSubscriptionPlanId: 'price_1P6CvF05OMzoU50E9WcADlcx',

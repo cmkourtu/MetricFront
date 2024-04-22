@@ -6,7 +6,7 @@ import PaymentMethod from './PaymentMethod';
 
 const SubscriptionDetails: React.FC = () => {
   return (
-    <div id="kt_app_content" className="app-content  flex-column-fluid ">
+    <div id="kt_app_content" className="app-content flex-column-fluid">
       <div
         id="kt_app_content_container"
         className="app-container  container-xxl "

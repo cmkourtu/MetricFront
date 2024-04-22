@@ -1,11 +1,17 @@
 import React from 'react';
 import { SubscriptionPlanCardProps } from './subscriptionsModels';
+import { subscribe } from '../../../modules/apps/core/_appRequests';
 
 const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
   subscriptionPlan,
 }) => {
-  const handleSelectSubscriptionPlan = (subscriptionId: string) => {
-    console.log(subscriptionId);
+  const handleSelectSubscriptionPlan = async (subscriptionId: string) => {
+    try {
+      const { data } = await subscribe(subscriptionId);
+      window.location.assign(data.url);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -30,24 +36,27 @@ const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
               </span>
 
               <span className="fs-7 fw-semibold opacity-50">
-                /<span data-kt-element="period">Mon</span>
+                /
+                <span data-kt-element="period">
+                  {subscriptionPlan?.interval}
+                </span>
               </span>
             </div>
           </div>
 
           <div className="w-100 mb-10">
-            <div className="d-flex align-items-center mb-5">
-              <span className="fw-semibold fs-6 text-gray-800 flex-grow-1 pe-3">
+            {/*<div className="d-flex align-items-center mb-5">
+              {/*<span className="fw-semibold fs-6 text-gray-800 flex-grow-1 pe-3">
                 {subscriptionPlan?.userLimit
                   ? `Up to ${subscriptionPlan?.userLimit} Active Users`
                   : 'Unlimited Active Users'}
-              </span>
+                </span>
               <i className="ki-duotone ki-check-circle fs-1 text-success">
                 <span className="path1"></span>
                 <span className="path2"></span>
               </i>
             </div>
-
+                */}
             {/*<div className="d-flex align-items-center mb-5">
               <span className="fw-semibold fs-6 text-gray-800 flex-grow-1 pe-3">
                 Up to 30 Project Integrations{' '}

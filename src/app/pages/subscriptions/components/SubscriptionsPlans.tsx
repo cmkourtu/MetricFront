@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-import { TemporarySubscriptionsDataProps } from './subscriptionsModels';
+import { SubscriptionPlansDataProps } from './subscriptionsModels';
 import { TemporarySubscriptionsData } from './TemporarySubscriptionsData';
 import SubscriptionPlanCard from './SubscriptionPlanCard';
+import { getSubscriptionPlans } from '../../../modules/apps/core/_appRequests';
 
 const SubscriptionsPlans: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'month' | 'annual'>('month');
   const [monthSubscriptionsPlans, setMonthSubscriptionsPlans] = useState<
-    TemporarySubscriptionsDataProps[]
+    SubscriptionPlansDataProps[]
   >([]);
   const [annualSubscriptionsPlans, setAnnualSubscriptionsPlans] = useState<
-    TemporarySubscriptionsDataProps[]
+    SubscriptionPlansDataProps[]
   >([]);
 
   const handleTabClick = (tab: 'month' | 'annual') => {
@@ -18,6 +19,29 @@ const SubscriptionsPlans: React.FC = () => {
   };
 
   useEffect(() => {
+    const fetchSubscriptionPlans = async () => {
+      try {
+        const { data } = await getSubscriptionPlans();
+        if (data) {
+          const monthSubscriptions = data
+            .filter((subscription) => subscription.interval === 'month')
+            .sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+
+          const annualSubscriptions = data
+            .filter((subscription) => subscription.interval === 'year')
+            .sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+
+          setMonthSubscriptionsPlans(monthSubscriptions);
+          setAnnualSubscriptionsPlans(annualSubscriptions);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchSubscriptionPlans();
+  }, []);
+
+  /*useEffect(() => {
     const monthSubscriptions = TemporarySubscriptionsData.filter(
       (subscription) => subscription.interval === 'month'
     ).sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
@@ -28,7 +52,7 @@ const SubscriptionsPlans: React.FC = () => {
 
     setMonthSubscriptionsPlans(monthSubscriptions);
     setAnnualSubscriptionsPlans(annualSubscriptions);
-  }, [TemporarySubscriptionsData]);
+  }, [TemporarySubscriptionsData]);*/
 
   return (
     <div id="kt_app_content" className="app-content  flex-column-fluid ">

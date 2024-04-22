@@ -9,6 +9,7 @@ export const GET_USER_BY_ID = `${API_URL}/profiles`;
 export const REGISTER_URL = `${API_URL}/register`;
 export const REQUEST_PASSWORD_URL = `${API_URL}/forgot-password`;
 export const RESET_PASSWORD_URL = `${API_URL}/reset-password`;
+export const GET_CURRENT_USER = `${API_URL}/users/me`;
 
 // Server should return AuthModel
 export function login(email: string, password: string) {
@@ -41,6 +42,17 @@ export function getUserById(userId: string, jwtToken: string) {
       Authorization: `Bearer ${jwtToken}`,
     },
   });
+}
+
+export function getCurrentUser(jwtToken: string) {
+  return (
+    axios.get(GET_CURRENT_USER),
+    {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    }
+  );
 }
 
 export function updateUserById(
