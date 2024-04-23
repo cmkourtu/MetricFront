@@ -4,6 +4,7 @@ import {
   FacebookAdsProps,
   ReportsProps,
   SubscriptionPlansDataProps,
+  PaymentMethodProps,
 } from '../core/_appModels';
 import { getFormattedDate } from '../../../../_metronic/helpers/reportsHelpers';
 
@@ -24,6 +25,9 @@ export const DELETE_REPORT = `${API_URL}/reports`;
 export const GET_SUBSCRIPTION_PLANS_URL = `${API_URL}/subscriptionPlans`;
 export const SUBSCRIBE_URL = `${API_URL}/subscriptions`;
 export const UNSUBSCRIBE_URL = `${API_URL}/subscriptions`;
+export const ADD_PAYMENT_METHOD = `${API_URL}/card`;
+export const GET_PAYMENT_METHODS = `${API_URL}/card/me`;
+export const DELETE_PAYMENT_METHOD = `${API_URL}/card`;
 
 export function getFacebookToken(jwtToken: string, code: string) {
   return axios.post(
@@ -128,14 +132,12 @@ export function updateReport(reportByIdPayload: ReportsProps) {
     name: reportByIdPayload?.name,
     description: reportByIdPayload?.description,
     userId: reportByIdPayload?.userId,
-    startDate: getFormattedDate(
-      reportByIdPayload?.startDate
-        ? new Date(reportByIdPayload?.startDate)
-        : null
-    ),
-    endDate: getFormattedDate(
-      reportByIdPayload?.endDate ? new Date(reportByIdPayload?.endDate) : null
-    ),
+    startDate: reportByIdPayload?.startDate
+      ? getFormattedDate(new Date(reportByIdPayload?.startDate))
+      : null,
+    endDate: reportByIdPayload?.endDate
+      ? getFormattedDate(new Date(reportByIdPayload?.endDate))
+      : null,
     adSets: reportByIdPayload?.adSets,
     metrics: reportByIdPayload?.metrics,
     viewMode: reportByIdPayload?.viewMode
@@ -163,4 +165,43 @@ export function subscribe(subscriptionPlanId: string) {
 
 export function unsubscribe() {
   return axios.delete(UNSUBSCRIBE_URL);
+}
+
+export function addPaymentMethod(
+  token: string,
+  cardNumber: string,
+  expMonth: number,
+  expYear: number,
+  paymentMethodId: string
+) {
+  return axios.post(
+    ADD_PAYMENT_METHOD,
+    {
+      number: cardNumber,
+      expMonth: expMonth,
+      expYear: expYear,
+      stripePaymentMethodId: paymentMethodId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
+
+export function getPaymentMethods(token: string) {
+  return axios.get<PaymentMethodProps[]>(GET_PAYMENT_METHODS, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export function deletePaymentMethod(token: string, paymentMethodId: string) {
+  return axios.delete(`${DELETE_PAYMENT_METHOD}/${paymentMethodId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }

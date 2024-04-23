@@ -21,6 +21,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   const { reportByIdPayload, setReportByIdPayload } = usePageData();
   const [showDateRangeSelector, setShowDateRangeSelector] =
     useState<boolean>(false);
+
   const handleShowDateRangeSelector = () => {
     setShowDateRangeSelector(true);
   };
@@ -51,8 +52,8 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   const handleApply = () => {
     setShowDateRangeSelector(false);
     if (
-      selectedDateRange.startDate &&
-      selectedDateRange.endDate &&
+      selectedDateRange?.startDate &&
+      selectedDateRange?.endDate &&
       setDateFilter
     ) {
       const startDate = selectedDateRange?.startDate
@@ -76,8 +77,8 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       if (reportByIdPayload && updateReportById) {
         updateReportById({
           ...reportByIdPayload,
-          startDate: selectedDateRange.startDate,
-          endDate: selectedDateRange.endDate,
+          startDate: selectedDateRange?.startDate,
+          endDate: selectedDateRange?.endDate,
         });
       }
     }
@@ -90,7 +91,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         onClick={handleShowDateRangeSelector}
       >
         <div className="me-2">
-          {reportByIdPayload?.startDate ? (
+          {selectedDateRange?.startDate && selectedDateRange?.endDate ? (
             <span className="text-gray-600 fw-bold text-hover-primary">
               {formatDateDisplay(selectedDateRange.startDate, 'Start Date')} to{' '}
               {formatDateDisplay(selectedDateRange.endDate, 'End Date')}
@@ -114,7 +115,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
               onChange={handleSelect}
               moveRangeOnFirstSelection={false}
               months={isModal ? 1 : 2}
-              ranges={[selectedDateRange]}
+              ranges={selectedDateRange ? [selectedDateRange] : []}
               direction="horizontal"
               minDate={minDateThreeYearsAgo}
               maxDate={currentDate}

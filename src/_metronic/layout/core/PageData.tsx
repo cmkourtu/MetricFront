@@ -7,6 +7,7 @@ import { WithChildren } from '../../helpers';
 import {
   FacebookAdsProps,
   ReportsProps,
+  SelectedRangeProps,
 } from '../../../app/modules/apps/core/_appModels';
 import { getReportsByUserId } from '../../../app/modules/apps/core/_appRequests';
 import { useAuth } from '../../../app/modules/auth';
@@ -35,6 +36,12 @@ const initialReportByIdPayload: ReportsProps = {
   updatedAt: null,
 };
 
+const initialSelectedRangeState: SelectedRangeProps = {
+  startDate: null,
+  endDate: null,
+  key: 'selection',
+};
+
 export interface PageDataContextModel {
   pageTitle?: string;
   setPageTitle: (_title: string) => void;
@@ -50,6 +57,8 @@ export interface PageDataContextModel {
   setUpdateReportsTrigger: (_updateReportsTrigger: boolean) => void;
   reportByIdPayload?: ReportsProps | null;
   setReportByIdPayload: React.Dispatch<React.SetStateAction<ReportsProps>>;
+  selectedRange?: SelectedRangeProps;
+  setSelectedRange: React.Dispatch<React.SetStateAction<SelectedRangeProps>>;
 }
 
 const PageDataContext = createContext<PageDataContextModel>({
@@ -64,6 +73,8 @@ const PageDataContext = createContext<PageDataContextModel>({
   setUpdateReportsTrigger: (_updateReportsTrigger: boolean) => {},
   reportByIdPayload: initialReportByIdPayload,
   setReportByIdPayload: () => {},
+  selectedRange: initialSelectedRangeState,
+  setSelectedRange: () => {},
 });
 
 const PageDataProvider: FC<WithChildren> = ({ children }) => {
@@ -78,6 +89,10 @@ const PageDataProvider: FC<WithChildren> = ({ children }) => {
   );
   const [updateReportsTrigger, setUpdateReportsTrigger] =
     useState<boolean>(false);
+
+  const [selectedRange, setSelectedRange] = useState<SelectedRangeProps>(
+    initialSelectedRangeState
+  );
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -97,6 +112,21 @@ const PageDataProvider: FC<WithChildren> = ({ children }) => {
     fetchReports();
   }, [updateReportsTrigger]);
 
+  useEffect(() => {
+    const defaultStartDate = reportByIdPayload?.startDate
+      ? new Date(reportByIdPayload.startDate)
+      : null;
+    const defaultEndDate = reportByIdPayload?.endDate
+      ? new Date(reportByIdPayload.endDate)
+      : null;
+
+    setSelectedRange({
+      startDate: defaultStartDate,
+      endDate: defaultEndDate,
+      key: 'selection',
+    });
+  }, [reportByIdPayload?.startDate, reportByIdPayload?.endDate]);
+
   const value: PageDataContextModel = {
     pageTitle,
     setPageTitle,
@@ -112,6 +142,8 @@ const PageDataProvider: FC<WithChildren> = ({ children }) => {
     setUpdateReportsTrigger,
     reportByIdPayload,
     setReportByIdPayload,
+    selectedRange,
+    setSelectedRange,
   };
   return (
     <PageDataContext.Provider value={value}>

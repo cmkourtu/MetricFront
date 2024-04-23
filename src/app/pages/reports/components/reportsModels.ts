@@ -276,7 +276,9 @@ export interface DateRangeSelectorProps {
   onSubmit?: (selectedDateRange: DateRangeProps) => void;
   setDateFilter?: React.Dispatch<React.SetStateAction<string | null>>;
   updateReportById?: (report: ReportsProps) => void;
-  selectedDateRange: DateRangeProps;
-  setSelectedDateRange: React.Dispatch<React.SetStateAction<DateRangeProps>>;
+  selectedDateRange: DateRangeProps | null;
+  setSelectedDateRange: React.Dispatch<
+    React.SetStateAction<DateRangeProps | null>
+  >;
   isModal?: boolean;
 }

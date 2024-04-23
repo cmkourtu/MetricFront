@@ -99,3 +99,27 @@ export const getFormattedDateWithMonth = (
 
   return `${day} ${month} ${year}`;
 };
+
+export function getMonthAbbreviation(monthNumber: number) {
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  // Ensure monthNumber is within valid range (1 to 12)
+  if (monthNumber >= 1 && monthNumber <= 12) {
+    return months[monthNumber - 1];
+  } else {
+    return 'Invalid Month';
+  }
+}

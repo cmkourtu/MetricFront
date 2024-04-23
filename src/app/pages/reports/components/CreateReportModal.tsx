@@ -36,22 +36,21 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
   );
   const [chosenAdId, setChosenAdId] = useState<number[]>([]);
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [selectedDateRange, setSelectedDateRange] = useState<DateRangeProps>(
-    () => {
-      const defaultStartDate = reportByIdPayload?.startDate
-        ? new Date(reportByIdPayload?.startDate)
-        : new Date();
-      const defaultEndDate = reportByIdPayload?.endDate
-        ? new Date(reportByIdPayload?.endDate)
-        : new Date();
+  const [selectedDateRange, setSelectedDateRange] =
+    useState<DateRangeProps | null>(() => {
+      if (!reportByIdPayload?.startDate || !reportByIdPayload?.endDate) {
+        return null;
+      }
+
+      const defaultStartDate = new Date(reportByIdPayload.startDate);
+      const defaultEndDate = new Date(reportByIdPayload.endDate);
 
       return {
         startDate: defaultStartDate,
         endDate: defaultEndDate,
         key: 'selection',
       };
-    }
-  );
+    });
 
   const handleReportTitleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -88,8 +87,8 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
             ...reportByIdPayload,
             name: reportTitle,
             description: reportDescription,
-            startDate: selectedDateRange.startDate,
-            endDate: selectedDateRange.endDate,
+            startDate: selectedDateRange?.startDate,
+            endDate: selectedDateRange?.endDate,
           });
           closeCreateReportModal();
         }
@@ -123,6 +122,7 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
         endDate: null,
       });
     }
+    setSelectedDateRange(null);
   };
 
   const handleCheckboxChange = (

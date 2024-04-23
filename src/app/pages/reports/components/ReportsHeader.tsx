@@ -94,13 +94,13 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
       <div className="d-flex fv-rowrow align-items-center justify-content-between mb-6">
         <h1>{reportById?.name}</h1>
         <div className="d-flex flex-row position-relative">
-          <DateRangeSelector
+          {/*<DateRangeSelector
             setDateFilter={setDateFilter}
             updateReportById={updateReportById}
             selectedDateRange={selectedDateRange}
             setSelectedDateRange={setSelectedDateRange}
             isModal={false}
-          />
+  />*/}
           {reportByIdPayload?.startDate && (
             <a
               href="#"

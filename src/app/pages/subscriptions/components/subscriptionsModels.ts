@@ -1,7 +1,19 @@
-import { SubscriptionPlansDataProps } from '../../../modules/apps/core/_appModels';
+import {
+  SubscriptionPlansDataProps,
+  PaymentMethodProps,
+} from '../../../modules/apps/core/_appModels';
 
-export type { SubscriptionPlansDataProps };
+export type { SubscriptionPlansDataProps, PaymentMethodProps };
 
 export interface SubscriptionPlanCardProps {
   subscriptionPlan: SubscriptionPlansDataProps;
+}
+
+export interface PaymentMethodComponentProps {
+  paymentMethodData: PaymentMethodProps[];
+  setPaymentMethodData: (paymentMethodData: PaymentMethodProps[]) => void;
+}
+
+export interface SummarySubscriptionCardProps {
+  paymentMethodData: PaymentMethodProps[];
 }

@@ -1,9 +1,15 @@
 import React from 'react';
+
 import { toAbsoluteUrl } from '../../../../_metronic/helpers';
 import { useAuth } from '../../../modules/auth';
-import { getFormattedDateWithMonth } from '../../../../_metronic/helpers/reportsHelpers';
-
-const SummarySubscriptionCard: React.FC = () => {
+import {
+  getFormattedDateWithMonth,
+  getMonthAbbreviation,
+} from '../../../../_metronic/helpers/reportsHelpers';
+import { SummarySubscriptionCardProps } from './subscriptionsModels';
+const SummarySubscriptionCard: React.FC<SummarySubscriptionCardProps> = ({
+  paymentMethodData,
+}) => {
   const { currentUser } = useAuth();
   return (
     <div className="flex-column flex-lg-row-auto w-lg-250px w-xl-300px mb-10 order-1 order-lg-2">
@@ -77,13 +83,38 @@ const SummarySubscriptionCard: React.FC = () => {
             <div className="mb-0">
               <div className="fw-semibold text-gray-600 d-flex align-items-center">
                 Mastercard
-                <img
-                  src={toAbsoluteUrl('media/svg/card-logos/mastercard.svg')}
-                  className="w-35px ms-2"
-                  alt=""
-                />
+                {paymentMethodData[0]?.card?.brand &&
+                  paymentMethodData[0]?.card?.brand === 'mastercard' && (
+                    <img
+                      src={toAbsoluteUrl('media/svg/card-logos/mastercard.svg')}
+                      className="w-40px me-3"
+                      alt=""
+                    />
+                  )}
+                {paymentMethodData[0]?.card?.brand &&
+                  paymentMethodData[0]?.card?.brand === 'visa' && (
+                    <img
+                      src={toAbsoluteUrl('media/svg/card-logos/visa.svg')}
+                      className="w-40px me-3"
+                      alt=""
+                    />
+                  )}
+                {paymentMethodData[0]?.card?.brand &&
+                  paymentMethodData[0]?.card?.brand === 'american-express' && (
+                    <img
+                      src={toAbsoluteUrl(
+                        'media/svg/card-logos/american-express.svg'
+                      )}
+                      className="w-40px me-3"
+                      alt=""
+                    />
+                  )}
               </div>
-              <div className="fw-semibold text-gray-600">Expires Dec 2024</div>
+              <div className="fw-semibold text-gray-600">
+                {paymentMethodData[0]?.card?.exp_month &&
+                  paymentMethodData[0]?.card?.exp_year &&
+                  `Expires ${getMonthAbbreviation(paymentMethodData[0]?.card?.exp_month)} ${paymentMethodData[0]?.card?.exp_year}`}
+              </div>
             </div>
           </div>
           <div className="separator separator-dashed mb-7"></div>
