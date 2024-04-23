@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-import { CreateReportModal, DateRangeSelector } from '.';
+import { CalendarWithButton, CreateReportModal } from '.';
 import { KTIcon } from '../../../../_metronic/helpers';
 import ConfirmModal from '../../../../_metronic/partials/modals/ConfirmModal/ConfirmModal';
 import { usePageData } from '../../../../_metronic/layout/core';
@@ -22,38 +22,6 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
     useState<boolean>(false);
   const [showDeleteReportModal, setShowDeleteReportModal] =
     useState<boolean>(false);
-  const [selectedDateRange, setSelectedDateRange] = useState<DateRangeProps>(
-    () => {
-      const defaultStartDate = reportByIdPayload?.startDate
-        ? new Date(reportByIdPayload?.startDate)
-        : new Date();
-      const defaultEndDate = reportByIdPayload?.endDate
-        ? new Date(reportByIdPayload?.endDate)
-        : new Date();
-
-      return {
-        startDate: defaultStartDate,
-        endDate: defaultEndDate,
-        key: 'selection',
-      };
-    }
-  );
-
-  const handleClearDate = () => {
-    setDateFilter(null);
-    setSelectedDateRange({
-      startDate: new Date(),
-      endDate: new Date(),
-      key: 'selection',
-    });
-    if (reportByIdPayload) {
-      updateReportById({
-        ...reportByIdPayload,
-        startDate: null,
-        endDate: null,
-      });
-    }
-  };
 
   const handleSaveReportById = () => {
     if (reportByIdPayload) {
@@ -93,44 +61,35 @@ const ReportsHeader: React.FC<ReportsHeaderProps> = ({
     <>
       <div className="d-flex fv-rowrow align-items-center justify-content-between mb-6">
         <h1>{reportById?.name}</h1>
-        <div className="d-flex flex-row position-relative">
-          {/*<DateRangeSelector
+        <div className="d-flex flex-row position-relative flex-wrap justify-content-end">
+          <CalendarWithButton
             setDateFilter={setDateFilter}
             updateReportById={updateReportById}
-            selectedDateRange={selectedDateRange}
-            setSelectedDateRange={setSelectedDateRange}
             isModal={false}
-  />*/}
-          {reportByIdPayload?.startDate && (
+          />
+          <div className="d-flex flex-row">
             <a
               href="#"
-              className="btn btn-sm fw-bold btn-secondary me-4"
-              onClick={handleClearDate}
+              className="btn btn-sm fw-bold btn-primary me-4 ms-4"
+              onClick={openCreateReportModal}
             >
-              Clear
+              Edit
             </a>
-          )}
-          <a
-            href="#"
-            className="btn btn-sm fw-bold btn-primary me-4"
-            onClick={openCreateReportModal}
-          >
-            Edit
-          </a>
-          <a
-            href="#"
-            className="btn btn-sm fw-bold btn-primary me-4"
-            onClick={handleSaveReportById}
-          >
-            Save
-          </a>
-          <a
-            href="#"
-            className="btn btn-sm btn-icon btn-active-color-danger "
-            onClick={openDeleteReportModal}
-          >
-            <KTIcon iconName="trash" className="fs-2x" />
-          </a>
+            <a
+              href="#"
+              className="btn btn-sm fw-bold btn-primary me-4"
+              onClick={handleSaveReportById}
+            >
+              Save
+            </a>
+            <a
+              href="#"
+              className="btn btn-sm btn-icon btn-active-color-danger "
+              onClick={openDeleteReportModal}
+            >
+              <KTIcon iconName="trash" className="fs-2x" />
+            </a>
+          </div>
         </div>
       </div>
       {showCreateReportModal && (

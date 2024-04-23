@@ -109,8 +109,8 @@ export function createReport(
     name: reportTitle,
     description: reportDescription,
     userId: userId,
-    startDate: getFormattedDate(startedDate ? new Date(startedDate) : null),
-    endDate: getFormattedDate(endedDate ? new Date(endedDate) : null),
+    startDate: startedDate ? getFormattedDate(new Date(startedDate)) : null,
+    endDate: endedDate ? getFormattedDate(new Date(endedDate)) : null,
   });
 }
 

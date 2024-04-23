@@ -9,8 +9,12 @@ import {
   updateReport,
 } from '../../../modules/apps/core/_appRequests';
 import { usePageData } from '../../../../_metronic/layout/core';
-import { CreateReportModalProps, DateRangeProps } from './reportsModels';
-import DateRangeSelector from './DateRangeSelector';
+import {
+  CreateReportModalProps,
+  DateRangeProps,
+  ReportsProps,
+} from './reportsModels';
+import { CalendarWithButton } from './';
 
 const CreateReportModal: React.FC<CreateReportModalProps> = ({
   closeCreateReportModal,
@@ -36,21 +40,6 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
   );
   const [chosenAdId, setChosenAdId] = useState<number[]>([]);
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [selectedDateRange, setSelectedDateRange] =
-    useState<DateRangeProps | null>(() => {
-      if (!reportByIdPayload?.startDate || !reportByIdPayload?.endDate) {
-        return null;
-      }
-
-      const defaultStartDate = new Date(reportByIdPayload.startDate);
-      const defaultEndDate = new Date(reportByIdPayload.endDate);
-
-      return {
-        startDate: defaultStartDate,
-        endDate: defaultEndDate,
-        key: 'selection',
-      };
-    });
 
   const handleReportTitleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -74,8 +63,8 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
             userId,
             reportTitle,
             reportDescription,
-            selectedDateRange?.startDate,
-            selectedDateRange?.endDate
+            reportByIdPayload?.startDate,
+            reportByIdPayload?.endDate
           );
           if (data) {
             setReportByIdPayload(data);
@@ -87,8 +76,6 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
             ...reportByIdPayload,
             name: reportTitle,
             description: reportDescription,
-            startDate: selectedDateRange?.startDate,
-            endDate: selectedDateRange?.endDate,
           });
           closeCreateReportModal();
         }
@@ -111,20 +98,6 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
     }
   }, [savedAdId]);
 
-  const handleClearDate = () => {
-    if (setDateFilter) {
-      setDateFilter(null);
-    }
-    if (reportByIdPayload && updateReportById) {
-      updateReportById({
-        ...reportByIdPayload,
-        startDate: null,
-        endDate: null,
-      });
-    }
-    setSelectedDateRange(null);
-  };
-
   const handleCheckboxChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     adId: number
@@ -136,6 +109,16 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
       setChosenAdId((prevIds) => prevIds.filter((id) => id !== adId));
     }
   };
+
+  useEffect(() => {
+    if (!isUpdate) {
+      setReportByIdPayload((prevPayload: ReportsProps) => ({
+        ...prevPayload,
+        startDate: null,
+        endDate: null,
+      }));
+    }
+  }, []);
 
   return (
     <>
@@ -203,23 +186,13 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
                   <label className="d-flex align-items-center fs-6 fw-semibold mb-2">
                     <span>Select a period</span>
                   </label>
-                  <div className="d-flex flex-row align-items-center mb-10">
-                    <DateRangeSelector
+                  <div className="d-flex flex-row align-items-center mb-10 position-relative">
+                    <CalendarWithButton
                       setDateFilter={setDateFilter}
                       updateReportById={updateReportById}
-                      selectedDateRange={selectedDateRange}
-                      setSelectedDateRange={setSelectedDateRange}
                       isModal={true}
+                      isUpdate={isUpdate}
                     />
-                    {reportByIdPayload?.startDate && (
-                      <a
-                        href="#"
-                        className="btn btn-sm fw-bold btn-secondary me-4"
-                        onClick={handleClearDate}
-                      >
-                        Clear
-                      </a>
-                    )}
                   </div>
                 </div>
                 {isUpdate && (

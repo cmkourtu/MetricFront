@@ -16,15 +16,11 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   updateReportById,
   selectedDateRange,
   setSelectedDateRange,
+  showDateRangeSelector,
+  setShowDateRangeSelector,
   isModal,
 }) => {
   const { reportByIdPayload, setReportByIdPayload } = usePageData();
-  const [showDateRangeSelector, setShowDateRangeSelector] =
-    useState<boolean>(false);
-
-  const handleShowDateRangeSelector = () => {
-    setShowDateRangeSelector(true);
-  };
 
   const minDateThreeYearsAgo = new Date(
     moment().subtract(3, 'years').format('Y-MM-DD')
@@ -41,11 +37,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   };
 
   const onClickClear = () => {
-    setSelectedDateRange({
-      startDate: new Date(),
-      endDate: new Date(),
-      key: 'selection',
-    });
+    setSelectedDateRange(null);
     setShowDateRangeSelector(false);
   };
 
@@ -84,11 +76,15 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     }
   };
 
+  const handleOpenRangeSelector = () => {
+    setShowDateRangeSelector(true);
+  };
+
   return (
     <>
       <div
-        className="btn btn-sm fw-bold  d-flex align-items-center bg-body btn-color-gray-700 btn-active-color-primary me-4 "
-        onClick={handleShowDateRangeSelector}
+        className="btn btn-sm fw-bold  d-flex align-items-center bg-body btn-color-gray-700 btn-active-color-primary me-4"
+        onClick={handleOpenRangeSelector}
       >
         <div className="me-2">
           {selectedDateRange?.startDate && selectedDateRange?.endDate ? (
@@ -104,10 +100,11 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       </div>
       {showDateRangeSelector && (
         <div
-          className={`${isModal ? 'position-absolute top-0' : 'position-absolute top-100'}`}
+          className="position-absolute bottom-40"
           style={{
-            right: isModal ? '50px' : 0,
+            right: 0,
             zIndex: 2,
+            top: isModal ? '-280px' : '30px',
           }}
         >
           <div className="shadow d-inline-block">

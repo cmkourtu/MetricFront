@@ -280,5 +280,14 @@ export interface DateRangeSelectorProps {
   setSelectedDateRange: React.Dispatch<
     React.SetStateAction<DateRangeProps | null>
   >;
+  showDateRangeSelector: boolean;
+  setShowDateRangeSelector: React.Dispatch<React.SetStateAction<boolean>>;
   isModal?: boolean;
+}
+
+export interface CalendarWithButtonProps {
+  setDateFilter?: React.Dispatch<React.SetStateAction<string | null>>;
+  updateReportById?: (report: ReportsProps) => void;
+  isModal?: boolean;
+  isUpdate?: boolean;
 }
