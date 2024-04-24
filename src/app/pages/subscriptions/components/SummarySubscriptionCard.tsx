@@ -7,6 +7,7 @@ import {
   getMonthAbbreviation,
 } from '../../../../_metronic/helpers/reportsHelpers';
 import { SummarySubscriptionCardProps } from './subscriptionsModels';
+
 const SummarySubscriptionCard: React.FC<SummarySubscriptionCardProps> = ({
   paymentMethodData,
 }) => {
@@ -122,10 +123,6 @@ const SummarySubscriptionCard: React.FC<SummarySubscriptionCardProps> = ({
             <h5 className="mb-4">Subscription Details</h5>
             <table className="table fs-6 fw-semibold gs-0 gy-2 gx-2">
               <tbody>
-                {/*<tr className="">
-                  <td className="text-gray-500">Subscription ID:</td>
-                  <td className="text-gray-800">sub_4567_8765</td>
-            </tr>*/}
                 <tr className="">
                   <td className="text-gray-500">Started:</td>
                   <td className="text-gray-800">

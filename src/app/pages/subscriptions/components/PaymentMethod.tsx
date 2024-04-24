@@ -11,6 +11,7 @@ import { useAuth } from '../../../modules/auth';
 import { PaymentMethodComponentProps } from './subscriptionsModels';
 import { getMonthAbbreviation } from '../../../../_metronic/helpers/reportsHelpers';
 import ConfirmModal from '../../../../_metronic/partials/modals/ConfirmModal/ConfirmModal';
+import ErrorModal from '../../../../_metronic/partials/modals/ErrorModal/ErrorModal';
 
 const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
   setPaymentMethodData,
@@ -23,6 +24,7 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
   const [paymentMethodId, setPaymentMethodId] = useState<string>('');
   const [updatePaymentMethodTrigger, setUpdatePaymentMethodTrigger] =
     useState<boolean>(false);
+  const [errorText, setErrorText] = useState<string | undefined>('');
 
   const handleOpenAddCartModal = () => {
     setShowAddCardModal(true);
@@ -58,8 +60,9 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
             setPaymentMethodData(data);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
+        setErrorText('Can not get payment methods. Please try again later.');
       }
     };
 
@@ -71,8 +74,9 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
       if (token && paymentMethodId) {
         await deletePaymentMethod(token, paymentMethodId);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      setErrorText('Can not delete payment method. Please try again later.');
     } finally {
       handleCloseConfirmModal();
       setUpdatePaymentMethodTrigger(!updatePaymentMethodTrigger);
@@ -211,9 +215,7 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
                                 Name
                               </td>
                               <td className="text-gray-800">
-                                {paymentCard?.billing_details?.name
-                                  ? paymentCard?.billing_details?.name
-                                  : '---'}
+                                {paymentCard?.name ? paymentCard?.name : '---'}
                               </td>
                             </tr>
                             <tr>
@@ -270,66 +272,6 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
                           </tbody>
                         </table>
                       </div>
-                      {/*<div className="flex-equal ">
-                        <table className="table table-flush fw-semibold gy-1">
-                          <tbody>
-                            <tr>
-                              <td className="text-muted min-w-125px w-125px">
-                                Billing address
-                              </td>
-                              <td className="text-gray-800">AU</td>
-                            </tr>
-                            <tr>
-                              <td className="text-muted min-w-125px w-125px">
-                                Phone
-                              </td>
-                              <td className="text-gray-800">
-                                No phone provided
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="text-muted min-w-125px w-125px">
-                                Email
-                              </td>
-                              <td className="text-gray-800">
-                                <a
-                                  href="#"
-                                  className="text-gray-900 text-hover-primary"
-                                >
-                                  smith@kpmg.com
-                                </a>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="text-muted min-w-125px w-125px">
-                                Origin
-                              </td>
-                              <td className="text-gray-800">
-                                Australia{' '}
-                                <div className="symbol symbol-20px symbol-circle ms-2">
-                                  <img
-                                    src={toAbsoluteUrl(
-                                      'media/flags/australia.svg'
-                                    )}
-                                  />
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="text-muted min-w-125px w-125px">
-                                CVC check
-                              </td>
-                              <td className="text-gray-800">
-                                Passed{' '}
-                                <i className="ki-duotone ki-check-circle fs-2 text-success">
-                                  <span className="path1"></span>
-                                  <span className="path2"></span>
-                                </i>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>*/}
                     </div>
                   </div>
                 </div>
@@ -346,6 +288,9 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
           yesButtonAction={handleDeletePaymentMethod}
           closeConfirmModal={handleCloseConfirmModal}
         />
+      )}
+      {errorText && (
+        <ErrorModal errorModalText={errorText} setErrorText={setErrorText} />
       )}
     </>
   );

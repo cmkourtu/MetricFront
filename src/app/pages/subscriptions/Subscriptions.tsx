@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
@@ -15,24 +15,22 @@ const Subscriptions: React.FC = () => {
     PaymentMethodProps[]
   >([]);
 
-  const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
+  const stripePromise = useMemo(
+    () => loadStripe(STRIPE_PUBLISHABLE_KEY),
+    [STRIPE_PUBLISHABLE_KEY]
+  );
+
+  const ComponentToRender = useMemo(() => {
+    return isSubscriptionActive ? SubscriptionDetails : SubscriptionsPlans;
+  }, [isSubscriptionActive]);
 
   return (
-    <>
-      <Elements stripe={stripePromise}>
-        {isSubscriptionActive ? (
-          <SubscriptionDetails
-            paymentMethodData={paymentMethodData}
-            setPaymentMethodData={setPaymentMethodData}
-          />
-        ) : (
-          <SubscriptionsPlans
-            paymentMethodData={paymentMethodData}
-            setPaymentMethodData={setPaymentMethodData}
-          />
-        )}
-      </Elements>
-    </>
+    <Elements stripe={stripePromise}>
+      <ComponentToRender
+        paymentMethodData={paymentMethodData}
+        setPaymentMethodData={setPaymentMethodData}
+      />
+    </Elements>
   );
 };
 

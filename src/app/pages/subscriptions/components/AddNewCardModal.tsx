@@ -1,35 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import moment from 'moment';
 
-import { toAbsoluteUrl } from '../../../../_metronic/helpers';
 import { addPaymentMethod } from '../../../modules/apps/core/_appRequests';
 import { useAuth } from '../../../modules/auth';
-
-interface AddNewCardModalProps {
-  closeModal: () => void;
-}
+import ErrorModal from '../../../../_metronic/partials/modals/ErrorModal/ErrorModal';
+import { AddNewCardModalProps } from './subscriptionsModels';
 
 const AddNewCardModal: React.FC<AddNewCardModalProps> = ({ closeModal }) => {
   const { auth, currentUser } = useAuth();
   const stripe = useStripe();
   const elements = useElements();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [errorText, setErrorText] = useState<string | undefined>('');
+  const [cardName, setCardName] = useState('');
   const [isCardDefault, setIsCardDefault] = useState(true);
-  const currentYear = moment().year();
-  const futureYears = 6;
   const token = auth?.accessToken;
   const userId = currentUser?.id;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setLoading(true);
-    setError(undefined);
+    setErrorText('');
 
     if (!stripe || !elements) {
-      setError('Stripe.js has not loaded yet.');
-      setLoading(false);
+      setErrorText('Stripe.js has not loaded yet.');
       return;
     }
 
@@ -39,8 +31,7 @@ const AddNewCardModal: React.FC<AddNewCardModalProps> = ({ closeModal }) => {
     });
 
     if (error) {
-      setError(error.message);
-      setLoading(false);
+      setErrorText(error.message);
       return;
     }
 
@@ -58,21 +49,24 @@ const AddNewCardModal: React.FC<AddNewCardModalProps> = ({ closeModal }) => {
             typeof paymentMethod.card?.exp_year === 'number'
               ? paymentMethod.card?.exp_year
               : 0,
-            isCardDefault
+            isCardDefault,
+            cardName
           );
         }
       } catch (error) {
-        setError('Failed to add payment method. Please try again.');
-      } finally {
-        closeModal();
+        setErrorText('Failed to add payment method. Please try again later.');
+        return;
       }
     }
-
-    setLoading(false);
+    closeModal();
   };
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsCardDefault(event.target.checked);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCardName(event.target.value);
   };
 
   return (
@@ -122,6 +116,7 @@ const AddNewCardModal: React.FC<AddNewCardModalProps> = ({ closeModal }) => {
                     className="form-control form-control-solid"
                     placeholder=""
                     name="card_name"
+                    onChange={handleInputChange}
                   />
                   <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                 </div>
@@ -148,140 +143,10 @@ const AddNewCardModal: React.FC<AddNewCardModalProps> = ({ closeModal }) => {
                       Set card as default
                     </span>
                   </label>
-                  {/*<div className="position-relative">
-                    <input
-                      type="text"
-                      className="form-control form-control-solid"
-                      placeholder="Enter card number"
-                      name="card_number"
-                    />
-                    <div className="position-absolute translate-middle-y top-50 end-0 me-5">
-                      <img
-                        src={toAbsoluteUrl('media/svg/card-logos/visa.svg')}
-                        alt=""
-                        className="h-25px"
-                      />
-                      <img
-                        src={toAbsoluteUrl(
-                          'media/svg/card-logos/mastercard.svg'
-                        )}
-                        alt=""
-                        className="h-25px"
-                      />
-                      <img
-                        src={toAbsoluteUrl(
-                          'media/svg/card-logos/american-express.svg'
-                        )}
-                        alt=""
-                        className="h-25px"
-                      />
-                    </div>
-                  </div>
-                      <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>*/}
                 </div>
-                {/*<div
-                  className="row mb-10"
-                  data-select2-id="select2-data-126-ixef"
-                >
-                  <div
-                    className="col-md-8 fv-row"
-                    data-select2-id="select2-data-125-48ja"
-                  >
-                    <label className="required fs-6 fw-semibold form-label mb-2">
-                      Expiration Date
-                    </label>
-                    <div className="row fv-row fv-plugins-icon-container">
-                      <div
-                        className="col-6"
-                        data-select2-id="select2-data-142-asfc"
-                      >
-                        <select
-                          name="card_expiry_month"
-                          className="form-select form-select-solid select2-hidden-accessible"
-                          data-control="select2"
-                          data-hide-search="true"
-                          data-placeholder="Month"
-                          data-select2-id="select2-data-9-pove"
-                          aria-hidden="true"
-                          data-kt-initialized="1"
-                        >
-                          {[...Array(12).keys()].map((month) => (
-                            <option
-                              key={month + 1}
-                              value={month + 1}
-                              data-select2-id={`select2-data-${month + 143}-syn9`}
-                            >
-                              {month + 1}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                      </div>
-                      <div
-                        className="col-6"
-                        data-select2-id="select2-data-124-xf1a"
-                      >
-                        <select
-                          name="card_expiry_year"
-                          className="form-select form-select-solid select2-hidden-accessible"
-                          data-control="select2"
-                          data-hide-search="true"
-                          data-placeholder="Year"
-                          data-select2-id="select2-data-12-hkb6"
-                          aria-hidden="true"
-                          data-kt-initialized="1"
-                        >
-                          {[...Array(futureYears).keys()].map((index) => (
-                            <option
-                              key={currentYear + index}
-                              value={currentYear + index}
-                              data-select2-id={`select2-data-${currentYear + index}-nx5f`}
-                            >
-                              {currentYear + index}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-4 fv-row fv-plugins-icon-container">
-                    <label className="d-flex align-items-center fs-6 fw-semibold form-label mb-2">
-                      <span className="required">CVV</span>
-                      <span
-                        className="ms-1"
-                        data-bs-toggle="tooltip"
-                        aria-label="Enter a card CVV code"
-                        data-bs-original-title="Enter a card CVV code"
-                        data-kt-initialized="1"
-                      >
-                        <i className="ki-duotone ki-information-5 text-gray-500 fs-6">
-                          <span className="path1"></span>
-                          <span className="path2"></span>
-                          <span className="path3"></span>
-                        </i>
-                      </span>{' '}
-                    </label>
-                    <div className="position-relative">
-                      <input
-                        type="text"
-                        className="form-control form-control-solid"
-                        minlength={3} maxlength="4" placeholder="CVV"
-                        name="card_cvv"
-                      />
-                      <div className="position-absolute translate-middle-y top-50 end-0 me-3">
-                        <i className="ki-duotone ki-credit-cart fs-2hx">
-                          <span className="path1"></span>
-                          <span className="path2"></span>
-                        </i>{' '}
-                      </div>
-                    </div>
-                    <div className="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                  </div>
-                        </div>*/}
                 <div className="text-center pt-15">
                   <button
-                    className="btn btn-light fw-bold me-4"
+                    className="btn btn-light fw-bold me-8"
                     onClick={closeModal}
                   >
                     Discard
@@ -300,8 +165,11 @@ const AddNewCardModal: React.FC<AddNewCardModalProps> = ({ closeModal }) => {
         </div>
       </div>
       <div className="modal-backdrop fade show"></div>
+      {errorText && (
+        <ErrorModal errorModalText={errorText} setErrorText={setErrorText} />
+      )}
     </>
   );
 };
 
-export default AddNewCardModal;
+export default memo(AddNewCardModal);

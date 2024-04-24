@@ -175,7 +175,8 @@ export function addPaymentMethod(
   paymentMethodId: string,
   expMonth: number,
   expYear: number,
-  isCardDefault: boolean
+  isCardDefault: boolean,
+  cardName?: string
 ) {
   return axios.post(
     ADD_PAYMENT_METHOD,
@@ -186,6 +187,7 @@ export function addPaymentMethod(
       expMonth: expMonth,
       expYear: expYear,
       isDefault: isCardDefault,
+      name: cardName ? cardName : null,
     },
     {
       headers: {

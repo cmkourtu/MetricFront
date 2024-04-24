@@ -28,3 +28,7 @@ export interface SubscriptionPlansProps {
   paymentMethodData: PaymentMethodProps[];
   setPaymentMethodData: (paymentMethodData: PaymentMethodProps[]) => void;
 }
+
+export interface AddNewCardModalProps {
+  closeModal: () => void;
+}

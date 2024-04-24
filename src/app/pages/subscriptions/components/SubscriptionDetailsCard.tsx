@@ -5,10 +5,12 @@ import { useAuth } from '../../../modules/auth';
 import { unsubscribe } from '../../../modules/apps/core/_appRequests';
 import { getUserById } from '../../../modules/auth/core/_requests';
 import ConfirmModal from '../../../../_metronic/partials/modals/ConfirmModal/ConfirmModal';
+import ErrorModal from '../../../../_metronic/partials/modals/ErrorModal/ErrorModal';
 
 const SubscriptionDetailsCard: React.FC = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const { setCurrentUser, currentUser, auth } = useAuth();
+  const [errorText, setErrorText] = useState<string | undefined>('');
   const token = auth?.accessToken;
   const userId = currentUser?.id;
 
@@ -29,6 +31,7 @@ const SubscriptionDetailsCard: React.FC = () => {
       }
     } catch (error) {
       console.error('Error unsubscribing:', error);
+      setErrorText('Oops... Something went wrong. Please try again later.');
     }
     handleCloseConfirmModal();
   };
@@ -127,8 +130,6 @@ const SubscriptionDetailsCard: React.FC = () => {
                 <thead>
                   <tr className="border-bottom border-gray-200 text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                     <th className="min-w-150px">Product</th>
-                    {/*<th className="min-w-125px">Subscription ID</th>*/}
-                    {/*<th className="min-w-125px">Qty</th>*/}
                     <th className="min-w-125px">Total</th>
                     <th className="text-end min-w-70px">Actions</th>
                   </tr>
@@ -143,12 +144,6 @@ const SubscriptionDetailsCard: React.FC = () => {
                         bundle
                       </div>
                     </td>
-                    {/*<td>
-                      <span className="badge badge-light-danger">
-                        sub_4567_8765
-                      </span>
-  </td>*/}
-                    {/*<td>1</td>*/}
                     <td>
                       ${currentUser?.subscription?.subscriptionPlan?.price} /{' '}
                       {currentUser?.subscription?.subscriptionPlan?.name}
@@ -174,6 +169,9 @@ const SubscriptionDetailsCard: React.FC = () => {
           yesButtonAction={handleCancelSubscription}
           closeConfirmModal={handleCloseConfirmModal}
         />
+      )}
+      {errorText && (
+        <ErrorModal errorModalText={errorText} setErrorText={setErrorText} />
       )}
     </>
   );

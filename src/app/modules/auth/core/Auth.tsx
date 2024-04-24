@@ -25,6 +25,8 @@ type AuthContextProps = {
   setFacebookAuthCode: Dispatch<SetStateAction<string>>;
   isSubscriptionActive: boolean;
   setIsSubscriptionActive: Dispatch<SetStateAction<boolean>>;
+  updateCurrentUserTrigger: boolean;
+  setUpdateCurrentUserTrigger: Dispatch<SetStateAction<boolean>>;
 };
 
 const initAuthContextPropsState = {
@@ -37,6 +39,8 @@ const initAuthContextPropsState = {
   setFacebookAuthCode: () => {},
   isSubscriptionActive: false,
   setIsSubscriptionActive: () => {},
+  updateCurrentUserTrigger: false,
+  setUpdateCurrentUserTrigger: () => {},
 };
 
 const AuthContext = createContext<AuthContextProps>(initAuthContextPropsState);
@@ -54,6 +58,8 @@ const AuthProvider: FC<WithChildren> = ({ children }) => {
   );
   const [facebookAuthCode, setFacebookAuthCode] = useState<string>('');
   const [isSubscriptionActive, setIsSubscriptionActive] =
+    useState<boolean>(false);
+  const [updateCurrentUserTrigger, setUpdateCurrentUserTrigger] =
     useState<boolean>(false);
 
   useEffect(() => {
@@ -90,6 +96,8 @@ const AuthProvider: FC<WithChildren> = ({ children }) => {
         setFacebookAuthCode,
         isSubscriptionActive,
         setIsSubscriptionActive,
+        updateCurrentUserTrigger,
+        setUpdateCurrentUserTrigger,
       }}
     >
       {children}
@@ -98,16 +106,27 @@ const AuthProvider: FC<WithChildren> = ({ children }) => {
 };
 
 const AuthInit: FC<WithChildren> = ({ children }) => {
-  const { auth, currentUser, logout, setCurrentUser } = useAuth();
+  const {
+    auth,
+    currentUser,
+    logout,
+    setCurrentUser,
+    updateCurrentUserTrigger,
+  } = useAuth();
   const [showSplashScreen, setShowSplashScreen] = useState(true);
+  const jwtToken = auth?.accessToken;
+  const userId = auth?.userId;
 
   // We should request user by authToken (IN OUR EXAMPLE IT'S API_TOKEN) before rendering the application
   useEffect(() => {
-    const jwtToken = auth?.accessToken;
-    const userId = auth?.userId;
     const requestUser = async (jwtToken: string) => {
       try {
         if (!currentUser && jwtToken && userId) {
+          const { data } = await getUserById(userId, jwtToken);
+          if (data) {
+            setCurrentUser(data);
+          }
+        } else if (currentUser && jwtToken && userId) {
           const { data } = await getUserById(userId, jwtToken);
           if (data) {
             setCurrentUser(data);
@@ -130,7 +149,7 @@ const AuthInit: FC<WithChildren> = ({ children }) => {
       setShowSplashScreen(false);
     }
     // eslint-disable-next-line
-  }, []);
+  }, [updateCurrentUserTrigger]);
 
   return showSplashScreen ? <LayoutSplashScreen /> : <>{children}</>;
 };
