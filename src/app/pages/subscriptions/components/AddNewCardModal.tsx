@@ -11,14 +11,16 @@ interface AddNewCardModalProps {
 }
 
 const AddNewCardModal: React.FC<AddNewCardModalProps> = ({ closeModal }) => {
-  const { auth } = useAuth();
+  const { auth, currentUser } = useAuth();
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const [isCardDefault, setIsCardDefault] = useState(true);
   const currentYear = moment().year();
   const futureYears = 6;
   const token = auth?.accessToken;
+  const userId = currentUser?.id;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,20 +46,20 @@ const AddNewCardModal: React.FC<AddNewCardModalProps> = ({ closeModal }) => {
 
     if (paymentMethod) {
       try {
-        // Simulate getting token from authentication context
-        if (token) {
+        if (token && userId) {
           await addPaymentMethod(
             token,
+            userId,
             paymentMethod.card?.last4 || '',
+            paymentMethod.id || '',
             typeof paymentMethod.card?.exp_month === 'number'
               ? paymentMethod.card?.exp_month
               : 0,
             typeof paymentMethod.card?.exp_year === 'number'
               ? paymentMethod.card?.exp_year
               : 0,
-            paymentMethod.id || ''
+            isCardDefault
           );
-          // Payment method added successfully, handle any further actions (e.g., close modal)
         }
       } catch (error) {
         setError('Failed to add payment method. Please try again.');
@@ -67,6 +69,10 @@ const AddNewCardModal: React.FC<AddNewCardModalProps> = ({ closeModal }) => {
     }
 
     setLoading(false);
+  };
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsCardDefault(event.target.checked);
   };
 
   return (
@@ -124,12 +130,24 @@ const AddNewCardModal: React.FC<AddNewCardModalProps> = ({ closeModal }) => {
                     Card Number
                   </label>
                   <CardElement
-                    className="form-control form-control-solid"
+                    className="form-control form-control-solid mb-10"
                     options={{
                       style: { base: { fontSize: '14px' } },
                       hidePostalCode: true,
                     }}
                   />
+                  <label className="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                    <input
+                      className="form-check-input me-4"
+                      type="checkbox"
+                      value="1"
+                      checked={isCardDefault}
+                      onChange={handleCheckboxChange}
+                    />
+                    <span className="fs-6 fw-semibold">
+                      Set card as default
+                    </span>
+                  </label>
                   {/*<div className="position-relative">
                     <input
                       type="text"

@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
-import { SubscriptionPlansDataProps } from './subscriptionsModels';
+import {
+  SubscriptionPlansDataProps,
+  SubscriptionPlansProps,
+} from './subscriptionsModels';
 import { TemporarySubscriptionsData } from './TemporarySubscriptionsData';
 import SubscriptionPlanCard from './SubscriptionPlanCard';
 import { getSubscriptionPlans } from '../../../modules/apps/core/_appRequests';
+import PaymentMethod from './PaymentMethod';
 
-const SubscriptionsPlans: React.FC = () => {
+const SubscriptionsPlans: React.FC<SubscriptionPlansProps> = ({
+  paymentMethodData,
+  setPaymentMethodData,
+}) => {
   const [activeTab, setActiveTab] = useState<'month' | 'annual'>('month');
   const [monthSubscriptionsPlans, setMonthSubscriptionsPlans] = useState<
     SubscriptionPlansDataProps[]
@@ -60,7 +67,7 @@ const SubscriptionsPlans: React.FC = () => {
         id="kt_app_content_container"
         className="app-container  container-xxl "
       >
-        <div className="card" id="kt_pricing">
+        <div className="card mb-5" id="kt_pricing">
           <div className="card-body p-lg-17">
             <div className="d-flex flex-column">
               <div className="mb-4 text-center">
@@ -118,6 +125,10 @@ const SubscriptionsPlans: React.FC = () => {
             </div>
           </div>
         </div>
+        <PaymentMethod
+          paymentMethodData={paymentMethodData}
+          setPaymentMethodData={setPaymentMethodData}
+        />
       </div>
     </div>
   );

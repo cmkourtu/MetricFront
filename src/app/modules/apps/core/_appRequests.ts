@@ -28,6 +28,7 @@ export const UNSUBSCRIBE_URL = `${API_URL}/subscriptions`;
 export const ADD_PAYMENT_METHOD = `${API_URL}/card`;
 export const GET_PAYMENT_METHODS = `${API_URL}/card/me`;
 export const DELETE_PAYMENT_METHOD = `${API_URL}/card`;
+export const SET_CARD_AS_DEFAULT = `${API_URL}/card/primary`;
 
 export function getFacebookToken(jwtToken: string, code: string) {
   return axios.post(
@@ -169,18 +170,22 @@ export function unsubscribe() {
 
 export function addPaymentMethod(
   token: string,
+  userId: string,
   cardNumber: string,
+  paymentMethodId: string,
   expMonth: number,
   expYear: number,
-  paymentMethodId: string
+  isCardDefault: boolean
 ) {
   return axios.post(
     ADD_PAYMENT_METHOD,
     {
+      userId: userId,
       number: cardNumber,
+      stripePaymentMethodId: paymentMethodId,
       expMonth: expMonth,
       expYear: expYear,
-      stripePaymentMethodId: paymentMethodId,
+      isDefault: isCardDefault,
     },
     {
       headers: {
@@ -204,4 +209,18 @@ export function deletePaymentMethod(token: string, paymentMethodId: string) {
       Authorization: `Bearer ${token}`,
     },
   });
+}
+
+export function setCardAsDefault(token: string, paymentMethodId: string) {
+  return axios.post(
+    SET_CARD_AS_DEFAULT,
+    {
+      stripePaymentMethodId: paymentMethodId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 }

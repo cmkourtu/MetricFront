@@ -17,3 +17,13 @@ export interface PaymentMethodComponentProps {
 export interface SummarySubscriptionCardProps {
   paymentMethodData: PaymentMethodProps[];
 }
+
+export interface SubscriptionDetailsProps {
+  paymentMethodData: PaymentMethodProps[];
+  setPaymentMethodData: (paymentMethodData: PaymentMethodProps[]) => void;
+}
+
+export interface SubscriptionPlansProps {
+  paymentMethodData: PaymentMethodProps[];
+  setPaymentMethodData: (paymentMethodData: PaymentMethodProps[]) => void;
+}

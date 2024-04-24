@@ -5,6 +5,7 @@ import AddNewCardModal from './AddNewCardModal';
 import {
   getPaymentMethods,
   deletePaymentMethod,
+  setCardAsDefault,
 } from '../../../modules/apps/core/_appRequests';
 import { useAuth } from '../../../modules/auth';
 import { PaymentMethodComponentProps } from './subscriptionsModels';
@@ -20,12 +21,15 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
   const [showAddCardModal, setShowAddCardModal] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [paymentMethodId, setPaymentMethodId] = useState<string>('');
+  const [updatePaymentMethodTrigger, setUpdatePaymentMethodTrigger] =
+    useState<boolean>(false);
 
   const handleOpenAddCartModal = () => {
     setShowAddCardModal(true);
   };
   const handleCloseAddCartModal = () => {
     setShowAddCardModal(false);
+    setUpdatePaymentMethodTrigger(!updatePaymentMethodTrigger);
   };
 
   const handleOpenConfirmModal = (paymentMethodId: string) => {
@@ -39,21 +43,28 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
   };
 
   useEffect(() => {
-    if (showAddCardModal || showConfirmModal) {
-      return;
-    }
     const fetchPaymentMethods = async () => {
       try {
         if (token) {
           const { data } = await getPaymentMethods(token);
-          setPaymentMethodData(data);
+
+          const defaultPaymentIndex = data.findIndex(
+            (paymentMethod) => paymentMethod.isDefault
+          );
+          if (defaultPaymentIndex !== -1) {
+            const defaultPayment = data.splice(defaultPaymentIndex, 1)[0];
+            setPaymentMethodData([defaultPayment, ...data]);
+          } else {
+            setPaymentMethodData(data);
+          }
         }
       } catch (error) {
         console.log(error);
       }
     };
+
     fetchPaymentMethods();
-  }, [showAddCardModal, showConfirmModal]);
+  }, [updatePaymentMethodTrigger]);
 
   const handleDeletePaymentMethod = async () => {
     try {
@@ -64,6 +75,19 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
       console.log(error);
     } finally {
       handleCloseConfirmModal();
+      setUpdatePaymentMethodTrigger(!updatePaymentMethodTrigger);
+    }
+  };
+
+  const chooseDefaultCard = async (paymentMethodId: string) => {
+    try {
+      if (token) {
+        await setCardAsDefault(token, paymentMethodId);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setUpdatePaymentMethodTrigger(!updatePaymentMethodTrigger);
     }
   };
 
@@ -79,7 +103,7 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
           </div>
           <div className="card-toolbar">
             <button
-              className="btn btn-primary fw-bold"
+              className="btn btn-sm btn-primary fw-bold"
               onClick={handleOpenAddCartModal}
             >
               New Method
@@ -87,15 +111,15 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
           </div>
         </div>
         {paymentMethodData?.length > 0 &&
-          paymentMethodData?.map((paymentCard) => (
+          paymentMethodData?.map((paymentCard, index) => (
             <div className="card-body pt-0" key={paymentCard?.id}>
               <div id="kt_create_new_payment_method">
                 <div className="py-1">
                   <div className="py-3 d-flex flex-stack flex-wrap">
                     <div
-                      className="d-flex align-items-center collapsible toggle "
+                      className={`d-flex align-items-center collapsible toggle ${!paymentCard?.isDefault && 'collapsed'}`}
                       data-bs-toggle="collapse"
-                      data-bs-target="#kt_create_new_payment_method_1"
+                      data-bs-target={`#kt_create_new_payment_method_${index + 1}`}
                     >
                       <div className="btn btn-sm btn-icon btn-active-color-primary ms-n3 me-2">
                         <i className="ki-duotone ki-minus-square toggle-on text-primary fs-2">
@@ -138,9 +162,11 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
                           {paymentCard?.card?.brand
                             ? paymentCard.card.brand.toUpperCase()
                             : ''}
-                          <div className="badge badge-light-primary ms-5">
-                            Primary
-                          </div>
+                          {paymentCard?.isDefault && (
+                            <div className="badge badge-light-primary ms-5">
+                              Primary
+                            </div>
+                          )}
                         </div>
                         <div className="text-muted">
                           Expires{' '}
@@ -152,24 +178,29 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
                       </div>
                     </div>
                     <div className="d-flex my-3 ms-2">
+                      {paymentCard?.isDefault ? (
+                        <div className="btn btn-sm bg-success text-white fw-bold me-2">
+                          {` Default card `}
+                        </div>
+                      ) : (
+                        <button
+                          className="btn btn-sm btn-primary fw-bold me-2"
+                          onClick={() => chooseDefaultCard(paymentCard?.id)}
+                        >
+                          Set as default
+                        </button>
+                      )}
                       <button
                         className="btn btn-sm btn-icon btn-active-color-danger me-2"
                         onClick={() => handleOpenConfirmModal(paymentCard?.id)}
                       >
                         <KTIcon iconName="trash" className="fs-2x" />
                       </button>
-                      <label className="form-check form-check-custom form-check-solid me-5">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="payment_method" /*checked={checked}*/
-                        />
-                      </label>
                     </div>
                   </div>
                   <div
-                    id="kt_create_new_payment_method_1"
-                    className="collapse show fs-6 ps-10"
+                    id={`kt_create_new_payment_method_${index + 1}`}
+                    className={`${paymentCard?.isDefault && 'show fs-6 ps-10'} collapse`}
                   >
                     <div className="d-flex flex-wrap py-5">
                       <div className="flex-equal me-5">
@@ -223,12 +254,17 @@ const PaymentMethod: React.FC<PaymentMethodComponentProps> = ({
                               <td className="text-muted min-w-125px w-125px">
                                 CVC check
                               </td>
-                              <td className="text-gray-800">
-                                Passed{' '}
-                                <i className="ki-duotone ki-check-circle fs-2 text-success">
-                                  <span className="path1"></span>
-                                  <span className="path2"></span>
-                                </i>
+                              <td>
+                                <div className="d-flex flex-row align-items-center justify-content-start">
+                                  <span className="text-gray-800 me-2">
+                                    {' '}
+                                    Passed{' '}
+                                  </span>
+                                  <i className="ki-duotone ki-check-circle fs-2 text-success">
+                                    <span className="path1"></span>
+                                    <span className="path2"></span>
+                                  </i>
+                                </div>
                               </td>
                             </tr>
                           </tbody>

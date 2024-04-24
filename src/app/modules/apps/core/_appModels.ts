@@ -112,4 +112,5 @@ export interface PaymentMethodProps {
   metadata: Record<string, any>;
   radar_options: Record<string, any>;
   type: string;
+  isDefault: boolean;
 }
