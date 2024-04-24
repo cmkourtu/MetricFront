@@ -7,6 +7,7 @@ export type { SubscriptionPlansDataProps, PaymentMethodProps };
 
 export interface SubscriptionPlanCardProps {
   subscriptionPlan: SubscriptionPlansDataProps;
+  paymentMethodData: PaymentMethodProps[];
 }
 
 export interface PaymentMethodComponentProps {

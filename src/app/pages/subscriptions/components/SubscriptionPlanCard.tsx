@@ -1,9 +1,13 @@
 import React from 'react';
-import { SubscriptionPlanCardProps } from './subscriptionsModels';
+import {
+  SubscriptionPlanCardProps,
+  PaymentMethodProps,
+} from './subscriptionsModels';
 import { subscribe } from '../../../modules/apps/core/_appRequests';
 
 const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
   subscriptionPlan,
+  paymentMethodData,
 }) => {
   const handleSelectSubscriptionPlan = async (subscriptionId: string) => {
     try {
@@ -12,6 +16,22 @@ const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const getAddInfo = (paymentMethodData: PaymentMethodProps[]) => {
+    if (!paymentMethodData || paymentMethodData.length === 0) {
+      return '* Please, add a payment method to proceed.';
+    }
+
+    const defaultCount = paymentMethodData.filter(
+      (method) => method.isDefault
+    ).length;
+
+    if (defaultCount !== 1) {
+      return '* Please, choose a default payment method to proceed.';
+    }
+
+    return '';
   };
 
   return (
@@ -45,18 +65,18 @@ const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
           </div>
 
           <div className="w-100 mb-10">
-            {/*<div className="d-flex align-items-center mb-5">
-              {/*<span className="fw-semibold fs-6 text-gray-800 flex-grow-1 pe-3">
-                {subscriptionPlan?.userLimit
-                  ? `Up to ${subscriptionPlan?.userLimit} Active Users`
-                  : 'Unlimited Active Users'}
+            {subscriptionPlan?.interval === 'month' && (
+              <div className="d-flex align-items-center mb-5">
+                <span className="fw-semibold fs-6 text-gray-800 flex-grow-1 pe-3">
+                  Trial period 14 days
                 </span>
-              <i className="ki-duotone ki-check-circle fs-1 text-success">
-                <span className="path1"></span>
-                <span className="path2"></span>
-              </i>
-            </div>
-                */}
+                <i className="ki-duotone ki-check-circle fs-1 text-success">
+                  <span className="path1"></span>
+                  <span className="path2"></span>
+                </i>
+              </div>
+            )}
+
             {/*<div className="d-flex align-items-center mb-5">
               <span className="fw-semibold fs-6 text-gray-800 flex-grow-1 pe-3">
                 Up to 30 Project Integrations{' '}
@@ -118,15 +138,16 @@ const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
   </div>*/}
           </div>
 
-          <a
-            href="#"
-            className="btn btn-sm btn-primary fw-bold"
+          <button
+            className="btn btn-sm btn-primary fw-bold mb-8"
             onClick={() => {
               handleSelectSubscriptionPlan(subscriptionPlan?.id);
             }}
+            disabled={getAddInfo(paymentMethodData) !== ''}
           >
             Select
-          </a>
+          </button>
+          <span>{getAddInfo(paymentMethodData)}</span>
         </div>
       </div>
     </div>

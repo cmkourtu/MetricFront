@@ -111,6 +111,7 @@ const SubscriptionsPlans: React.FC<SubscriptionPlansProps> = ({
                     <SubscriptionPlanCard
                       subscriptionPlan={subscription}
                       key={subscription.id}
+                      paymentMethodData={paymentMethodData}
                     />
                   ))}
                 {activeTab === 'annual' &&
@@ -118,6 +119,7 @@ const SubscriptionsPlans: React.FC<SubscriptionPlansProps> = ({
                   annualSubscriptionsPlans.map((subscription) => (
                     <SubscriptionPlanCard
                       subscriptionPlan={subscription}
+                      paymentMethodData={paymentMethodData}
                       key={subscription.id}
                     />
                   ))}
