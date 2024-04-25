@@ -61,7 +61,7 @@ const SidebarLogo = (props: PropsType) => {
               className="h-25px app-sidebar-logo-default"
             />*/}
             <h1 className="text-white fs-1qx fw-bolder text-center app-sidebar-logo-default">
-              Statistic App
+              MetricNest
             </h1>
           </>
         ) : (
@@ -85,7 +85,7 @@ const SidebarLogo = (props: PropsType) => {
           className="h-20px app-sidebar-logo-minimize"
         />*/}
         <h1 className="text-white fs-1qx fw-bolder text-center app-sidebar-logo-minimize">
-          SA
+          MN
         </h1>
       </Link>
 

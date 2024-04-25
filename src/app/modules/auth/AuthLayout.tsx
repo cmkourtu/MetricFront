@@ -54,13 +54,17 @@ const AuthLayout = () => {
       {/* begin::Aside */}
       <div
         className="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2"
-        style={{ backgroundImage: `url(${toAbsoluteUrl('media/misc/auth-bg.png')})` }}
+        style={{
+          backgroundImage: `url(${toAbsoluteUrl('media/misc/auth-bg.png')})`,
+        }}
       >
         {/* begin::Content */}
         <div className="d-flex flex-column flex-center py-15 px-5 px-md-15 w-100">
           {/* begin::Logo */}
           <Link to="/" className="mb-12">
-            <h1 className="text-white fs-3qx fw-bolder text-center">Statistic App</h1>
+            <h1 className="text-white fs-3qx fw-bolder text-center">
+              MetricNest
+            </h1>
             {/*<img alt="Logo" src={toAbsoluteUrl('media/logos/custom-1.png')} className="h-75px" />*/}
           </Link>
           {/* end::Logo */}
@@ -85,12 +89,13 @@ const AuthLayout = () => {
             <a href="#" className="opacity-75-hover text-warning fw-bold me-1">
               the blogger
             </a>
-            introduces a person they’ve interviewed <br /> and provides some background information
-            about
+            introduces a person they’ve interviewed <br /> and provides some
+            background information about
             <a href="#" className="opacity-75-hover text-warning fw-bold me-1">
               the interviewee
             </a>
-            and their <br /> work following this is a transcript of the interview.
+            and their <br /> work following this is a transcript of the
+            interview.
           </div>
           {/* end::Text */}
         </div>
