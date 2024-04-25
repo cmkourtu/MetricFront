@@ -5,7 +5,6 @@ import {
   ReportsTable,
   ReportsCharts,
   ReportsHeader,
-  TemporaryAdsetsData,
   ReportsToolbar,
   ReportsTileView,
 } from './components';

@@ -12,7 +12,6 @@ import { FacebookCallback } from '../pages/facebook-ads/components';
 import FacebookAdAccount from '../pages/facebook-ads/FacebookAdAccount';
 import Reports from '../pages/reports/Reports';
 import { useAuth } from '../modules/auth';
-import Subscriptions from '../pages/subscriptions/Subscriptions';
 
 const PrivateRoutes = () => {
   const { isSubscriptionActive, currentUser } = useAuth();
@@ -72,7 +71,6 @@ const PrivateRoutes = () => {
             isSubscriptionActive ? <Reports /> : <Navigate to="/pricing" />
           }
         />
-        <Route path="pricing" element={<Subscriptions />} />
         <Route path="builder" element={<BuilderPageWrapper />} />
         <Route path="menu-test" element={<MenuTestPage />} />
         {/* Lazy Modules */}
