@@ -2,7 +2,7 @@ import { lazy, FC, Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { MasterLayout } from '../../_metronic/layout/MasterLayout';
 import TopBarProgress from 'react-topbar-progress-indicator';
-import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper';
+import HomePage from '../pages/home/HomePage';
 import { MenuTestPage } from '../pages/MenuTestPage';
 import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils';
 import { WithChildren } from '../../_metronic/helpers';
@@ -10,6 +10,7 @@ import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper';
 import FacebookAds from '../pages/facebook-ads/FacebookAds';
 import { FacebookCallback } from '../pages/facebook-ads/components';
 import FacebookAdAccount from '../pages/facebook-ads/FacebookAdAccount';
+import Reports from '../pages/reports/Reports';
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'));
@@ -27,7 +28,7 @@ const PrivateRoutes = () => {
         {/* Redirect to Dashboard after success login/registartion */}
         <Route path="auth/*" element={<Navigate to="/dashboard" />} />
         {/* Pages */}
-        <Route path="dashboard" element={<DashboardWrapper />} />
+        <Route path="dashboard" element={<HomePage />} />
         <Route path="facebook-ads" element={<FacebookAds />} />
         <Route
           path="/facebook-ads/:facebookId"
@@ -37,7 +38,7 @@ const PrivateRoutes = () => {
           path="callback/facebook-callback"
           element={<FacebookCallback />}
         />
-
+        <Route path="reports/:reportId" element={<Reports />} />
         <Route path="builder" element={<BuilderPageWrapper />} />
         <Route path="menu-test" element={<MenuTestPage />} />
         {/* Lazy Modules */}
